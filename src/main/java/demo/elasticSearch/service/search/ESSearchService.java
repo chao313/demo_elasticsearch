@@ -27,16 +27,27 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class ESSearchService extends ESService {
 
-    private RestHighLevelClient client;
+    public RestHighLevelClient client;
 
     public ESSearchService init(String hostname, int port, String scheme) {
         this.client = this.createClient(hostname, port, scheme);
         return this;
     }
 
-
     /**
      * 最底层，兼容全部的查询条件
+     * 参数是  SearchRequest
+     */
+    public SearchResponse searchBase(RequestOptions options,
+                                     SearchRequest searchRequest) throws IOException {
+        SearchResponse searchResponse = this.client.search(searchRequest, options);
+        return searchResponse;
+    }
+
+
+    /**
+     * 最底层的上上一层 ，兼容全部的查询条件
+     * 参数是 SearchSourceBuilder 包裹在 SearchSourceBuilder
      */
     public SearchResponse searchBase(RequestOptions options,
                                      SearchSourceBuilder searchSourceBuilder,
