@@ -27,7 +27,7 @@ public class ScrollTest {
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.size(1000); //创建搜索请求及其对应的搜索源生成器。还可以选择设置大小来控制一次检索多少个结果。
         searchRequest.source(searchSourceBuilder);
-        searchRequest.scroll(TimeValue.timeValueMinutes(1L)); //设置scroll间隔
+        searchRequest.scroll(TimeValue.timeValueSeconds(10L)); //设置scroll间隔
         ESSearchService esSearchService = new ESSearchService().init("9200.utools.club", 80, "http");
         SearchResponse searchResponse = esSearchService.searchBase(RequestOptions.DEFAULT, searchRequest);
         log.info("ScrollId:{}", JSON.toJSON(searchResponse.getScrollId()));
@@ -38,6 +38,7 @@ public class ScrollTest {
             scrollRequest.scroll(TimeValue.timeValueSeconds(30));
             searchScrollResponse = esSearchService.client.scroll(scrollRequest, RequestOptions.DEFAULT);
             log.info("scroll 取出结果:{}", searchScrollResponse.getHits().getHits());
+            log.info("scroll id结果:{}", searchScrollResponse.getScrollId());
         } while (searchScrollResponse.getHits().getHits().length > 0);
 
     }
