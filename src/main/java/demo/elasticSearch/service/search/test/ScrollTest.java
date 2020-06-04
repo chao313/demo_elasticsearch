@@ -20,6 +20,14 @@ public class ScrollTest {
      * 最大只能是10000 和设置相关
      *
      * @throws IOException
+     *
+     * InetAddress.getByName("10.200.3.167"), Integer.parseInt("9300")))
+     * //                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("10.200.5.226"), Integer.parseInt("9300")))
+     * //                    .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("10.200.5.166"), Integer.parseInt("9300")));
+     *
+     * 10.200.3.167
+     * 10.200.5.226
+     * 10.200.5.166
      */
     @Test
     public void ScrollIdSearch() throws IOException {

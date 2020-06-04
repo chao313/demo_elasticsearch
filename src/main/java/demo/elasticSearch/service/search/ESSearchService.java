@@ -1,20 +1,14 @@
 package demo.elasticSearch.service.search;
 
-import com.alibaba.fastjson.JSON;
-import demo.elasticSearch.service.DefaultESIndexService;
 import demo.elasticSearch.service.ESService;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -67,29 +61,6 @@ public class ESSearchService extends ESService {
         SearchResponse searchResponse = this.searchBase(RequestOptions.DEFAULT, searchSourceBuilder, indices);
         return searchResponse;
     }
-
-
-    /**
-     *
-     */
-    public SearchResponse querySearch(RequestOptions options, String... indices) throws IOException {
-        SearchRequest searchRequest = new SearchRequest(indices);
-        SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();  // 默认配置
-        sourceBuilder.query(QueryBuilders.termQuery("F2_0088", "MONEYTREE, INC.")); // 设置搜索，可以是任何类型的 QueryBuilder
-        sourceBuilder.from(0); // 起始 index
-        sourceBuilder.size(5); // 大小 size
-        sourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS)); // 设置搜索的超时时间
-        searchRequest.source(sourceBuilder);
-        SearchResponse searchResponse = this.client.search(searchRequest, options);
-        return searchResponse;
-    }
-
-    public static void main(String[] args) throws IOException {
-        new ESSearchService().init("10.202.16.9", 9200, "http")
-                .querySearch(RequestOptions.DEFAULT, "comstore_tb_object_0088_v2");
-
-    }
-
 
 }
 
