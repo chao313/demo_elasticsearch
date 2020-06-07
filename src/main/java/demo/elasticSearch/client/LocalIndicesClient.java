@@ -87,6 +87,41 @@ public final class LocalIndicesClient {
     }
 
     /**
+     * Opens an index using the Open Index API.
+     * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html">
+     * Open Index API on elastic.co</a>
+     * ----------------------------------------
+     * 打开索引
+     * ----------------------------------------
+     *
+     * @param openIndexRequest the request
+     * @param options          the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
+     * @return the response
+     * @throws IOException in case there is a problem sending the request or parsing back the response
+     */
+    public OpenIndexResponse open(OpenIndexRequest openIndexRequest, RequestOptions options) throws IOException {
+        return indicesClient.open(openIndexRequest, options);
+    }
+
+    /**
+     * Closes an index using the Close Index API.
+     * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html">
+     * Close Index API on elastic.co</a>
+     * ----------------------------------------
+     * 关闭索引
+     * ----------------------------------------
+     *
+     * @param closeIndexRequest the request
+     * @param options           the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
+     * @return the response
+     * @throws IOException in case there is a problem sending the request or parsing back the response
+     */
+    public CloseIndexResponse close(CloseIndexRequest closeIndexRequest, RequestOptions options) throws IOException {
+        return indicesClient.close(closeIndexRequest, options);
+    }
+
+
+    /**
      * Creates an index using the Create Index API.
      * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html">
      * Create Index API on elastic.co</a>
@@ -157,26 +192,6 @@ public final class LocalIndicesClient {
         return indicesClient.getMapping(getMappingsRequest, options);
     }
 
-
-    /**
-     * Retrieves the field mappings on an index or indices using the Get Field Mapping API.
-     * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html">
-     * Get Field Mapping API on elastic.co</a>
-     * ----------------------------------------
-     * 获取index的字段Mapping
-     * ----------------------------------------
-     *
-     * @param getFieldMappingsRequest the request
-     * @param options                 the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
-     * @return the response
-     * @throws IOException in case there is a problem sending the request or parsing back the response
-     */
-    public GetFieldMappingsResponse getFieldMapping(GetFieldMappingsRequest getFieldMappingsRequest,
-                                                    RequestOptions options) throws IOException {
-        return indicesClient.getFieldMapping(getFieldMappingsRequest, options);
-    }
-
-
     /**
      * Updates aliases using the Index Aliases API.
      * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html">
@@ -196,42 +211,6 @@ public final class LocalIndicesClient {
 
 
     /**
-     * Opens an index using the Open Index API.
-     * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html">
-     * Open Index API on elastic.co</a>
-     * ----------------------------------------
-     * 打开索引
-     * ----------------------------------------
-     *
-     * @param openIndexRequest the request
-     * @param options          the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
-     * @return the response
-     * @throws IOException in case there is a problem sending the request or parsing back the response
-     */
-    public OpenIndexResponse open(OpenIndexRequest openIndexRequest, RequestOptions options) throws IOException {
-        return indicesClient.open(openIndexRequest, options);
-    }
-
-
-    /**
-     * Closes an index using the Close Index API.
-     * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html">
-     * Close Index API on elastic.co</a>
-     * ----------------------------------------
-     * 关闭索引
-     * ----------------------------------------
-     *
-     * @param closeIndexRequest the request
-     * @param options           the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
-     * @return the response
-     * @throws IOException in case there is a problem sending the request or parsing back the response
-     */
-    public CloseIndexResponse close(CloseIndexRequest closeIndexRequest, RequestOptions options) throws IOException {
-        return indicesClient.close(closeIndexRequest, options);
-    }
-
-
-    /**
      * Checks if one or more aliases exist using the Aliases Exist API.
      * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html">
      * Indices Aliases API on elastic.co</a>
@@ -246,6 +225,55 @@ public final class LocalIndicesClient {
      */
     public boolean existsAlias(GetAliasesRequest getAliasesRequest, RequestOptions options) throws IOException {
         return indicesClient.existsAlias(getAliasesRequest, options);
+    }
+
+    /**
+     * Gets one or more aliases using the Get Index Aliases API.
+     * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html"> Indices Aliases API on
+     * elastic.co</a>
+     * ----------------------------------------
+     * 获取一个或者多个别名
+     * ----------------------------------------
+     *
+     * @param getAliasesRequest the request
+     * @param options           the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
+     * @return the response
+     * @throws IOException in case there is a problem sending the request or parsing back the response
+     */
+    public GetAliasesResponse getAlias(GetAliasesRequest getAliasesRequest, RequestOptions options) throws IOException {
+        return indicesClient.getAlias(getAliasesRequest, options);
+    }
+
+    /**
+     * Synchronously calls the delete alias api
+     * ----------------------------------------
+     * 同步调用删除API
+     * ----------------------------------------
+     *
+     * @param request the request
+     * @param options the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
+     */
+    public org.elasticsearch.client.core.AcknowledgedResponse deleteAlias(DeleteAliasRequest request,
+                                                                          RequestOptions options) throws IOException {
+        return indicesClient.deleteAlias(request, options);
+    }
+
+    /**
+     * Retrieves the field mappings on an index or indices using the Get Field Mapping API.
+     * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-field-mapping.html">
+     * Get Field Mapping API on elastic.co</a>
+     * ----------------------------------------
+     * 获取index的字段Mapping
+     * ----------------------------------------
+     *
+     * @param getFieldMappingsRequest the request
+     * @param options                 the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
+     * @return the response
+     * @throws IOException in case there is a problem sending the request or parsing back the response
+     */
+    public GetFieldMappingsResponse getFieldMapping(GetFieldMappingsRequest getFieldMappingsRequest,
+                                                    RequestOptions options) throws IOException {
+        return indicesClient.getFieldMapping(getFieldMappingsRequest, options);
     }
 
 
@@ -448,24 +476,6 @@ public final class LocalIndicesClient {
 
 
     /**
-     * Gets one or more aliases using the Get Index Aliases API.
-     * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-aliases.html"> Indices Aliases API on
-     * elastic.co</a>
-     * ----------------------------------------
-     * 获取一个或者多个别名
-     * ----------------------------------------
-     *
-     * @param getAliasesRequest the request
-     * @param options           the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
-     * @return the response
-     * @throws IOException in case there is a problem sending the request or parsing back the response
-     */
-    public GetAliasesResponse getAlias(GetAliasesRequest getAliasesRequest, RequestOptions options) throws IOException {
-        return indicesClient.getAlias(getAliasesRequest, options);
-    }
-
-
-    /**
      * Updates specific index level settings using the Update Indices Settings API.
      * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-update-settings.html"> Update Indices Settings
      * API on elastic.co</a>
@@ -631,20 +641,6 @@ public final class LocalIndicesClient {
         return indicesClient.reloadAnalyzers(request, options);
     }
 
-
-    /**
-     * Synchronously calls the delete alias api
-     * ----------------------------------------
-     * 同步调用删除API
-     * ----------------------------------------
-     *
-     * @param request the request
-     * @param options the request options (e.g. headers), use {@link RequestOptions#DEFAULT} if nothing needs to be customized
-     */
-    public org.elasticsearch.client.core.AcknowledgedResponse deleteAlias(DeleteAliasRequest request,
-                                                                          RequestOptions options) throws IOException {
-        return indicesClient.deleteAlias(request, options);
-    }
 
     /**
      * Asynchronously calls the delete alias api
