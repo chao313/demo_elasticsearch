@@ -19,36 +19,13 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.stereotype.Component;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 
-import static org.yaml.snakeyaml.nodes.NodeId.mapping;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
 @Slf4j
-public class LocalIndicesClientTest {
-    static LocalIndicesClient localIndicesClient;
+public class LocalIndicesClientTest extends InitBean {
 
-    public static final String INDEX = "test";
-    public static final String ALIAS = "alias";
-
-    @BeforeAll
-    public static void init() {
-//        String hostname = "10.202.16.9";
-//        String hostname = "172.17.0.1";
-        String hostname = "192.168.0.105";
-        int port = 9200;
-        String scheme = "http";
-        RestHighLevelClient restHighLevelClient = new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost(hostname, port, scheme)
-                )
-        );
-        localIndicesClient = new LocalIndicesClient(restHighLevelClient.indices());
-    }
 
     @Test
     public void close() throws IOException {
