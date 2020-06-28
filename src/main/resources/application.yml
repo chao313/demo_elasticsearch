@@ -1,5 +1,5 @@
 server:
-  port: 8787
+  port: 9000
 
 spring:
-  name: demo-kafka
+  name: demo-elasticsearch
