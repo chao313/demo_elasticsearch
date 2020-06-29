@@ -1,5 +1,6 @@
 package demo.elastic.search.framework.aspect;
 
+import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -23,7 +24,7 @@ public class ExecutionAspect {
     /**
      * 定义切面执行的方法
      */
-    @Pointcut("execution(public * demo.kafka.controller..*Controller.*(..))")
+    @Pointcut("execution(public * demo.elastic.search.controller..*Controller.*(..))")
     private void pointCut() {
     }
 
@@ -41,23 +42,18 @@ public class ExecutionAspect {
 //        logger.info("第一步【执行Around：拦截连接点方法所在类文件中的位置】joinPoint.getSourceLocation() - > {}", joinPoint.getSourceLocation());//org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint$SourceLocationImpl@6742526e
 //        logger.info("第一步【执行Around：拦截AOP的当前执行对象】joinPoint.getThis() - > {}", joinPoint.getThis());//demo.spring.boot.demospringboot.controller.pub.FrameworkController@25c6ab3
 
-        Date start = new Date();
         Response response = new Response<>();
         try {
-            response.setCode(Code.System.OK);
-            response.setMsg(Code.System.SERVER_SUCCESS_MSG);
             Object result = joinPoint.proceed(); //继续下一个方法的调用 ：就是调用拦截的函数，得到拦截函数执行的结果
-            logger.info("执行结果:{}", result);
-            response.setContent(result);
-
+            logger.info("执行结果:{}", JSONObject.toJSON(result));
+            return result;
         } catch (Exception e) {
             response.setCode(Code.System.FAIL);
             response.setMsg(e.toString());
             response.addException(e);
             logger.error("[]FAIL path:{}", e.getMessage(), e);
+            return response;
         }
-        return response;
-        //这里的return的必须和拦截的方法的返回值一样
     }
 
 

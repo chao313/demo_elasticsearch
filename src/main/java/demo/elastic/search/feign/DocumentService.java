@@ -21,4 +21,24 @@ public interface DocumentService {
                @PathVariable(value = "type") String type,
                @PathVariable(value = "id") String id);
 
+    @RequestMapping(value = "/{index}/{type}/{id}", method = RequestMethod.DELETE)
+    String del(@PathVariable(value = "index") String index,
+               @PathVariable(value = "type") String type,
+               @PathVariable(value = "id") String id);
+
+    /**
+     * 匹配插入
+     */
+    @RequestMapping(value = "/{index}/_bulk", method = RequestMethod.POST, headers = {"content-type=application/json"})
+    String _bulk(@PathVariable(value = "index") String index,
+                 @RequestBody String body);
+
+    @RequestMapping(value = "/{index}/{type}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
+    String _search(@PathVariable(value = "index") String index,
+                   @PathVariable(value = "type") String type,
+                   @RequestBody String body);
+
+    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
+    String _search(@PathVariable(value = "index") String index,
+                   @RequestBody String body);
 }
