@@ -3,9 +3,7 @@
  */
 package demo.elastic.search.po.compound;
 
-import demo.elastic.search.po.Must;
-import demo.elastic.search.po.Must_not;
-import demo.elastic.search.po.Should;
+import demo.elastic.search.po.term.level.TermLevel;
 import lombok.Data;
 
 import java.util.List;
@@ -38,10 +36,9 @@ import java.util.List;
  * </pre>
  */
 @Data
-public class Boolean {
-
-    private List<Must> must;
-    private List<Must_not> must_not;
-    private List<Should> should;
-    private List<Should> filter;
+public class Bool {
+    private List<TermLevel> must;
+//    private TermLevel must_not;
+//    private TermLevel should;
+//    private TermLevel filter;
 }

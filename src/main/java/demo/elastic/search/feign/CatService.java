@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 
 @FeignClient(name = "cat", url = "http://39.107.236.187:9200/", configuration = FeignServiceConfig.class)
-//@FeignClient(name = "es", url = "http://127.0.0.1:80/", configuration = FeignServiceConfig.class)
+//@FeignClient(name = "cat", url = "http://127.0.0.1:80/", configuration = FeignServiceConfig.class)
 public interface CatService {
 
     /**

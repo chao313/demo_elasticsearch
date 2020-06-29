@@ -3,7 +3,8 @@
  */
 package demo.elastic.search.po;
 
-import demo.elastic.search.po.compound.Boolean;
+import com.alibaba.fastjson.annotation.JSONField;
+import demo.elastic.search.po.compound.Bool;
 import lombok.Data;
 
 /**
@@ -15,6 +16,7 @@ import lombok.Data;
 @Data
 public class Query {
 
-    private Boolean bool;
+    @JSONField(name = "bool")
+    private Bool bool;
 
 }

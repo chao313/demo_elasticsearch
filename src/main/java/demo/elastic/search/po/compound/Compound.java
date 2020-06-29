@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class Compound {
-    private Boolean aBoolean;
+    private Bool bool;
     private Boosting boosting;
     private ConstantScore constantScore;
     private DisMax disMax;

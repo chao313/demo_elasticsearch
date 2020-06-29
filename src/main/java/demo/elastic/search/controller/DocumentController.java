@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 /**
- * 用于 ElasticSearch es使用
+ * 用于 ElasticSearch Document级别的使用
  */
 @RequestMapping(value = "/DocumentController")
 @RestController
@@ -58,24 +58,6 @@ public class DocumentController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "查询一个index的type")
-    @PostMapping(value = "/{index}/{type}/_search")
-    public Response _search(
-            @PathVariable(value = "index") String index,
-            @PathVariable(value = "type") String type,
-            @RequestBody String body) {
-        String s = documentService._search(index, type, body);
-        return Response.Ok(JSONObject.parse(s));
-    }
-
-    @ApiOperation(value = "查询一个index的type")
-    @PostMapping(value = "/{index}/_search")
-    public Response _search(
-            @PathVariable(value = "index") String index,
-            @RequestBody String body) {
-        String s = documentService._search(index, body);
-        return Response.Ok(JSONObject.parse(s));
-    }
 
 }
 

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @FeignClient(name = "document", url = "http://39.107.236.187:9200/", configuration = FeignServiceConfig.class)
-//@FeignClient(name = "es", url = "http://127.0.0.1:80/", configuration = FeignServiceConfig.class)
+//@FeignClient(name = "document", url = "http://127.0.0.1:80/", configuration = FeignServiceConfig.class)
 public interface DocumentService {
 
 
@@ -27,18 +27,9 @@ public interface DocumentService {
                @PathVariable(value = "id") String id);
 
     /**
-     * 匹配插入
+     * 批量插入
      */
     @RequestMapping(value = "/{index}/_bulk", method = RequestMethod.POST, headers = {"content-type=application/json"})
     String _bulk(@PathVariable(value = "index") String index,
                  @RequestBody String body);
-
-    @RequestMapping(value = "/{index}/{type}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String _search(@PathVariable(value = "index") String index,
-                   @PathVariable(value = "type") String type,
-                   @RequestBody String body);
-
-    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String _search(@PathVariable(value = "index") String index,
-                   @RequestBody String body);
 }

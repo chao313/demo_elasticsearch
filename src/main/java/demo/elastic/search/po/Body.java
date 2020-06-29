@@ -3,6 +3,7 @@
  */
 package demo.elastic.search.po;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 import java.util.List;
@@ -16,10 +17,15 @@ import java.util.List;
 @Data
 public class Body {
 
+    @JSONField(name = "query")
     private Query query;
-    private Integer from;
-    private Integer size;
-    private List<String> sort;
-    private Aggs aggs;
+//    @JSONField(name = "from")
+//    private Integer from;
+//    @JSONField(name = "size")
+//    private Integer size;
+//    @JSONField(name = "sort")
+//    private List<String> sort;
+//    @JSONField(name = "aggs")
+//    private Aggs aggs;
 
 }

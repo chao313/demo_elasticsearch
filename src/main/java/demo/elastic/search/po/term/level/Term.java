@@ -1,5 +1,6 @@
 package demo.elastic.search.po.term.level;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 /**
@@ -18,4 +19,14 @@ import lombok.Data;
  */
 @Data
 public class Term {
+
+    @JSONField(name = "field")
+    private Field field;
+
+    class Field {
+        @JSONField(name = "value")
+        String value;
+        @JSONField(name = "boost")
+        Double boost;
+    }
 }
