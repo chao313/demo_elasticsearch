@@ -7,9 +7,14 @@ import java.util.List;
 
 @Data
 public class TermLevel {
-    private Exists exists;
-    private Term term;
-//    private List<Fuzzy> fuzzy;
+
+    private List<Term> terms;
+
+    private List<Exists> exists;
+
+//    private Node node;
+
+    //    private List<Fuzzy> fuzzy;
 //    private List<IDs> ids;
 //    private List<Prefix> prefix;
 //    private List<Range> range;

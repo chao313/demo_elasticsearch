@@ -34,6 +34,27 @@ import java.util.List;
  *   }
  * }
  * </pre>
+ *
+ * <pre>
+ *  curl -X GET  "http://39.107.236.187:9200/bank/_doc/_search?pretty" -H 'Content-Type: application/json' -d'
+ *  {
+ *     "from": 0,
+ *     "size": 1,
+ *     "query": {
+ *         "bool": {
+ *             "must":[
+ *              {"exists": {"field": "age"}},
+ *              {"exists": {"field": "address"}},
+ *              {"term": {"age": {
+ *                             "boost": 0,
+ *                             "value": 32
+ *                         }}
+ *              }
+ *             ]
+ *         }
+ *     }
+ * }'
+ * </pre>
  */
 @Data
 public class Bool {

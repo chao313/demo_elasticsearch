@@ -5,6 +5,7 @@ import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.po.Body;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RequestMapping(value = "/SearchBaseController")
 @RestController
+@Slf4j
 public class SearchBaseController {
 
     @Autowired
@@ -23,7 +25,8 @@ public class SearchBaseController {
     public Response _search(
             @PathVariable(value = "index") String index,
             @RequestBody Body body) {
-        String s = searchService._search(index, JSONObject.toJSON(body).toString());
-        return Response.Ok(JSONObject.parse(s));
+//        String s = searchService._search(index, JSONObject.toJSON(body).toString());
+        log.info("解析的json", body.parse());
+        return Response.Ok(JSONObject.parse(body.parse()));
     }
 }

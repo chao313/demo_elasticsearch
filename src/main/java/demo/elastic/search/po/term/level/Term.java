@@ -19,14 +19,11 @@ import lombok.Data;
  */
 @Data
 public class Term {
-
     @JSONField(name = "field")
-    private Field field;
+    String field;
+    @JSONField(name = "value")
+    String value;
+    @JSONField(name = "boost")
+    Double boost;
 
-    class Field {
-        @JSONField(name = "value")
-        String value;
-        @JSONField(name = "boost")
-        Double boost;
-    }
 }
