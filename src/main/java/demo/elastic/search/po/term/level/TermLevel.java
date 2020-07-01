@@ -11,9 +11,10 @@ public class TermLevel {
     private List<Term> term;
     private List<Exists> exists;
     private List<Regexp> regexp;
+    private List<Prefix> prefix;
 //    private List<Fuzzy> fuzzy;
 //    private List<IDs> ids;
-//    private List<Prefix> prefix;
+
 //    private List<Range> range;
 
 //    private List<Terms> terms;

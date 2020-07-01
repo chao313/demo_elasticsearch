@@ -97,6 +97,13 @@ public class Body {
                 result.add(JSONObject.parseObject(regexp));
             }
         });
+
+        termLevel.getPrefix().forEach(vo -> {
+            String prefix = vo.parse();
+            if (!StringUtils.isBlank(prefix)) {
+                result.add(JSONObject.parseObject(prefix));
+            }
+        });
         return result;
     }
 

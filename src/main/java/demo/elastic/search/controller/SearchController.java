@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +51,7 @@ public class SearchController {
                     "</pre>")
     @PostMapping(value = "/{index}/_search")
     public Response _search(
-            @PathVariable(value = "index") String index,
+            @PathVariable(value = "index") @RequestParam(defaultValue = "comstore_tb_object_0088") String index,
             @RequestBody String body) {
         String s = searchService._search(index, body);
         return Response.Ok(JSONObject.parse(s));

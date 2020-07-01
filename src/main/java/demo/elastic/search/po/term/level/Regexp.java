@@ -30,6 +30,8 @@ public class Regexp implements Parse {
 
     @JSONField(name = "field")
     String field;
+
+    @ApiModelProperty(example = " ")
     @JSONField(name = "value")
     String value;
 
@@ -53,7 +55,7 @@ public class Regexp implements Parse {
              */
             return "";
         }
-        JSONObject term = new JSONObject();
+        JSONObject regexp = new JSONObject();
         JSONObject key = new JSONObject();
         JSONObject content = new JSONObject();
         content.put(_value, this.getValue());
@@ -61,8 +63,8 @@ public class Regexp implements Parse {
         content.put(_max_determinized_states, this.getMaxDeterminizedStates());
         content.put(_rewrite, this.getRewrite());
         key.put(this.getField(), content);
-        term.put(_regexp, key);
-        return term.toJSONString();
+        regexp.put(_regexp, key);
+        return regexp.toJSONString();
     }
 
     public static String _regexp = "regexp";
