@@ -104,6 +104,34 @@ public class Body {
                 result.add(JSONObject.parseObject(prefix));
             }
         });
+
+        termLevel.getRange().forEach(vo -> {
+            String range = vo.parse();
+            if (!StringUtils.isBlank(range)) {
+                result.add(JSONObject.parseObject(range));
+            }
+        });
+
+        termLevel.getWildcard().forEach(vo -> {
+            String wildcard = vo.parse();
+            if (!StringUtils.isBlank(wildcard)) {
+                result.add(JSONObject.parseObject(wildcard));
+            }
+        });
+
+        termLevel.getTerms().forEach(vo -> {
+            String terms = vo.parse();
+            if (!StringUtils.isBlank(terms)) {
+                result.add(JSONObject.parseObject(terms));
+            }
+        });
+
+        termLevel.getIds().forEach(vo -> {
+            String ids = vo.parse();
+            if (!StringUtils.isBlank(ids)) {
+                result.add(JSONObject.parseObject(ids));
+            }
+        });
         return result;
     }
 
