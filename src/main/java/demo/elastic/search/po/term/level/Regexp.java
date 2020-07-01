@@ -2,7 +2,10 @@ package demo.elastic.search.po.term.level;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonValue;
 import demo.elastic.search.po.Parse;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,16 +32,22 @@ public class Regexp implements Parse {
     String field;
     @JSONField(name = "value")
     String value;
+
+    @ApiModelProperty(example = "ALL")
     @JSONField(name = "flags")
     String flags;
+
+    @ApiModelProperty(example = "10000")
     @JSONField(name = "max_determinized_states")
-    String maxDeterminizedStates;
+    Integer maxDeterminizedStates;
+
+    @ApiModelProperty(example = "constant_score")
     @JSONField(name = "rewrite")
     String rewrite;
 
     @Override
     public String parse() {
-        if (StringUtils.isBlank(value)) {
+        if (StringUtils.isBlank(value) || StringUtils.isBlank(value.trim())) {
             /**
              * 关键字段为空->返回空字符串
              */

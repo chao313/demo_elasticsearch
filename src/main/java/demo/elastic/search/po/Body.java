@@ -8,6 +8,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import demo.elastic.search.po.compound.Bool;
 import demo.elastic.search.po.term.level.TermLevel;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -38,13 +40,17 @@ import java.util.List;
 @Data
 public class Body {
 
-
     @JSONField(name = "query")
     private Query query;
-//    @JSONField(name = "from")
-//    private Integer from;
-//    @JSONField(name = "size")
-//    private Integer size;
+
+    @ApiModelProperty(example = "0")
+    @JSONField(name = "from")
+    private Integer from;
+
+    @ApiModelProperty(example = "10")
+    @JSONField(name = "size")
+    private Integer size;
+
 //    @JSONField(name = "sort")
 //    private List<String> sort;
 //    @JSONField(name = "aggs")

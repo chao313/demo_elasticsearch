@@ -3,6 +3,7 @@ package demo.elastic.search.po.term.level;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import demo.elastic.search.po.Parse;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,12 +24,17 @@ import org.apache.commons.lang3.StringUtils;
 @Data
 public class Term implements Parse {
 
+    @ApiModelProperty(example = " ")
     @JSONField(name = "field")
     String field;
+
+    @ApiModelProperty(example = " ")
     @JSONField(name = "value")
     String value;
+
+    @ApiModelProperty(example = "1.0")
     @JSONField(name = "boost")
-    Double boost;
+    String boost;
 
     @Override
     public String parse() {

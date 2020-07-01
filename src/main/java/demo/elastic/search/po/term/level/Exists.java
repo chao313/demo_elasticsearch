@@ -6,6 +6,8 @@ package demo.elastic.search.po.term.level;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.po.Parse;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.Example;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,12 +26,13 @@ import org.apache.commons.lang3.StringUtils;
 @Data
 public class Exists implements Parse {
 
+    @ApiModelProperty(example = " ", allowableValues = " ")
     private String field;
 
 
     @Override
     public String parse() {
-        if (StringUtils.isBlank(field)) {
+        if (StringUtils.isBlank(field) || StringUtils.isBlank(field.trim())) {
             /**
              * 关键字段为空->返回空字符串
              */

@@ -20,7 +20,7 @@ public class SearchParseController {
     @ApiOperation(value = "解析成标准DSL查询语句")
     @PostMapping(value = "/parse")
     public JSONObject _search(
-            @RequestBody Body body) {
+            @RequestBody  Body body) {
         log.info("解析的json:{}", body.parse());
         return JSONObject.parseObject(body.parse());
     }
