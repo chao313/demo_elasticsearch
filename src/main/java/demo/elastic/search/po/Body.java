@@ -3,9 +3,13 @@
  */
 package demo.elastic.search.po;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import demo.elastic.search.po.compound.Bool;
+import demo.elastic.search.po.term.level.TermLevel;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -34,23 +38,18 @@ import java.util.List;
 @Data
 public class Body {
 
+
     @JSONField(name = "query")
     private Query query;
-    @JSONField(name = "from")
-    private Integer from;
-    @JSONField(name = "size")
-    private Integer size;
-    @JSONField(name = "sort")
-    private List<String> sort;
-    @JSONField(name = "aggs")
-    private Aggs aggs;
+//    @JSONField(name = "from")
+//    private Integer from;
+//    @JSONField(name = "size")
+//    private Integer size;
+//    @JSONField(name = "sort")
+//    private List<String> sort;
+//    @JSONField(name = "aggs")
+//    private Aggs aggs;
 
-
-    public static String _query = "query";
-    public static String _from = "from";
-    public static String _size = "size";
-    public static String _sort = "sort";
-    public static String _aggs = "aggs";
 
     /**
      * 用于解析请求体
@@ -59,12 +58,47 @@ public class Body {
      */
     public String parse() {
 
-
         JSONObject root = JSONObject
                 .parseObject(JSONObject.toJSON(this).toString());
 
-        root.getJSONArray(_query)
+        JSONObject boolJSONObject = root.getJSONObject(Body._query).getJSONObject(Query._bool);
+
+        TermLevel must = this.getQuery().getBool().getMust();
+        JSONArray mustJsonArray = this.dealTermLevel(must);
+        boolJSONObject.put(Bool._must, mustJsonArray);
 
         return root.toString();
     }
+
+    private JSONArray dealTermLevel(TermLevel termLevel) {
+        JSONArray result = new JSONArray();
+        termLevel.getExists().forEach(vo -> {
+            String exists = vo.parse();
+            if (!StringUtils.isBlank(exists)) {
+                result.add(JSONObject.parseObject(exists));
+            }
+        });
+        termLevel.getTerm().forEach(vo -> {
+            String term = vo.parse();
+            if (!StringUtils.isBlank(term)) {
+                result.add(JSONObject.parseObject(term));
+            }
+
+        });
+        termLevel.getRegexp().forEach(vo -> {
+            String regexp = vo.parse();
+            if (!StringUtils.isBlank(regexp)) {
+                result.add(JSONObject.parseObject(regexp));
+            }
+        });
+        return result;
+    }
+
+    public static String _query = "query";
+    public static String _from = "from";
+    public static String _size = "size";
+    public static String _sort = "sort";
+    public static String _aggs = "aggs";
+
+
 }

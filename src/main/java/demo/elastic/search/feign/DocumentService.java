@@ -1,12 +1,12 @@
 package demo.elastic.search.feign;
 
+import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.FeignServiceConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 
-@FeignClient(name = "document", url = "http://39.107.236.187:9200/", configuration = FeignServiceConfig.class)
-//@FeignClient(name = "document", url = "http://127.0.0.1:80/", configuration = FeignServiceConfig.class)
+@FeignClient(name = "document", url = Bootstrap.IN_USE, configuration = FeignServiceConfig.class)
 public interface DocumentService {
 
 

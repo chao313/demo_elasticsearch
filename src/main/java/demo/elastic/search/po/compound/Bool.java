@@ -3,6 +3,7 @@
  */
 package demo.elastic.search.po.compound;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import demo.elastic.search.po.term.level.TermLevel;
 import lombok.Data;
 
@@ -58,8 +59,18 @@ import java.util.List;
  */
 @Data
 public class Bool {
-    private List<TermLevel> must;
+
+    @JSONField(name = "must")
+    private TermLevel must;
+//    @JSONField(name = "must_not")
 //    private TermLevel must_not;
+//    @JSONField(name = "should")
 //    private TermLevel should;
+//    @JSONField(name = "filter")
 //    private TermLevel filter;
+
+    public static String _must = "must";
+    public static String _must_not = "must_not";
+    public static String _should = "should";
+    public static String _filter = "filter";
 }
