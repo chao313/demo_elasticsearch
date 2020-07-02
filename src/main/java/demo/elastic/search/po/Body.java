@@ -70,6 +70,18 @@ public class Body {
         JSONArray mustJsonArray = this.dealTermLevel(must);
         boolJSONObject.put(Bool._must, mustJsonArray);
 
+        TermLevel must_not = this.getQuery().getBool().getMust_not();
+        JSONArray must_notJsonArray = this.dealTermLevel(must_not);
+        boolJSONObject.put(Bool._must_not, must_notJsonArray);
+
+        TermLevel should = this.getQuery().getBool().getShould();
+        JSONArray shouldJsonArray = this.dealTermLevel(should);
+        boolJSONObject.put(Bool._should, shouldJsonArray);
+
+        TermLevel filter = this.getQuery().getBool().getFilter();
+        JSONArray filterJsonArray = this.dealTermLevel(filter);
+        boolJSONObject.put(Bool._filter, filterJsonArray);
+
         return root.toString();
     }
 

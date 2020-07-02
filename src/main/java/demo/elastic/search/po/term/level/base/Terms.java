@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.LongStream;
 
@@ -31,7 +32,7 @@ public class Terms implements Parse {
 
     @ApiModelProperty(example = "")
     @JSONField(name = "value")
-    List<String> value;
+    List<Object> value;
 
     @ApiModelProperty(example = "1.0")
     @JSONField(name = "boost")
@@ -39,7 +40,7 @@ public class Terms implements Parse {
 
     @Override
     public String parse() {
-        if (null == value || value.size() == 0) {
+        if (null == value || value.size() == 0 || (value.size() == 1 && value.get(0) instanceof LinkedHashMap)) {
             /**
              * 关键字段为空->返回空字符串
              */
