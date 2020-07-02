@@ -4,7 +4,7 @@
 package demo.elastic.search.po;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import demo.elastic.search.po.compound.*;
+import demo.elastic.search.po.compound.base.Bool;
 import lombok.Data;
 
 

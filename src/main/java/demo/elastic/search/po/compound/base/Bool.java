@@ -1,7 +1,7 @@
 /**
  * Copyright 2020 bejson.com
  */
-package demo.elastic.search.po.compound;
+package demo.elastic.search.po.compound.base;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import demo.elastic.search.po.term.level.TermLevel;

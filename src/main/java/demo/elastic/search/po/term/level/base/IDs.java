@@ -1,4 +1,4 @@
-package demo.elastic.search.po.term.level;
+package demo.elastic.search.po.term.level.base;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.po.Parse;

@@ -1,7 +1,7 @@
 /**
  * Copyright 2020 bejson.com
  */
-package demo.elastic.search.po.term.level;
+package demo.elastic.search.po.term.level.base;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;

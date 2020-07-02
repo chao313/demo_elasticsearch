@@ -1,4 +1,4 @@
-package demo.elastic.search.po.term.level;
+package demo.elastic.search.po.term.level.base;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -11,18 +11,18 @@ import org.apache.commons.lang3.StringUtils;
  * <pre>
  * {
  *     "query": {
- *         "term": {
+ *         "prefix": {
  *             "user": {
- *                 "value": "Kimchy",
- *                 "boost": 1.0
+ *                 "value": "ki"
  *             }
  *         }
  *     }
  * }
  * </pre>
  */
+
 @Data
-public class Term implements Parse {
+public class Prefix implements Parse {
 
     @ApiModelProperty(example = " ")
     @JSONField(name = "field")
@@ -30,31 +30,25 @@ public class Term implements Parse {
 
     @ApiModelProperty(example = " ")
     @JSONField(name = "value")
-    String value;
-
-    @ApiModelProperty(example = "1.0")
-    @JSONField(name = "boost")
-    String boost;
+    private String value;
 
     @Override
     public String parse() {
-        if (StringUtils.isBlank(value)) {
+        if (StringUtils.isBlank(value) || StringUtils.isBlank(value.trim())) {
             /**
              * 关键字段为空->返回空字符串
              */
             return "";
         }
-        JSONObject term = new JSONObject();
+
+        JSONObject prefix = new JSONObject();
         JSONObject key = new JSONObject();
         JSONObject content = new JSONObject();
-        content.put(_value, this.getValue());
-        content.put(_boost, this.getBoost());
+        content.put("value", this.getValue());
         key.put(this.getField(), content);
-        term.put(_term, key);
-        return term.toJSONString();
+        prefix.put(_prefix, key);
+        return prefix.toJSONString();
     }
 
-    public static String _term = "term";
-    public static String _value = "value";
-    public static String _boost = "boost";
+    public static String _prefix = "prefix";
 }

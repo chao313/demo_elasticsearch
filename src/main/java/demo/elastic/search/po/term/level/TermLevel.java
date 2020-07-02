@@ -1,6 +1,7 @@
 package demo.elastic.search.po.term.level;
 
 
+import demo.elastic.search.po.term.level.base.*;
 import lombok.Data;
 
 import java.util.List;
