@@ -58,10 +58,18 @@ public class Regexp implements Parse {
         JSONObject regexp = new JSONObject();
         JSONObject key = new JSONObject();
         JSONObject content = new JSONObject();
-        content.put(_value, this.getValue());
-        content.put(_flags, this.getFlags());
-        content.put(_max_determinized_states, this.getMaxDeterminizedStates());
-        content.put(_rewrite, this.getRewrite());
+        if (StringUtils.isNotBlank(this.getValue())) {
+            content.put(_value, this.getValue());
+        }
+        if (StringUtils.isNotBlank(this.getFlags())) {
+            content.put(_flags, this.getFlags());
+        }
+        if (null != this.getMaxDeterminizedStates()) {
+            content.put(_max_determinized_states, this.getMaxDeterminizedStates());
+        }
+        if (StringUtils.isNotBlank(this.getRewrite())) {
+            content.put(_rewrite, this.getRewrite());
+        }
         key.put(this.getField(), content);
         regexp.put(_regexp, key);
         return regexp.toJSONString();

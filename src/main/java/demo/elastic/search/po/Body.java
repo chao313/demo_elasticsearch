@@ -129,6 +129,23 @@ public class Body {
                 result.add(JSONObject.parseObject(ids));
             }
         });
+
+        termLevel.getFuzzy().forEach(vo -> {
+            String fuzzy = vo.parse();
+            if (!StringUtils.isBlank(fuzzy)) {
+                result.add(JSONObject.parseObject(fuzzy));
+            }
+        });
+
+
+//        termLevel.getType().forEach(vo -> {
+//            String type = vo.parse();
+//            if (!StringUtils.isBlank(type)) {
+//                result.add(JSONObject.parseObject(type));
+//            }
+//        });
+
+
         return result;
     }
 

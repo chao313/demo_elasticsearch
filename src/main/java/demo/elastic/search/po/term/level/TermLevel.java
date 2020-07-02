@@ -17,8 +17,6 @@ public class TermLevel {
     private List<Wildcard> wildcard;
     private List<Terms> terms;
     private List<IDs> ids;
-    private List<Type> type;
-//    private List<Fuzzy> fuzzy;
-
-
+    private List<Fuzzy> fuzzy;
+//  private List<Type> type;//已经弃用
 }
