@@ -51,9 +51,10 @@ public class SearchController {
                     "</pre>")
     @PostMapping(value = "/{index}/_search")
     public Response _search(
-            @PathVariable(value = "index") @RequestParam(defaultValue = "comstore_tb_object_0088") String index,
+//            @PathVariable(value = "index") String index,
+            @RequestParam(defaultValue = "comstore_tb_object_0088") String indexTmp,
             @RequestBody String body) {
-        String s = searchService._search(index, body);
+        String s = searchService._search(indexTmp, body);
         return Response.Ok(JSONObject.parse(s));
     }
 
