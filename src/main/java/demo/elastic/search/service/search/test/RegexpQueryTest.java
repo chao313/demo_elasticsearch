@@ -30,8 +30,8 @@ public class RegexpQueryTest {
             log.info("_type:{}", searchHit.getType());
             log.info("_id:{}", searchHit.getId());
             log.info("_score:{}", searchHit.getScore());
-            log.info("_source:{}", searchHit.getSourceAsString());
-            log.info("_source:{}", searchHit.getSourceAsMap());
+            log.info("Source:{}", searchHit.getSourceAsString());
+            log.info("Source:{}", searchHit.getSourceAsMap());
         });
 
         Arrays.stream(searchResponse.getHits().getHits()).forEach(searchHit -> {
@@ -55,8 +55,8 @@ public class RegexpQueryTest {
             log.info("_type:{}", searchHit.getType());
             log.info("_id:{}", searchHit.getId());
             log.info("_score:{}", searchHit.getScore());
-            log.info("_source:{}", searchHit.getSourceAsString());
-            log.info("_source:{}", searchHit.getSourceAsMap());
+            log.info("Source:{}", searchHit.getSourceAsString());
+            log.info("Source:{}", searchHit.getSourceAsMap());
         });
 
         Arrays.stream(searchResponse.getHits().getHits()).forEach(searchHit -> {
