@@ -62,8 +62,8 @@ public class CustomController {
         String result;
         if (StringUtils.isBlank(scroll)) {
             result = searchService._search(index, body);
-            ESResponse esResponse = JSONObject.parseObject(result, ESResponse.class);
-            log.info("转换后的数据:{}", esResponse);
+            ESResponse esResponse = ESResponse.parse(result);
+            
         } else {
             result = searchService._search(index, scroll, body);
         }

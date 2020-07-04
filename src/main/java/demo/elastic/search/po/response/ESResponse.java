@@ -4,6 +4,7 @@
 package demo.elastic.search.po.response;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
@@ -15,4 +16,9 @@ public class ESResponse {
     private Shards _shards;
     @JSONField(name = "hits")
     private Hits hits;
+
+    public static ESResponse parse(String root) {
+        ESResponse esResponse = JSONObject.parseObject(root, ESResponse.class);
+        return esResponse;
+    }
 }
