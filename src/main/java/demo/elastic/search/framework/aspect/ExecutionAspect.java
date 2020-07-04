@@ -5,6 +5,7 @@ import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import java.util.Date;
 /**
  * 2018/8/9    Created by   chao
  */
-@org.aspectj.lang.annotation.Aspect
+@Aspect
 @Component
 public class ExecutionAspect {
     protected final Logger logger = LoggerFactory.getLogger(getClass());

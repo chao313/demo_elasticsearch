@@ -1,25 +1,18 @@
 package demo.elastic.search.config;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
-import com.alibaba.fastjson.support.springfox.SwaggerJsonSerializer;
 import feign.Logger;
-import feign.codec.Decoder;
-import feign.codec.Encoder;
-import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-import org.springframework.cloud.openfeign.support.SpringDecoder;
-import org.springframework.cloud.openfeign.support.SpringEncoder;
+import feign.Response;
+import feign.codec.ErrorDecoder;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+
 
 @Configuration
+@Slf4j
 public class FeignServiceConfig {
 
     /**
@@ -36,40 +29,31 @@ public class FeignServiceConfig {
         return Logger.Level.FULL;
     }
 
-//    @Bean
-//    public Encoder feignEncoder() {
-//        return new SpringEncoder(feignHttpMessageConverter());
-//    }
-
-//    @Bean
-//    public Decoder feignDecoder() {
-//        return new SpringDecoder(feignHttpMessageConverter());
-//    }
-
     /**
-     * 设置解码器为fastjson
+     * 为feign重写异常解析(把错误信息放入msg中)
+     * ->ErrorDecoder已经内置的Default
+     * ->配合切面来使用，发生异常时,把错误数据返回
      *
      * @return
      */
-    private ObjectFactory<HttpMessageConverters> feignHttpMessageConverter() {
-        final HttpMessageConverters httpMessageConverters = new HttpMessageConverters(this.getFastJsonConverter());
-        return () -> httpMessageConverters;
+    @Bean
+    public ErrorDecoder feignErrorDecoder() {
+        return new ErrorDecoder.Default() {
+            @Override
+            public Exception decode(String methodKey, Response response) {
+                String responseError = "为解析异常";
+                try {
+                    responseError = IOUtils.toString(response.body().asInputStream(), "UTF-8");
+                    log.error("feign请求发生异常:{}", responseError);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return new RuntimeException(responseError);
+            }
+        };
     }
 
-    private FastJsonHttpMessageConverter getFastJsonConverter() {
-        FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
 
-        List<MediaType> supportedMediaTypes = new ArrayList<>();
-        MediaType mediaTypeJson = MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE);
-        supportedMediaTypes.add(mediaTypeJson);
-        converter.setSupportedMediaTypes(supportedMediaTypes);
-        FastJsonConfig config = new FastJsonConfig();
-        config.getSerializeConfig().put(JSON.class, new SwaggerJsonSerializer());
-        config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect);
-        converter.setFastJsonConfig(config);
-
-        return converter;
-    }
 }
 
 
