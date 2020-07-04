@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 @Data
 public class Regexp implements Parse {
 
+    @ApiModelProperty(example = " ")
     @JSONField(name = "field")
     String field;
 
