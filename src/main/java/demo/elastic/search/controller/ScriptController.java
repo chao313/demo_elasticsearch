@@ -5,7 +5,6 @@ import demo.elastic.search.feign.ScriptService;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
