@@ -1,6 +1,6 @@
 package demo.elastic.search.service.search.test;
 
-import demo.elastic.search.service.search.ScrollService;
+import demo.elastic.search.service.search.ScrollService2;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -84,7 +84,7 @@ public class ScrollTest2 {
         int port = 9200;
         String scheme = "http";
 
-        new ScrollService().ScrollIdSearch(indices, boolQueryBuilder, size, seconds, hostname, port, scheme, new Consumer<SearchHit[]>() {
+        new ScrollService2().ScrollIdSearch(indices, boolQueryBuilder, size, seconds, hostname, port, scheme, new Consumer<SearchHit[]>() {
             @Override
             public void accept(SearchHit[] searchHits) {
                 Arrays.stream(searchHits).forEach(searchHit -> {
