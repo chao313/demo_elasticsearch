@@ -33,12 +33,4 @@ public interface ScriptService {
     String del(@PathVariable(value = "id") String id);
 
 
-    /**
-     * 使用一个 script
-     */
-    @RequestMapping(value = "/{index}/_bulk", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String _bulk(@PathVariable(value = "index") String index,
-                 @RequestBody String body);
-
-
 }

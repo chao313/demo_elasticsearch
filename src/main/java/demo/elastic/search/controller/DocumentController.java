@@ -4,8 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.feign.DocumentService;
 import demo.elastic.search.framework.Response;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 
 /**
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class DocumentController {
 
-    @Autowired
+    @Resource
     private DocumentService documentService;
 
     @ApiOperation(value = "创建一个Document")

@@ -3,12 +3,18 @@ package demo.elastic.search.controller;
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.AwareUtil;
 import demo.elastic.search.feign.DocumentService;
+import demo.elastic.search.feign.ScrollService;
+import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.po.response.ESResponse;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 
@@ -18,10 +24,17 @@ import java.io.IOException;
  */
 @RequestMapping(value = "/CustomController")
 @RestController
+@Slf4j
 public class CustomController {
 
-    @Autowired
+    @Resource
     private DocumentService documentService;
+
+    @Resource
+    private SearchService searchService;
+
+    @Resource
+    private ScrollService scrollService;
 
     @ApiOperation(value = "accounts.json 数据批量插入")
     @PostMapping(value = "/{index}/_bulk")
@@ -34,6 +47,24 @@ public class CustomController {
     }
 
 
+    @ApiOperation(value = "导出全部的查询结果")
+    @PostMapping(value = "/{index}/_search/output")
+    public Response _search(
+            @PathVariable(value = "index") String index,
+            @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
+            @RequestParam(value = "scroll", required = false) String scroll,
+            @RequestBody String body) throws IOException {
+        String result;
+        if (StringUtils.isBlank(scroll)) {
+            result = searchService._search(index, body);
+            ESResponse esResponse = ESResponse.parse(result);
+
+        } else {
+            result = searchService._search(index, scroll, body);
+        }
+
+        return Response.Ok(JSONObject.parse(result));
+    }
 }
 
 
