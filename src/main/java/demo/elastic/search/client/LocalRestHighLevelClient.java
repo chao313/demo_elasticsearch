@@ -40,7 +40,6 @@ import org.elasticsearch.script.mustache.MultiSearchTemplateResponse;
 import org.elasticsearch.script.mustache.SearchTemplateRequest;
 import org.elasticsearch.script.mustache.SearchTemplateResponse;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 

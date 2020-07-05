@@ -3,20 +3,29 @@ package demo.elastic.search.controller;
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.AwareUtil;
 import demo.elastic.search.feign.DocumentService;
+import demo.elastic.search.feign.MappingService;
 import demo.elastic.search.feign.ScrollService;
 import demo.elastic.search.feign.SearchService;
+import demo.elastic.search.feign.plus.MappingServicePlus;
+import demo.elastic.search.feign.plus.ScrollServicePlus;
+import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.po.response.ESResponse;
+import demo.elastic.search.util.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import rx.functions.Func2;
 
 import javax.annotation.Resource;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -36,6 +45,19 @@ public class CustomController {
     @Resource
     private ScrollService scrollService;
 
+    @Resource
+    private MappingService mappingService;
+
+    @Autowired
+    private MappingServicePlus mappingServicePlus;
+
+    @Autowired
+    private SearchServicePlus searchServicePlus;
+
+    @Autowired
+    private ScrollServicePlus scrollServicePlus;
+
+
     @ApiOperation(value = "accounts.json 数据批量插入")
     @PostMapping(value = "/{index}/_bulk")
     public Response _bulk_accounts(
@@ -53,17 +75,36 @@ public class CustomController {
             @PathVariable(value = "index") String index,
             @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false) String scroll,
-            @RequestBody String body) throws IOException {
-        String result;
+            @RequestBody String body) throws IOException, IllegalAccessException {
+        List<List<String>> lists = new ArrayList<>();
         if (StringUtils.isBlank(scroll)) {
-            result = searchService._search(index, body);
-            ESResponse esResponse = ESResponse.parse(result);
+            lists = searchServicePlus._search(index, body, 10000, new Func2<Integer, Integer, Void>() {
+                @Override
+                public Void call(Integer size, Integer total) {
+                    log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total));
+                    return null;
+                }
+            });
 
         } else {
-            result = searchService._search(index, scroll, body);
+            lists = searchServicePlus._search(index, scroll, body, 10000, new Func2<Integer, Integer, Void>() {
+                @Override
+                public Void call(Integer size, Integer total) {
+                    log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total));
+                    return null;
+                }
+            });
         }
 
-        return Response.Ok(JSONObject.parse(result));
+        File file = new File("result.xlsx");
+        ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), new Func2<Integer, Integer, Void>() {
+            @Override
+            public Void call(Integer line, Integer size) {
+                log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size));
+                return null;
+            }
+        });
+        return Response.Ok(true);
     }
 }
 

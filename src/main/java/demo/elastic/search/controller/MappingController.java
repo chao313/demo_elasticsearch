@@ -2,11 +2,12 @@ package demo.elastic.search.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.feign.MappingService;
-import demo.elastic.search.feign.ScriptService;
-import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
@@ -34,7 +35,7 @@ public class MappingController {
     public Response get(
             @PathVariable(value = "index") String index,
             @PathVariable(value = "fieldName") String fieldName) {
-        String s = mappingService.get(index, fieldName);
+        String s = mappingService.get(index,fieldName);
         return Response.Ok(JSONObject.parse(s));
     }
 

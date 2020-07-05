@@ -333,7 +333,7 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, boolean title, Func2<Integer, Integer, Void> func2)
+    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, Func2<Integer, Integer, Void> func2)
             throws IllegalAccessException, IOException {
         return writeListSXSS(data, outputStream, "Sheet1", func2);
     }
@@ -343,7 +343,7 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, boolean title)
+    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream)
             throws IllegalAccessException, IOException {
         return writeListSXSS(data, outputStream, "Sheet1", null);
     }
@@ -353,7 +353,7 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, File file, boolean title)
+    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, File file)
             throws IllegalAccessException, IOException {
         OutputStream outputStream = new FileOutputStream(file);
         return writeListSXSS(data, outputStream, "Sheet1", null);

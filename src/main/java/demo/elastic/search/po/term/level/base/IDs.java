@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.po.Parse;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

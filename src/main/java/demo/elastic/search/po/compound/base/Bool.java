@@ -7,8 +7,6 @@ import com.alibaba.fastjson.annotation.JSONField;
 import demo.elastic.search.po.term.level.TermLevel;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * <pre>
  * {
