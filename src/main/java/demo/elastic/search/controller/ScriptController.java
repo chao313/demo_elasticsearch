@@ -8,6 +8,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 
 /**
  * 用于 ElasticSearch script 级别的使用
@@ -16,10 +18,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class ScriptController {
 
-    @Autowired
+    @Resource
     private ScriptService scriptService;
 
-    @Autowired
+    @Resource
     private SearchService searchService;
 
     @ApiOperation(value = "创建一个Script")

@@ -19,6 +19,7 @@ import org.elasticsearch.search.SearchHits;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -32,13 +33,13 @@ import java.io.IOException;
 @Slf4j
 public class CustomController {
 
-    @Autowired
+    @Resource
     private DocumentService documentService;
 
-    @Autowired
+    @Resource
     private SearchService searchService;
 
-    @Autowired
+    @Resource
     private ScrollService scrollService;
 
     @ApiOperation(value = "accounts.json 数据批量插入")
@@ -63,7 +64,7 @@ public class CustomController {
         if (StringUtils.isBlank(scroll)) {
             result = searchService._search(index, body);
             ESResponse esResponse = ESResponse.parse(result);
-            
+
         } else {
             result = searchService._search(index, scroll, body);
         }

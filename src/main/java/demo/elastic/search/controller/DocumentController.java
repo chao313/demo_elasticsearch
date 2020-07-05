@@ -7,6 +7,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 
 /**
  * 用于 ElasticSearch Document级别的使用
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class DocumentController {
 
-    @Autowired
+    @Resource
     private DocumentService documentService;
 
     @ApiOperation(value = "创建一个Document")

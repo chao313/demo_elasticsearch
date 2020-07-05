@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 /**
  * 查询使用
  */
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class SearchController {
 
-    @Autowired
+    @Resource
     private SearchService searchService;
 
 //    @ApiOperation(value = "查询一个index的type")
