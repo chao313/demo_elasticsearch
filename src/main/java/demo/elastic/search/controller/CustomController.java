@@ -20,6 +20,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHost;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import rx.functions.Action2;
@@ -29,8 +33,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 
@@ -87,7 +90,7 @@ public class CustomController {
             @RequestBody String body) throws IOException, IllegalAccessException {
         List<List<String>> lists = new ArrayList<>();
         if (StringUtils.isBlank(scroll)) {
-            lists = searchServicePlus._search(index, body, 10000, new Action2<Integer, Integer>() {
+            lists = searchServicePlus._search(index, body, 10000, true, new Action2<Integer, Integer>() {
                 @Override
                 public void call(Integer size, Integer total) {
                     log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total));
@@ -95,7 +98,7 @@ public class CustomController {
             });
 
         } else {
-            lists = searchServicePlus._search(index, scroll, body, 10000, new Action2<Integer, Integer>() {
+            lists = searchServicePlus._search(index, scroll, body, 10000, true, new Action2<Integer, Integer>() {
                 @Override
                 public void call(Integer size, Integer total) {
                     log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total));
@@ -162,6 +165,101 @@ public class CustomController {
 
         return Response.Ok(true);
     }
+
+    /**
+     * 提供主表的index,关联字段
+     * 提供从表表的index,关联字段
+     *
+     * @param masterIndex
+     * @param masterField
+     * @param slaveIndex
+     * @param slaveField
+     * @param scroll
+     * @param body
+     * @return
+     * @throws IOException
+     * @throws IllegalAccessException
+     */
+    @ApiOperation(value = "查询主从的附属表")
+    @PostMapping(value = "/_search/masterSlave")
+    public Response _searchMasterSlave(
+            @ApiParam(name = "masterIndex", defaultValue = "tb_object_0088")
+            @RequestParam(value = "masterIndex")
+                    String masterIndex,
+            @ApiParam(name = "masterField", defaultValue = "F1_0088")
+            @RequestParam(value = "masterField")
+                    String masterField,
+            @RequestParam(value = "slaveIndex")
+                    String slaveIndex,
+            @RequestParam(value = "slaveField")
+                    String slaveField,
+            @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
+            @RequestParam(value = "scroll", required = false)
+                    String scroll,
+            @ApiParam(name = "initialCapacity", value = "结果集的初始化大小", defaultValue = "1000")
+            @RequestParam(value = "initialCapacity", required = false)
+                    int initialCapacity,
+            @RequestBody String body) throws IOException, IllegalAccessException {
+        List<List<String>> result = new ArrayList<>(initialCapacity);
+        Set<String> masterFieldValues = new HashSet<>(1600000);
+        if (StringUtils.isBlank(scroll)) {
+            searchServicePlus._search(masterIndex, body, new Consumer<InnerHits>() {
+                @Override
+                public void accept(InnerHits innerHits) {
+                    String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
+                    masterFieldValues.add(filedValue);
+                }
+            });
+
+        } else {
+            searchServicePlus._search(masterIndex, scroll, body, new Consumer<InnerHits>() {
+                @Override
+                public void accept(InnerHits innerHits) {
+                    String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
+                    masterFieldValues.add(filedValue);
+                }
+            });
+        }
+
+        List<String> fieldNamesList = mappingServicePlus.getFieldNamesList(slaveIndex);
+        result.add(fieldNamesList);//存放字段名称
+        List<String> dealValues = new ArrayList<>();
+        int i = 0;
+        int total = masterFieldValues.size();
+        for (String value : masterFieldValues) {
+            log.info("i : {} /total :{} -> {}", i++, total, ExcelUtil.percent(i, total));
+            if (dealValues.size() < 1000) {
+                dealValues.add(value);
+            } else {
+                try {
+                    List<List<String>> tmp = searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues);
+                    result.addAll(tmp);
+                    dealValues.clear();
+                    /**
+                     * 存储
+                     */
+                    log.info("result.size():{}", result.size());
+                    if (result.size() > 1000000) {
+                        File file = new File("resul" + i + ".xlsx");
+                        ExcelUtil.writeListSXSS(result, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
+                        result.clear();
+                    }
+                } catch (Exception e) {
+                    log.error("异常:{}", e.toString(), e);
+                }
+            }
+        }
+
+        List<List<String>> tmp = searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues);
+        result.addAll(tmp);
+
+
+        File file = new File("resulEnd.xlsx");
+        ExcelUtil.writeListSXSS(result, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
+        return Response.Ok(true);
+    }
+
+
 }
 
 

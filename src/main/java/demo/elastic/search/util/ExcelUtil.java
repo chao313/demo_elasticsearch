@@ -327,6 +327,7 @@ public class ExcelUtil {
             }
         }
         workbook.write(outputStream);
+        outputStream.close();
         return workbook;
     }
 

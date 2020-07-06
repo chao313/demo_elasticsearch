@@ -34,7 +34,8 @@ public class FeignAspect {
 
         try {
             Object result = joinPoint.proceed(); //继续下一个方法的调用 ：就是调用拦截的函数，得到拦截函数执行的结果
-            logger.info("feign请求正常 -> 结果:{}", JSONObject.toJSON(result));
+            logger.info("【feign请求正常：拦截参数】joinPoint.getArgs() - > {}{}", joinPoint.getArgs());
+//            logger.info("feign请求正常 -> 结果:{}", JSONObject.toJSON(result));
             return result;
         } catch (Exception e) {
             logger.info("feign请求异常 -> 结果:{}", e.toString(), e);

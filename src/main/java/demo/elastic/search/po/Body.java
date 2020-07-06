@@ -67,99 +67,24 @@ public class Body {
         JSONObject boolJSONObject = root.getJSONObject(Body._query).getJSONObject(Query._bool);
 
         TermLevel must = this.getQuery().getBool().getMust();
-        JSONArray mustJsonArray = this.dealTermLevel(must);
+        JSONArray mustJsonArray = TermLevel.dealTermLevel(must);
         boolJSONObject.put(Bool._must, mustJsonArray);
 
         TermLevel must_not = this.getQuery().getBool().getMust_not();
-        JSONArray must_notJsonArray = this.dealTermLevel(must_not);
+        JSONArray must_notJsonArray = TermLevel.dealTermLevel(must_not);
         boolJSONObject.put(Bool._must_not, must_notJsonArray);
 
         TermLevel should = this.getQuery().getBool().getShould();
-        JSONArray shouldJsonArray = this.dealTermLevel(should);
+        JSONArray shouldJsonArray = TermLevel.dealTermLevel(should);
         boolJSONObject.put(Bool._should, shouldJsonArray);
 
         TermLevel filter = this.getQuery().getBool().getFilter();
-        JSONArray filterJsonArray = this.dealTermLevel(filter);
+        JSONArray filterJsonArray = TermLevel.dealTermLevel(filter);
         boolJSONObject.put(Bool._filter, filterJsonArray);
 
         return root.toString();
     }
 
-    private JSONArray dealTermLevel(TermLevel termLevel) {
-        JSONArray result = new JSONArray();
-        termLevel.getExists().forEach(vo -> {
-            String exists = vo.parse();
-            if (!StringUtils.isBlank(exists)) {
-                result.add(JSONObject.parseObject(exists));
-            }
-        });
-        termLevel.getTerm().forEach(vo -> {
-            String term = vo.parse();
-            if (!StringUtils.isBlank(term)) {
-                result.add(JSONObject.parseObject(term));
-            }
-
-        });
-        termLevel.getRegexp().forEach(vo -> {
-            String regexp = vo.parse();
-            if (!StringUtils.isBlank(regexp)) {
-                result.add(JSONObject.parseObject(regexp));
-            }
-        });
-
-        termLevel.getPrefix().forEach(vo -> {
-            String prefix = vo.parse();
-            if (!StringUtils.isBlank(prefix)) {
-                result.add(JSONObject.parseObject(prefix));
-            }
-        });
-
-        termLevel.getRange().forEach(vo -> {
-            String range = vo.parse();
-            if (!StringUtils.isBlank(range)) {
-                result.add(JSONObject.parseObject(range));
-            }
-        });
-
-        termLevel.getWildcard().forEach(vo -> {
-            String wildcard = vo.parse();
-            if (!StringUtils.isBlank(wildcard)) {
-                result.add(JSONObject.parseObject(wildcard));
-            }
-        });
-
-        termLevel.getTerms().forEach(vo -> {
-            String terms = vo.parse();
-            if (!StringUtils.isBlank(terms)) {
-                result.add(JSONObject.parseObject(terms));
-            }
-        });
-
-        termLevel.getIds().forEach(vo -> {
-            String ids = vo.parse();
-            if (!StringUtils.isBlank(ids)) {
-                result.add(JSONObject.parseObject(ids));
-            }
-        });
-
-        termLevel.getFuzzy().forEach(vo -> {
-            String fuzzy = vo.parse();
-            if (!StringUtils.isBlank(fuzzy)) {
-                result.add(JSONObject.parseObject(fuzzy));
-            }
-        });
-
-
-//        termLevel.getType().forEach(vo -> {
-//            String type = vo.parse();
-//            if (!StringUtils.isBlank(type)) {
-//                result.add(JSONObject.parseObject(type));
-//            }
-//        });
-
-
-        return result;
-    }
 
     public static String _query = "query";
     public static String _from = "from";

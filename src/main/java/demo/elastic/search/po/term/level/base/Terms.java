@@ -5,6 +5,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import demo.elastic.search.po.Parse;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,11 +48,17 @@ public class Terms implements Parse {
         JSONObject term = new JSONObject();
         JSONObject key = new JSONObject();
         key.put(this.getField(), this.getValue());
-        key.put(_boost, this.getBoost());
+        if (StringUtils.isNotBlank(_boost)) {
+            key.put(_boost, this.getBoost());
+        }
         term.put(_terms, key);
         return term.toJSONString();
     }
 
     public static String _terms = "terms";
     public static String _boost = "boost";
+
+
+
+
 }
