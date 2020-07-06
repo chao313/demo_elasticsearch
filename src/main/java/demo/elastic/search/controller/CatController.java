@@ -38,10 +38,10 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_allocation")
+    @GetMapping(value = "/_cat/allocation")
     public String _cat_allocation(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
-            @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
+            @RequestParam(name = "elasticSearchHost")
                     String elasticSearchHost,
             @ApiParam(value = "是否格式化")
             @RequestParam(name = "v", defaultValue = "true")
@@ -52,7 +52,7 @@ public class CatController {
     }
 
 
-    @GetMapping(value = "/_cat_shards")
+    @GetMapping(value = "/_cat/shards")
     public String _cat_shards(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -65,7 +65,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_master")
+    @GetMapping(value = "/_cat/master")
     public String _cat_master(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -78,7 +78,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_nodes")
+    @GetMapping(value = "/_cat/nodes")
     public String _cat_nodes(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -92,7 +92,7 @@ public class CatController {
     }
 
 
-    @GetMapping(value = "/_cat_indices")
+    @GetMapping(value = "/_cat/indices")
     public String _cat_indices(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -105,7 +105,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_segments")
+    @GetMapping(value = "/_cat/segments")
     public String _cat_segments(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -118,7 +118,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_count")
+    @GetMapping(value = "/_cat/count")
     public String _cat_count(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -131,7 +131,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_recovery")
+    @GetMapping(value = "/_cat/recovery")
     public String _cat_recovery(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -144,7 +144,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_health")
+    @GetMapping(value = "/_cat/health")
     public String _cat_health(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -157,7 +157,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_pending_tasks")
+    @GetMapping(value = "/_cat/pending_tasks")
     public String _cat_pending_tasks(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -170,7 +170,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_aliases")
+    @GetMapping(value = "/_cat/aliases")
     public String _cat_aliases(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -183,7 +183,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_thread_pool")
+    @GetMapping(value = "/_cat/thread_pool")
     public String _cat_thread_pool(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -196,7 +196,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_plugins")
+    @GetMapping(value = "/_cat/plugins")
     public String _cat_plugins(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -209,7 +209,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_fielddata")
+    @GetMapping(value = "/_cat/fielddata")
     public String _cat_fielddata(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -222,7 +222,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_nodeattrs")
+    @GetMapping(value = "/_cat/nodeattrs")
     public String _cat_nodeattrs(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -235,7 +235,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_repositories")
+    @GetMapping(value = "/_cat/repositories")
     public String _cat_repositories(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
@@ -248,7 +248,7 @@ public class CatController {
         return s;
     }
 
-    @GetMapping(value = "/_cat_templates")
+    @GetMapping(value = "/_cat/templates")
     public String _cat_templates(
             @ApiParam(value = "elasticSearchHost", allowableValues = Bootstrap.allowableValues)
             @RequestParam(name = "elasticSearchHost", defaultValue = "39.107.236.187:9200")
