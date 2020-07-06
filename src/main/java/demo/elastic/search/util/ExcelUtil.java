@@ -13,7 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.Assert;
-import rx.functions.Func2;
+import rx.functions.Action2;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -192,12 +192,12 @@ public class ExcelUtil {
     /**
      * @param vos
      * @param outputStream
-     * @param func2        line 处理的vos
+     * @param process      line 处理的vos
      * @param <T>
      * @return
      * @throws Exception
      */
-    public static <T> XSSFWorkbook writeVosAppendXLSX(List<T> vos, OutputStream outputStream, Func2<Integer, Integer, Void> func2) throws Exception {
+    public static <T> XSSFWorkbook writeVosAppendXLSX(List<T> vos, OutputStream outputStream, Action2<Integer, Integer> process) throws Exception {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet sheet = workbook.createSheet("sheet");
         int line = 0;
@@ -221,7 +221,9 @@ public class ExcelUtil {
                 String value = null == field.get(vo) ? "" : field.get(vo).toString();
                 cell.setCellValue(value);
             }
-            func2.call(line, size);//留作处理进度
+            if (null != process) {
+                process.call(line, size);//留作处理进度
+            }
             if (line % 50000 == 0) {
                 workbook.write(outputStream);
                 sheet = workbook.createSheet("sheet" + line % 50000);
@@ -237,7 +239,7 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeVosSXSS(List<T> vos, OutputStream outputStream, boolean title, String sheetName, Func2<Integer, Integer, Void> func2)
+    public static <T> SXSSFWorkbook writeVosSXSS(List<T> vos, OutputStream outputStream, boolean title, String sheetName, Action2<Integer, Integer> process)
             throws IllegalAccessException, IOException {
         SXSSFWorkbook workbook = new SXSSFWorkbook();
         SXSSFSheet sheet = workbook.createSheet(sheetName);
@@ -271,8 +273,8 @@ public class ExcelUtil {
                 String value = null == field.get(vo) ? "" : field.get(vo).toString();
                 cell.setCellValue(value);
             }
-            if (null != func2) {
-                func2.call(line, size);//留作处理进度
+            if (null != process) {
+                process.call(line, size);//留作处理进度
             }
         }
         workbook.write(outputStream);
@@ -284,9 +286,9 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeVosSXSS(List<T> vos, OutputStream outputStream, boolean title, Func2<Integer, Integer, Void> func2)
+    public static <T> SXSSFWorkbook writeVosSXSS(List<T> vos, OutputStream outputStream, boolean title, Action2<Integer, Integer> process)
             throws IllegalAccessException, IOException {
-        return writeVosSXSS(vos, outputStream, title, "Sheet1", func2);
+        return writeVosSXSS(vos, outputStream, title, "Sheet1", process);
     }
 
     /**
@@ -304,7 +306,7 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, String sheetName, Func2<Integer, Integer, Void> func2)
+    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, String sheetName, Action2<Integer, Integer> process)
             throws IOException {
         SXSSFWorkbook workbook = new SXSSFWorkbook();
         SXSSFSheet sheet = workbook.createSheet(sheetName);
@@ -320,8 +322,8 @@ public class ExcelUtil {
                 String value = item;
                 cell.setCellValue(value);
             }
-            if (null != func2) {
-                func2.call(line, size);//留作处理进度
+            if (null != process) {
+                process.call(line, size);//留作处理进度
             }
         }
         workbook.write(outputStream);
@@ -333,9 +335,9 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, Func2<Integer, Integer, Void> func2)
+    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, Action2<Integer, Integer> process)
             throws IllegalAccessException, IOException {
-        return writeListSXSS(data, outputStream, "Sheet1", func2);
+        return writeListSXSS(data, outputStream, "Sheet1", process);
     }
 
     /**
@@ -364,7 +366,7 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static List<List<String>> readListSXSS(XSSFWorkbook workbook, String sheetName, Func2<Integer, Integer, Void> func2) {
+    public static List<List<String>> readListSXSS(XSSFWorkbook workbook, String sheetName, Action2<Integer, Integer> process) {
         List<List<String>> data = new ArrayList<>();
         SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(workbook);
         SXSSFSheet sheet = sxssfWorkbook.getSheet(sheetName);
@@ -379,8 +381,8 @@ public class ExcelUtil {
                 list.add(cell.getStringCellValue());
             }
             data.add(list);
-            if (null != func2) {
-                func2.call(line, lastRowNum);
+            if (null != process) {
+                process.call(line, lastRowNum);
             }
         }
         return data;
@@ -391,7 +393,7 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static List<List<String>> readList(Workbook workbook, String sheetName, Func2<Integer, Integer, Void> func2) {
+    public static List<List<String>> readList(Workbook workbook, String sheetName, Action2<Integer, Integer> process) {
         List<List<String>> data = new ArrayList<>();
         Sheet sheet = workbook.getSheet(sheetName);
         int lastRowNum = sheet.getLastRowNum();
@@ -405,8 +407,8 @@ public class ExcelUtil {
                 list.add(value);
             }
             data.add(list);
-            if (null != func2) {
-                func2.call(line, lastRowNum);
+            if (null != process) {
+                process.call(line, lastRowNum);
             }
         }
         return data;
@@ -428,9 +430,9 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static List<List<String>> readList(InputStream inputStream, Type type, Func2<Integer, Integer, Void> func2) throws IOException {
+    public static List<List<String>> readList(InputStream inputStream, Type type, Action2<Integer, Integer> process) throws IOException {
         XSSFWorkbook workbook = buildWorkbook(inputStream, type);
-        return readList(workbook, "Sheet1", func2);
+        return readList(workbook, "Sheet1", process);
     }
 
     public static <T> void writeVosSXSSLog(String filePath, List<T> list) throws IOException {
@@ -438,11 +440,10 @@ public class ExcelUtil {
         file.createNewFile();
         OutputStream outputStream = new FileOutputStream(file);
         try {
-            ExcelUtil.writeVosSXSS(list, outputStream, true, new Func2<Integer, Integer, Void>() {
+            ExcelUtil.writeVosSXSS(list, outputStream, true, new Action2<Integer, Integer>() {
                 @Override
-                public Void call(Integer line, Integer size) {
+                public void call(Integer line, Integer size) {
                     log.info("处理进度:{}/{}->{}", line, size, percent(line, size));
-                    return null;
                 }
             });
             outputStream.close();

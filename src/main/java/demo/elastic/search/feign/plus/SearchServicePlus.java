@@ -6,6 +6,7 @@ import demo.elastic.search.po.response.InnerHits;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import rx.functions.Action2;
 import rx.functions.Func2;
 
 import javax.annotation.Resource;
@@ -61,7 +62,7 @@ public class SearchServicePlus {
      * @param initialCapacity 可能list存放很多数据,可以指定initialCapacity避免扩容
      * @return
      */
-    public List<List<String>> _search(String index, String body, int initialCapacity, Func2<Integer, Integer, Void> progress) {
+    public List<List<String>> _search(String index, String body, int initialCapacity, Action2<Integer, Integer> progress) {
         List<String> names = mappingServicePlus.getFieldNamesList(index);//获取
         List<List<String>> resultList = new ArrayList<>(initialCapacity);
         resultList.add(names);//添加head
@@ -91,7 +92,7 @@ public class SearchServicePlus {
      * @param initialCapacity 可能list存放很多数据,可以指定initialCapacity避免扩容
      * @return
      */
-    public List<List<String>> _search(String index, String scroll, String body, int initialCapacity, Func2<Integer, Integer, Void> progress) {
+    public List<List<String>> _search(String index, String scroll, String body, int initialCapacity, Action2<Integer, Integer> progress) {
         List<String> names = mappingServicePlus.getFieldNamesList(index);//获取
         List<List<String>> resultList = new ArrayList<>(initialCapacity);
         resultList.add(names);//添加head

@@ -22,6 +22,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import rx.functions.Action2;
 import rx.functions.Func2;
 
 import javax.annotation.Resource;
@@ -86,30 +87,27 @@ public class CustomController {
             @RequestBody String body) throws IOException, IllegalAccessException {
         List<List<String>> lists = new ArrayList<>();
         if (StringUtils.isBlank(scroll)) {
-            lists = searchServicePlus._search(index, body, 10000, new Func2<Integer, Integer, Void>() {
+            lists = searchServicePlus._search(index, body, 10000, new Action2<Integer, Integer>() {
                 @Override
-                public Void call(Integer size, Integer total) {
+                public void call(Integer size, Integer total) {
                     log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total));
-                    return null;
                 }
             });
 
         } else {
-            lists = searchServicePlus._search(index, scroll, body, 10000, new Func2<Integer, Integer, Void>() {
+            lists = searchServicePlus._search(index, scroll, body, 10000, new Action2<Integer, Integer>() {
                 @Override
-                public Void call(Integer size, Integer total) {
+                public void call(Integer size, Integer total) {
                     log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total));
-                    return null;
                 }
             });
         }
 
         File file = new File("result.xlsx");
-        ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), new Func2<Integer, Integer, Void>() {
+        ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), new Action2<Integer, Integer>() {
             @Override
-            public Void call(Integer line, Integer size) {
+            public void call(Integer line, Integer size) {
                 log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size));
-                return null;
             }
         });
         return Response.Ok(true);
