@@ -8,10 +8,9 @@ import java.util.List;
 
 @Data
 public class Hits {
-
-    @JSONField(serialize = false)
     private Integer total;
-    private int max_score;
+    @JSONField(name = "max_score")
+    private int maxScore;
     @JSONField(name = "hits")
     private List<InnerHits> hits;
 

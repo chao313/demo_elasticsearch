@@ -8,10 +8,14 @@ import java.util.Map;
 
 @Data
 public class InnerHits {
-    private String _index;
-    private String _type;
+    @JSONField(name = "_index")
+    private String index;
+    @JSONField(name = "_type")
+    private String type;
     @JSONField(name = "_source")
-    private Map<String, Object> _source;
+    private Map<String, Object> source;
+    @JSONField(name = "id")
     private String _id;
+    @JSONField(name = "score")
     private int _score;
 }
