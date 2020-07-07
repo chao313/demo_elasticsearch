@@ -11,6 +11,7 @@ import demo.elastic.search.feign.plus.MappingServicePlus;
 import demo.elastic.search.feign.plus.ScrollServicePlus;
 import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.out.kafka.KafkaMsg;
 import demo.elastic.search.out.kafka.KafkaOutService;
 import demo.elastic.search.po.response.InnerHits;
 import demo.elastic.search.util.ExcelUtil;
@@ -128,7 +129,7 @@ public class CustomController {
             @ApiParam(name = "body", value = "真实的查询body", allowMultiple = true)
             @RequestBody String body,
             @ApiParam(name = "topic", value = "输出为topic -> 提供topic", defaultValue = "TP_01009406")
-            @PathVariable(value = "topic")
+            @RequestParam(value = "topic")
                     String topic,
             @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "ESETL2")
             @RequestParam(value = "policyId")
@@ -181,7 +182,7 @@ public class CustomController {
      * @throws IllegalAccessException
      */
     @ApiOperation(value = "查询主从的附属表")
-    @PostMapping(value = "/_search/masterSlave")
+    @PostMapping(value = "/_search/masterSlave/outputToExcel")
     public Response _searchMasterSlave(
             @ApiParam(name = "masterIndex", defaultValue = "tb_object_0088")
             @RequestParam(value = "masterIndex")
@@ -256,6 +257,120 @@ public class CustomController {
 
         File file = new File("resulEnd.xlsx");
         ExcelUtil.writeListSXSS(result, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
+        return Response.Ok(true);
+    }
+
+    /**
+     * 提供主表的index,关联字段
+     * 提供从表表的index,关联字段
+     * <p>
+     * s数据最终会今日kafka
+     *
+     * @param masterIndex
+     * @param masterField
+     * @param slaveIndex
+     * @param slaveField
+     * @param scroll
+     * @param body
+     * @return
+     * @throws IOException
+     * @throws IllegalAccessException
+     */
+    @ApiOperation(value = "查询主从的附属表")
+    @PostMapping(value = "/_search/masterSlave/outputToKafka")
+    public Response _searchMasterSlave(
+            @ApiParam(name = "masterIndex", defaultValue = "tb_object_0088")
+            @RequestParam(value = "masterIndex")
+                    String masterIndex,
+            @ApiParam(name = "masterField", defaultValue = "F1_0088")
+            @RequestParam(value = "masterField")
+                    String masterField,
+            @RequestParam(value = "slaveIndex", defaultValue = "tb_object_6254")
+                    String slaveIndex,
+            @RequestParam(value = "slaveField", defaultValue = "F1_6254")
+                    String slaveField,
+            @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
+            @RequestParam(value = "scroll", required = false)
+                    String scroll,
+            @RequestBody String body,
+            @ApiParam(name = "topic", value = "输出为topic -> 提供topic", defaultValue = "TP_01009406")
+            @RequestParam(value = "topic")
+                    String topic,
+            @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "TB6254ETL")
+            @RequestParam(value = "policyId")
+                    String policyId,
+            @ApiParam(name = "script", value = "_source 处理的脚本（这里是从脚本）", defaultValue = "dataMap[\"F23_0088\"] = \"11\"")
+            @RequestParam(value = "script", required = false)
+                    String script
+    ) throws IOException, IllegalAccessException {
+        /**
+         * 第一步:获取主表的指定字段
+         */
+        Set<String> masterFieldValues = new HashSet<>(1600000);
+        if (StringUtils.isBlank(scroll)) {
+            searchServicePlus._search(masterIndex, body, new Consumer<InnerHits>() {
+                @Override
+                public void accept(InnerHits innerHits) {
+                    String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
+                    masterFieldValues.add(filedValue);
+                }
+            });
+
+        } else {
+            searchServicePlus._search(masterIndex, scroll, body, new Consumer<InnerHits>() {
+                @Override
+                public void accept(InnerHits innerHits) {
+                    String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
+                    masterFieldValues.add(filedValue);
+                }
+            });
+        }
+
+        /**
+         * 根据指定的字段集合从表查询
+         */
+
+
+        List<String> dealValues = new ArrayList<>();
+        int i = 0;
+        int total = masterFieldValues.size();
+        for (String value : masterFieldValues) {
+            log.info("i : {} /total :{} -> {}", i++, total, ExcelUtil.percent(i, total));
+            if (dealValues.size() < 1000) {
+                dealValues.add(value);
+            } else {
+                try {
+                    /**
+                     * 处理1000条
+                     */
+                    searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues, new Consumer<InnerHits>() {
+                        @SneakyThrows
+                        @Override
+                        public void accept(InnerHits innerHits) {
+                            JSONObject json = ExecuteScript.eval(script, innerHits.getSource());
+                            kafkaOutService.load(topic, json, policyId, KafkaMsg.TB_OBJECT_6254);
+                            log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, json);
+                        }
+                    });
+                    dealValues.clear();
+                } catch (Exception e) {
+                    log.error("异常:{}", e.toString(), e);
+                }
+            }
+        }
+        /**
+         * 处理剩余数据
+         */
+        searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues, new Consumer<InnerHits>() {
+            @SneakyThrows
+            @Override
+            public void accept(InnerHits innerHits) {
+                JSONObject json = ExecuteScript.eval(script, innerHits.getSource());
+                kafkaOutService.load(topic, json, policyId, KafkaMsg.TB_OBJECT_6254);
+                log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, json);
+            }
+        });
+
         return Response.Ok(true);
     }
 

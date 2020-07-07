@@ -69,6 +69,24 @@ public class KafkaMsg {
         return result;
     }
 
+    /**
+     * 获取指定的table的数据
+     *
+     * @param jsonObjects
+     * @param table
+     * @return
+     */
+    protected JSONObject getJson(List<JSONObject> jsonObjects, String table) {
+        JSONObject result = new JSONObject();
+
+        JSONArray jsonArray = JSONArray.parseArray(JSON.toJSON(jsonObjects).toString());
+        JSONObject data = new JSONObject();
+        data.put("data", jsonArray);
+        result.put(table, data);
+
+        return result;
+    }
+
 
     protected JSONObject getJson0088(List<JSONObject> jsonObjects, String time) {
         JSONObject result = new JSONObject();

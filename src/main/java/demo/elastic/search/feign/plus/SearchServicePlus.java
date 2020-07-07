@@ -211,4 +211,31 @@ public class SearchServicePlus {
 
     }
 
+    /**
+     * terms的查询 -> 函数式处理
+     *
+     * @param index
+     * @param field
+     * @param values
+     * @return
+     * @throws IOException
+     */
+    public void _search(String index, String scroll, String field, List<String> values, Consumer<InnerHits> consumer) throws IOException {
+        Body body = new Body();
+        Terms terms = new Terms();
+        terms.setField(field);
+        terms.setValue(Collections.singletonList(values));
+        Query query = new Query();
+        Bool bool = new Bool();
+        TermLevel termLevel = new TermLevel();
+        termLevel.setTerms(Arrays.asList(terms));
+        bool.setMust(termLevel);
+        query.setBool(bool);
+        body.setQuery(query);
+        body.setSize(10000);
+        String bodyRequest = body.parse();
+
+        this._search(index, scroll, bodyRequest, consumer);
+    }
+
 }

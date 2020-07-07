@@ -36,4 +36,20 @@ public class KafkaOutService {
                 policyId, result);
         kafkaProducerService.load(topic, JSON.toJSONString(kafkaMessage));
     }
+
+    /**
+     * 这里处理单个的表
+     *
+     * @param topic
+     * @param json
+     * @param policyId
+     */
+    public void load(String topic, JSONObject json, String policyId, String table) {
+
+        JSONObject result = kafkaMsg.getJson(Arrays.asList(json), table);
+
+        KafkaMessage kafkaMessage = kafkaMsg.getKafakMsg(UUID.randomUUID().toString(),
+                policyId, result);
+        kafkaProducerService.load(topic, JSON.toJSONString(kafkaMessage));
+    }
 }
