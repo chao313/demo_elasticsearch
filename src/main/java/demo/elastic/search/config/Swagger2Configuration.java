@@ -9,13 +9,15 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebFlux;
+import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 /**
  * Created by hwc on 2017/1/16.
  */
 @Configuration
-@EnableSwagger2
+@EnableSwagger2WebMvc
+@EnableSwagger2WebFlux
 public class Swagger2Configuration {
 
     @Bean

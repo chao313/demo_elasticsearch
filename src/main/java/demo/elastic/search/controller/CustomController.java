@@ -375,6 +375,100 @@ public class CustomController {
     }
 
 
+    /**
+     * 提供主表的index,关联字段
+     * 提供从表表的index,关联字段
+     *
+     * @param masterIndex
+     * @param masterField
+     * @param slaveIndex
+     * @param slaveField
+     * @param scroll
+     * @param body
+     * @return
+     * @throws IOException
+     * @throws IllegalAccessException
+     */
+    @ApiOperation(value = "查询两个index相关字段的差集")
+    @PostMapping(value = "/_search/_searchDiff/outputToExcel")
+    public Response _searchDiff(
+            @ApiParam(name = "indexOne", defaultValue = "tb_object_0088")
+            @RequestParam(value = "indexOne")
+                    String indexOne,
+            @ApiParam(name = "indexOneField", defaultValue = "F1_0088")
+            @RequestParam(value = "indexOneField")
+                    String indexOneField,
+            @RequestParam(value = "indexTwo")
+                    String indexTwo,
+            @RequestParam(value = "indexTwoField")
+                    String indexTwoField,
+            @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
+            @RequestParam(value = "scroll", required = false)
+                    String scroll,
+            @ApiParam(name = "initialCapacity", value = "结果集的初始化大小", defaultValue = "1000")
+            @RequestParam(value = "initialCapacity", required = false)
+                    int initialCapacity,
+            @RequestBody String body) throws IOException, IllegalAccessException {
+//        List<List<String>> result = new ArrayList<>(initialCapacity);
+//        Set<String> masterFieldValues = new HashSet<>(1600000);
+//        if (StringUtils.isBlank(scroll)) {
+//            searchServicePlus._search(masterIndex, body, new Consumer<InnerHits>() {
+//                @Override
+//                public void accept(InnerHits innerHits) {
+//                    String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
+//                    masterFieldValues.add(filedValue);
+//                }
+//            });
+//
+//        } else {
+//            searchServicePlus._search(masterIndex, scroll, body, new Consumer<InnerHits>() {
+//                @Override
+//                public void accept(InnerHits innerHits) {
+//                    String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
+//                    masterFieldValues.add(filedValue);
+//                }
+//            });
+//        }
+//
+//        List<String> fieldNamesList = mappingServicePlus.getFieldNamesList(slaveIndex);
+//        result.add(fieldNamesList);//存放字段名称
+//        List<String> dealValues = new ArrayList<>();
+//        int i = 0;
+//        int total = masterFieldValues.size();
+//        for (String value : masterFieldValues) {
+//            log.info("i : {} /total :{} -> {}", i++, total, ExcelUtil.percent(i, total));
+//            if (dealValues.size() < 1000) {
+//                dealValues.add(value);
+//            } else {
+//                try {
+//                    List<List<String>> tmp = searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues);
+//                    result.addAll(tmp);
+//                    dealValues.clear();
+//                    /**
+//                     * 存储
+//                     */
+//                    log.info("result.size():{}", result.size());
+//                    if (result.size() > 1000000) {
+//                        File file = new File("resul" + i + ".xlsx");
+//                        ExcelUtil.writeListSXSS(result, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
+//                        result.clear();
+//                    }
+//                } catch (Exception e) {
+//                    log.error("异常:{}", e.toString(), e);
+//                }
+//            }
+//        }
+//
+//        List<List<String>> tmp = searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues);
+//        result.addAll(tmp);
+//
+//
+//        File file = new File("resulEnd.xlsx");
+//        ExcelUtil.writeListSXSS(result, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
+        return Response.Ok(true);
+    }
+
+
 }
 
 
