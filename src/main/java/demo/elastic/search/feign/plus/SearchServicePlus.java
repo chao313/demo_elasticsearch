@@ -1,6 +1,7 @@
 package demo.elastic.search.feign.plus;
 
 import demo.elastic.search.engine.script.ExecuteScript;
+import demo.elastic.search.engine.script.impl.JavaScriptExecuteScript;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.po.Body;
 import demo.elastic.search.po.Query;
@@ -11,6 +12,7 @@ import demo.elastic.search.po.term.level.TermLevel;
 import demo.elastic.search.po.term.level.base.Terms;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rx.functions.Action2;
@@ -181,9 +183,9 @@ public class SearchServicePlus {
                                             String script
     ) {
         List<String> names = mappingServicePlus.getFieldNamesList(index);//获取name
-        final List<List<String>>[] resultList = null;
+        final List<List<String>>[] resultList = new List[]{new ArrayList<>()};
         final int[] i = {0};
-        AtomicReference<Integer> totalNum = null;
+        AtomicReference<Integer> totalNum = new AtomicReference<>(0);
         this._searchWithoutScrollParam(index, body, total -> {
             resultList[0] = new ArrayList<>(total);
             log.info("ES匹配到数量:{}", total);
@@ -247,7 +249,7 @@ public class SearchServicePlus {
     /**
      * 搜索的数据存放到 List<List<String>> (这个是scroll)
      * <p>
-     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, ExecuteScript, String)}
+     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Consumer, ExecuteScript, String)}
      *
      * @param index
      * @param scroll
@@ -259,7 +261,7 @@ public class SearchServicePlus {
                                                   String body,
                                                   Boolean addHeader) {
 
-        return this._searchScrollToList(index, scroll, body, addHeader, null, null, null);
+        return this._searchScrollToList(index, scroll, body, addHeader, null, null, null, null);
 
     }
 
@@ -267,7 +269,7 @@ public class SearchServicePlus {
     /**
      * 搜索的数据存放到 List<List<String>> (这个是scroll)
      * <p>
-     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, ExecuteScript, String)}
+     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Consumer, ExecuteScript, String)}
      *
      * @param index
      * @param scroll
@@ -281,7 +283,29 @@ public class SearchServicePlus {
                                                   Boolean addHeader,
                                                   Action2<Integer, Integer> progress) {
 
-        return this._searchScrollToList(index, scroll, body, addHeader, progress, null, null);
+        return this._searchScrollToList(index, scroll, body, addHeader, progress, null, null, null);
+
+    }
+
+    /**
+     * 搜索的数据存放到 List<List<String>> (这个是scroll)
+     * <p>
+     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Consumer, ExecuteScript, String)}
+     *
+     * @param index
+     * @param scroll
+     * @param body
+     * @param addHeader 是否添加头
+     * @param progress  进度消费者(参数1:处理进度，参数2：匹配到的总值)
+     */
+    public List<List<String>> _searchScrollToList(String index,
+                                                  String scroll,
+                                                  String body,
+                                                  Boolean addHeader,
+                                                  Action2<Integer, Integer> progress,
+                                                  Consumer<List<List<String>>> resultConsumer) {
+
+        return this._searchScrollToList(index, scroll, body, addHeader, progress, resultConsumer, null, null);
 
     }
 
@@ -302,12 +326,13 @@ public class SearchServicePlus {
                                                   String body,
                                                   Boolean addHeader,
                                                   Action2<Integer, Integer> progress,
+                                                  Consumer<List<List<String>>> resultConsumer,
                                                   ExecuteScript executeScript,
                                                   String script) {
         List<String> names = mappingServicePlus.getFieldNamesList(index);//获取
-        final List<List<String>>[] resultList = null;
-        AtomicReference<Integer> i = null;
-        AtomicReference<Integer> totalNum = null;
+        final List<List<String>>[] resultList = new List[]{new ArrayList<>()};
+        AtomicReference<Integer> i = new AtomicReference<>(0);
+        AtomicReference<Integer> totalNum = new AtomicReference<>(0);
         /**
          * 消费者提取出来
          */
@@ -319,9 +344,10 @@ public class SearchServicePlus {
                     progress.call(i.getAndSet(i.get() + 1), totalNum.get());
                 }
                 Boolean scriptDeal = null;
-                if (null != executeScript) {
+                if (null != executeScript && StringUtils.isNotBlank(script)) {
                     //执行脚本
-                    scriptDeal = executeScript.evalAndFilter(script, innerHits.getSource());
+//                    scriptDeal = executeScript.evalAndFilter(script, innerHits.getSource());
+                    scriptDeal = JavaScriptExecuteScript.evalAndFilter2(script, innerHits.getSource());
                 }
                 if (null == scriptDeal || true == scriptDeal) {
                     //脚本没有结果 | 脚本返回的是true
@@ -330,15 +356,20 @@ public class SearchServicePlus {
                         String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
                         tmp.add(value);
                     });
+//                    log.info("获取的数据:{}", tmp);
                     resultList[0].add(tmp);//添加row
+                }
+                if (null != resultConsumer) {
+                    //处理结果集
+                    resultConsumer.accept(resultList[0]);
                 }
             }
         };
         ESResponse esResponse = this._searchWithScrollParam(index, scroll, body, total -> {
-            resultList[0] = new ArrayList<>(total);
+            resultList[0] = new ArrayList<>(total * 2);
             log.info("ES匹配到数量:{}", total);
             totalNum.set(total);
-            if (true == addHeader) {
+            if (null != addHeader && true == addHeader) {
                 resultList[0].add(names);//添加head
             }
         }, consumer);
@@ -399,7 +430,12 @@ public class SearchServicePlus {
      * @return
      * @throws IOException
      */
-    public List<List<String>> _searchToListTerms(String index, String scroll, String field, List<String> values) throws IOException {
+    public List<List<String>> _searchToListTerms(String index,
+                                                 String scroll,
+                                                 String field,
+                                                 List<String> values,
+                                                 ExecuteScript executeScript,
+                                                 String script) throws IOException {
         Body body = new Body();
         Terms terms = new Terms();
         terms.setField(field);
@@ -414,7 +450,7 @@ public class SearchServicePlus {
         body.setSize(10000);
         String bodyRequest = body.parse();
 
-        List<List<String>> lists = this._searchScrollToList(index, scroll, bodyRequest, null, null);
+        List<List<String>> lists = this._searchScrollToList(index, scroll, bodyRequest, null, null, null, executeScript, script);
         return lists;
 
     }

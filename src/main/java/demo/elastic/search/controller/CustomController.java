@@ -13,7 +13,9 @@ import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.out.kafka.KafkaMsg;
 import demo.elastic.search.out.kafka.KafkaOutService;
+import demo.elastic.search.po.Body;
 import demo.elastic.search.po.response.InnerHits;
+import demo.elastic.search.po.term.level.base.Terms;
 import demo.elastic.search.util.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -69,6 +71,8 @@ public class CustomController {
     @Autowired
     private JavaScriptExecuteScript javaScriptExecuteScript;
 
+    private static final Integer LIMIT = 1000000;
+
 
     @ApiOperation(value = "accounts.json 数据批量插入")
     @PostMapping(value = "/{index}/_bulk")
@@ -84,18 +88,33 @@ public class CustomController {
     @ApiOperation(value = "导出全部的查询结果")
     @PostMapping(value = "/{index}/_search/outputToExcel")
     public Response _search(
+            @ApiParam(name = "index", defaultValue = "tb_object_0088")
             @PathVariable(value = "index") String index,
             @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false) String scroll,
             @RequestBody String body) throws IOException, IllegalAccessException, ScriptException, NoSuchMethodException {
         List<List<String>> lists = new ArrayList<>();
+        final int[] i = {0};
         if (StringUtils.isBlank(scroll)) {
             lists = searchServicePlus._searchToList(index, body, true, (size, total) -> log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total)));
         } else {
-            lists = searchServicePlus._searchScrollToList(index, scroll, body, true, (size, total) -> log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total)));
+            lists = searchServicePlus._searchScrollToList(index, scroll, body, true, (size, total) -> {
+                log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total));
+            }, new Consumer<List<List<String>>>() {
+                @SneakyThrows
+                @Override
+                public void accept(List<List<String>> lists) {
+                    if (lists.size() >= LIMIT) {
+                        File file = new File("result" + i[0]++ + ".xlsx");
+                        ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
+                        lists.clear();
+                    }
+                }
+            });
         }
-        File file = new File("result.xlsx");
+        File file = new File("result" + i[0]++ + ".xlsx");
         ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
+        lists.clear();
         return Response.Ok(true);
     }
 
@@ -182,40 +201,37 @@ public class CustomController {
             @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false)
                     String scroll,
-            @RequestBody String body,
-            @ApiParam(name = "script", value = "_source 处理的脚本（这里是从脚本）", defaultValue = "dataMap[\"F23_0088\"] = \"11\"")
+            @RequestBody List<Body> body,
+            @ApiParam(name = "script", value = "_source 处理的脚本（这里是从脚本）", defaultValue = "dataMap[\"F23_0088\"] = \"11\";return dataMap;")
             @RequestParam(value = "script", required = false)
                     String script
     ) throws IOException, IllegalAccessException {
         final List<List<String>>[] result = new List[]{new ArrayList<>()};
         final Set<String>[] masterFieldValues = new Set[]{new HashSet<>()};
         if (StringUtils.isBlank(scroll)) {
-            searchServicePlus._searchToConsumer(masterIndex, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchToConsumer(masterIndex, body.get(0).parse(), new Consumer<InnerHits>() {
                 @Override
                 public void accept(InnerHits innerHits) {
                     String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
                     masterFieldValues[0].add(filedValue);
                 }
-            }, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer total) {
+            }, total -> {
+                /**
+                 * 初始化结果集
+                 */
+                masterFieldValues[0] = new HashSet<>(total);//初始化数量
+                if (total < 100100) {
                     /**
-                     * 初始化结果集
+                     * 如何小于，直接初始化
                      */
-                    masterFieldValues[0] = new HashSet<>(total);//初始化数量
-                    if (total < 100100) {
-                        /**
-                         * 如何小于，直接初始化
-                         */
-                        result[0] = new ArrayList<>(total);
-                    } else {
-                        result[0] = new ArrayList<>(100100);
-                    }
+                    result[0] = new ArrayList<>(total);
+                } else {
+                    result[0] = new ArrayList<>(100100);
                 }
             });
 
         } else {
-            searchServicePlus._searchScrollToConsumer(masterIndex, scroll, body, total -> {
+            searchServicePlus._searchScrollToConsumer(masterIndex, scroll, body.get(0).parse(), total -> {
                 /**
                  * 初始化结果集
                  */
@@ -245,14 +261,18 @@ public class CustomController {
                 dealValues.add(value);
             } else {
                 try {
-                    List<List<String>> tmp = searchServicePlus._searchToListTerms(slaveIndex, scroll, slaveField, dealValues);
+                    Terms terms = new Terms();
+                    terms.setField(slaveField);
+                    terms.getValue().addAll(dealValues);
+                    body.get(1).getQuery().getBool().getMust().setTerms(Arrays.asList(terms));
+                    List<List<String>> tmp = searchServicePlus._searchScrollToList(slaveIndex, "1m", body.get(1).parse(), false, null, null, javaScriptExecuteScript, script);
                     result[0].addAll(tmp);
                     dealValues.clear();
                     /**
                      * 存储
                      */
                     log.info("result.size():{}", result[0].size());
-                    if (result[0].size() > 1000000) {
+                    if (result[0].size() > LIMIT) {
                         File file = new File("resul" + i + ".xlsx");
                         ExcelUtil.writeListSXSS(result[0], new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
                         result[0].clear();
@@ -263,7 +283,7 @@ public class CustomController {
             }
         }
 
-        List<List<String>> tmp = searchServicePlus._searchToListTerms(slaveIndex, "1m", slaveField, dealValues);
+        List<List<String>> tmp = searchServicePlus._searchToListTerms(slaveIndex, "1m", slaveField, dealValues, javaScriptExecuteScript, script);
         result[0].addAll(tmp);
 
 
@@ -313,7 +333,7 @@ public class CustomController {
             @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "TB6254ETL")
             @RequestParam(value = "policyId")
                     String policyId,
-            @ApiParam(name = "script", value = "_source 处理的脚本（这里是从脚本）", defaultValue = "dataMap[\"F23_0088\"] = \"11\"")
+            @ApiParam(name = "script", value = "_source 处理的脚本（这里是的脚本返回 false 代表无效;如果要结束，return dataMap 即可）", defaultValue = "dataMap[\"F23_0088\"] = \"11\"")
             @RequestParam(value = "script", required = false)
                     String script
     ) throws IOException, IllegalAccessException {
@@ -458,7 +478,7 @@ public class CustomController {
 //                     * 存储
 //                     */
 //                    log.info("result.size():{}", result.size());
-//                    if (result.size() > 1000000) {
+//                    if (result.size() > LIMIT) {
 //                        File file = new File("resul" + i + ".xlsx");
 //                        ExcelUtil.writeListSXSS(result, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
 //                        result.clear();

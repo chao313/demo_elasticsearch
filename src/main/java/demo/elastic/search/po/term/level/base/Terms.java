@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class Terms implements Parse {
 
     @ApiModelProperty(example = "")
     @JSONField(name = "value")
-    List<Object> value;
+    List<Object> value = new ArrayList<>();
 
     @ApiModelProperty(example = "1.0")
     @JSONField(name = "boost")
@@ -57,8 +58,6 @@ public class Terms implements Parse {
 
     public static String _terms = "terms";
     public static String _boost = "boost";
-
-
 
 
 }

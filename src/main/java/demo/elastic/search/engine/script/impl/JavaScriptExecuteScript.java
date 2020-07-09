@@ -12,6 +12,7 @@ import javax.script.ScriptException;
 import java.util.Map;
 
 import static java.lang.System.err;
+import static java.lang.System.gc;
 
 
 /**
@@ -46,7 +47,7 @@ public class JavaScriptExecuteScript implements ExecuteScript {
             Object o = invokeEngine.invokeFunction("wash", JSONObject.toJSON(source).toString());
             return JSONObject.parseObject(JSONObject.toJSON(o).toString());
         } else {
-            err.println("这个脚本引擎不支持动态调用");
+            log.error("这个脚本引擎不支持动态调用:{}", script);
         }
         return null;
     }
@@ -56,7 +57,7 @@ public class JavaScriptExecuteScript implements ExecuteScript {
      * 1.完成脚本执行
      * 2.如果返回true -> 保留 否则false
      * <p>
-     * 注意:默认返回true
+     * 注意:默认返回 false
      *
      * @param script
      * @param source
@@ -67,12 +68,66 @@ public class JavaScriptExecuteScript implements ExecuteScript {
     public boolean evalAndFilter(String script, Map<String, Object> source) throws ScriptException, NoSuchMethodException {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByName("javascript");
-        String function = "function wash(dataMap){ var dataMap = JSON.parse(dataMap); " + script + " ;return true;}";
+        String function = "function wash(source){ var dataMap = JSON.parse(source); " + script + ";return false;}";
         if (engine instanceof Invocable) {
             engine.eval(function);
             Invocable invokeEngine = (Invocable) engine;
             Object o = invokeEngine.invokeFunction("wash", JSONObject.toJSON(source).toString());
-            return Boolean.valueOf(o.toString());
+            if ("false".equalsIgnoreCase(o.toString())) {
+                return false;
+            } else {
+                /**
+                 * 返回true -> 代表数据可用
+                 *
+                 * 把json回转为map
+                 */
+                JSONObject object = JSONObject.parseObject(JSONObject.toJSON(o).toString());
+                source.clear();
+                source.putAll(object);
+                return true;
+            }
+
+        } else {
+            log.error("这个脚本引擎不支持动态调用:{}", script);
+        }
+        return false;
+    }
+
+    /**
+     * 清洗
+     * 1.完成脚本执行
+     * 2.如果返回true -> 保留 否则false
+     * <p>
+     * 注意:默认返回 false
+     *
+     * @param script
+     * @param source
+     * @return
+     * @throws ScriptException
+     * @throws NoSuchMethodException
+     */
+    public static boolean evalAndFilter2(String script, Map<String, Object> source) throws ScriptException, NoSuchMethodException {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByName("javascript");
+        String function = "function wash(source){ var dataMap = JSON.parse(source); " + script + ";return false;}";
+        if (engine instanceof Invocable) {
+            engine.eval(function);
+            Invocable invokeEngine = (Invocable) engine;
+            Object o = invokeEngine.invokeFunction("wash", JSONObject.toJSON(source).toString());
+            if ("false".equalsIgnoreCase(o.toString())) {
+                return false;
+            } else {
+                /**
+                 * 返回true -> 代表数据可用
+                 *
+                 * 把json回转为map
+                 */
+                JSONObject object = JSONObject.parseObject(JSONObject.toJSON(o).toString());
+                source.clear();
+                source.putAll(object);
+                return true;
+            }
+
         } else {
             log.error("这个脚本引擎不支持动态调用:{}", script);
         }
