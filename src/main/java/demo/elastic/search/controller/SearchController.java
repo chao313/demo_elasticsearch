@@ -55,6 +55,7 @@ public class SearchController {
                     "</pre>")
     @PostMapping(value = "/{index}/_search")
     public Response _search(
+            @ApiParam(defaultValue = "tb_object_0088")
             @PathVariable(value = "index") String index,
             @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false) String scroll,

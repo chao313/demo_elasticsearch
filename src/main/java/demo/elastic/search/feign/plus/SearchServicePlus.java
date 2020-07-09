@@ -1,5 +1,6 @@
 package demo.elastic.search.feign.plus;
 
+import demo.elastic.search.engine.script.ExecuteScript;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.po.Body;
 import demo.elastic.search.po.Query;
@@ -8,23 +9,20 @@ import demo.elastic.search.po.response.ESResponse;
 import demo.elastic.search.po.response.InnerHits;
 import demo.elastic.search.po.term.level.TermLevel;
 import demo.elastic.search.po.term.level.base.Terms;
-import demo.elastic.search.util.ExcelUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpHost;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rx.functions.Action2;
-import rx.functions.Func2;
 
 import javax.annotation.Resource;
+import javax.script.ScriptException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 @Service
@@ -42,16 +40,24 @@ public class SearchServicePlus {
 
 
     /**
-     * 使用scroll查询(不循环)
-     *
-     * @param index
-     * @param scroll scroll时间
-     * @param body
+     * 普通查询
+     * {@link #_searchWithoutScrollParam(String, String, Consumer, Consumer)}
      */
-    public ESResponse _search(String index, String scroll, String body) {
-        String result = searchService._search(index, scroll, body);
-        ESResponse esResponse = ESResponse.parse(result);
-        return esResponse;
+    public ESResponse _searchWithoutScrollParam(String index,
+                                                String body) {
+
+        return this._searchWithoutScrollParam(index, body, null, null);
+    }
+
+    /**
+     * 普通查询
+     * {@link #_searchWithoutScrollParam(String, String, Consumer, Consumer)}
+     */
+    public ESResponse _searchWithoutScrollParam(String index,
+                                                String body,
+                                                Consumer<InnerHits> consumer) {
+
+        return this._searchWithoutScrollParam(index, body, null, consumer);
     }
 
     /**
@@ -60,43 +66,225 @@ public class SearchServicePlus {
      * @param index
      * @param body
      */
-    public ESResponse _search(String index, String body) {
+    public ESResponse _searchWithoutScrollParam(String index,
+                                                String body,
+                                                Consumer<Integer> totalConsumer,
+                                                Consumer<InnerHits> consumer
+    ) {
         String result = searchService._search(index, body);
         ESResponse esResponse = ESResponse.parse(result);
+        if (null != totalConsumer) {
+            totalConsumer.accept(esResponse.getHits().getTotal());
+        }
+        if (null != consumer) {
+            esResponse.getHits().getHits().forEach(innerHits -> {
+                consumer.accept(innerHits);
+            });
+        }
         return esResponse;
+    }
+
+    /**
+     * 普通查询
+     * {@link #_searchWithoutScrollParam(String, String, Consumer, Consumer)}
+     */
+    public ESResponse _searchWithScrollParam(String index,
+                                             String scroll,
+                                             String body) {
+
+        return this._searchWithScrollParam(index, scroll, body, null, null);
+    }
+
+    /**
+     * 普通查询
+     * {@link #_searchWithoutScrollParam(String, String, Consumer, Consumer)}
+     */
+    public ESResponse _searchWithScrollParam(String index,
+                                             String scroll,
+                                             String body,
+                                             Consumer<InnerHits> consumer) {
+
+        return this._searchWithScrollParam(index, body, scroll, null, consumer);
+    }
+
+    /**
+     * 使用scroll参数查询,本身不是滚动
+     *
+     * @param index
+     * @param scroll
+     * @param body
+     * @param consumer
+     * @param totalConsumer
+     * @return
+     */
+    public ESResponse _searchWithScrollParam(String index,
+                                             String scroll,
+                                             String body,
+                                             Consumer<Integer> totalConsumer,
+                                             Consumer<InnerHits> consumer
+    ) {
+        String result = searchService._search(index, scroll, body);
+        ESResponse esResponse = ESResponse.parse(result);
+        if (null != totalConsumer) {
+            totalConsumer.accept(esResponse.getHits().getTotal());
+        }
+        if (null != consumer) {
+            esResponse.getHits().getHits().forEach(innerHits -> {
+                consumer.accept(innerHits);
+            });
+        }
+        return esResponse;
+    }
+
+    /**
+     * 查询数据放入 list 中
+     * {@link #_searchToList(String, String, Boolean, Action2, ExecuteScript, String)}
+     */
+    public List<List<String>> _searchToList(String index,
+                                            String body,
+                                            Boolean addHeader
+    ) throws ScriptException, NoSuchMethodException {
+        return this._searchToList(index, body, addHeader, null, null, null);
+    }
+
+    /**
+     * 查询数据放入 list 中
+     * {@link #_searchToList(String, String, Boolean, Action2, ExecuteScript, String)}
+     */
+    public List<List<String>> _searchToList(String index,
+                                            String body,
+                                            Boolean addHeader,
+                                            Action2<Integer, Integer> progress
+    ) throws ScriptException, NoSuchMethodException {
+        return this._searchToList(index, body, addHeader, progress, null, null);
     }
 
 
     /**
      * 搜索的数据存放到 List<List<String>>
+     * <p>
+     * 注意 -> 这里的全部一次性查询入内容，后期可能出现问题
      *
      * @param index
      * @param body
-     * @param initialCapacity 可能list存放很多数据,可以指定initialCapacity避免扩容
+     * @param addHeader     是否添加头
+     * @param progress      进度消费者(参数1:处理进度，参数2：匹配到的总值)
+     * @param executeScript 脚本执行器
+     * @param script        脚本本身
      * @return
      */
-    public List<List<String>> _search(String index, String body, int initialCapacity, Boolean addHeader, Action2<Integer, Integer> progress) {
-        List<String> names = mappingServicePlus.getFieldNamesList(index);//获取
-        List<List<String>> resultList = new ArrayList<>(initialCapacity);
-        if (true == addHeader) {
-            resultList.add(names);//添加head
-        }
-        String result = searchService._search(index, body);
-        ESResponse esResponse = ESResponse.parse(result);
-        log.info("ES匹配到数量:{}", esResponse.getHits().getTotal());
-        esResponse.getHits().getHits().forEach(innerHits -> {
-            if (null != progress) {
-                progress.call(resultList.size(), esResponse.getHits().getTotal());
+    public List<List<String>> _searchToList(String index,
+                                            String body,
+                                            Boolean addHeader,
+                                            Action2<Integer, Integer> progress,
+                                            ExecuteScript executeScript,
+                                            String script
+    ) {
+        List<String> names = mappingServicePlus.getFieldNamesList(index);//获取name
+        final List<List<String>>[] resultList = null;
+        final int[] i = {0};
+        AtomicReference<Integer> totalNum = null;
+        this._searchWithoutScrollParam(index, body, total -> {
+            resultList[0] = new ArrayList<>(total);
+            log.info("ES匹配到数量:{}", total);
+            totalNum.set(total);
+            if (true == addHeader) {
+                resultList[0].add(names);//添加head
             }
-            List<String> tmp = new ArrayList<>();
-            names.forEach(name -> {
-                String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
-                tmp.add(value);
-            });
-            resultList.add(tmp);//添加row
+        }, new Consumer<InnerHits>() {
+            @SneakyThrows
+            @Override
+            public void accept(InnerHits innerHits) {
+                if (null != progress) {
+                    progress.call(i[0]++, totalNum.get());
+                }
+                Boolean scriptDeal = null;
+                if (null != executeScript) {
+                    //执行脚本
+                    scriptDeal = executeScript.evalAndFilter(script, innerHits.getSource());
+                }
+                if (null == scriptDeal || true == scriptDeal) {
+                    //脚本没有结果 | 脚本返回的是true
+                    List<String> tmp = new ArrayList<>();
+                    names.forEach(name -> {
+                        String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
+                        tmp.add(value);
+                    });
+                    resultList[0].add(tmp);//添加row
+                }
+            }
         });
-        return resultList;
+        return resultList[0];
     }
+
+    /**
+     * {@link SearchServicePlus#_searchToConsumer(java.lang.String, java.lang.String, java.util.function.Consumer, java.util.function.Consumer)}
+     */
+    public void _searchToConsumer(String index, String body, Consumer<InnerHits> consumer) {
+        this._searchToConsumer(index, body, consumer, null);
+    }
+
+    /**
+     * 搜索的数据存放到 （不滚动）
+     *
+     * @param index
+     * @param body
+     * @param consumer      消费 函数式处理
+     * @param totalConsumer 消费，获取total
+     */
+    public void _searchToConsumer(String index, String body, Consumer<InnerHits> consumer, Consumer<Integer> totalConsumer) {
+        ESResponse esResponse = this._searchWithoutScrollParam(index, body);
+        log.info("ES匹配到数量:{}", esResponse.getHits().getTotal());
+        if (null != totalConsumer) {
+            totalConsumer.accept(esResponse.getHits().getTotal());
+        }
+        esResponse.getHits().getHits().forEach(innerHits -> {
+            consumer.accept(innerHits);
+        });
+    }
+
+
+    /**
+     * 搜索的数据存放到 List<List<String>> (这个是scroll)
+     * <p>
+     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, ExecuteScript, String)}
+     *
+     * @param index
+     * @param scroll
+     * @param body
+     * @param addHeader 是否添加头
+     */
+    public List<List<String>> _searchScrollToList(String index,
+                                                  String scroll,
+                                                  String body,
+                                                  Boolean addHeader) {
+
+        return this._searchScrollToList(index, scroll, body, addHeader, null, null, null);
+
+    }
+
+
+    /**
+     * 搜索的数据存放到 List<List<String>> (这个是scroll)
+     * <p>
+     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, ExecuteScript, String)}
+     *
+     * @param index
+     * @param scroll
+     * @param body
+     * @param addHeader 是否添加头
+     * @param progress  进度消费者(参数1:处理进度，参数2：匹配到的总值)
+     */
+    public List<List<String>> _searchScrollToList(String index,
+                                                  String scroll,
+                                                  String body,
+                                                  Boolean addHeader,
+                                                  Action2<Integer, Integer> progress) {
+
+        return this._searchScrollToList(index, scroll, body, addHeader, progress, null, null);
+
+    }
+
 
     /**
      * 搜索的数据存放到 List<List<String>> (这个是scroll)
@@ -104,45 +292,79 @@ public class SearchServicePlus {
      * @param index
      * @param scroll
      * @param body
-     * @param initialCapacity 可能list存放很多数据,可以指定initialCapacity避免扩容
-     * @return
+     * @param addHeader     是否添加头
+     * @param progress      进度消费者(参数1:处理进度，参数2：匹配到的总值)
+     * @param executeScript 脚本执行器
+     * @param script        脚本本身
      */
-    public List<List<String>> _search(String index, String scroll, String body, int initialCapacity, Boolean addHeader, Action2<Integer, Integer> progress) {
+    public List<List<String>> _searchScrollToList(String index,
+                                                  String scroll,
+                                                  String body,
+                                                  Boolean addHeader,
+                                                  Action2<Integer, Integer> progress,
+                                                  ExecuteScript executeScript,
+                                                  String script) {
         List<String> names = mappingServicePlus.getFieldNamesList(index);//获取
-        List<List<String>> resultList = new ArrayList<>(initialCapacity);
-        if (true == addHeader) {
-            resultList.add(names);//添加head
-        }
-        ESResponse esResponse = this._search(index, scroll, body);
-        log.info("ES匹配到数量:{}", esResponse.getHits().getTotal());
-        esResponse.getHits().getHits().forEach(innerHits -> {
-            if (null != progress) {
-                progress.call(resultList.size(), esResponse.getHits().getTotal());
-            }
-            List<String> tmp = new ArrayList<>();
-            names.forEach(name -> {
-                String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
-                tmp.add(value);
-            });
-            resultList.add(tmp);//添加row
-        });
-        String scrollId = esResponse.getScrollId();
-        scrollServicePlus._search(scroll, scrollId, new Consumer<InnerHits>() {
+        final List<List<String>>[] resultList = null;
+        AtomicReference<Integer> i = null;
+        AtomicReference<Integer> totalNum = null;
+        /**
+         * 消费者提取出来
+         */
+        Consumer<InnerHits> consumer = new Consumer<InnerHits>() {
+            @SneakyThrows
             @Override
             public void accept(InnerHits innerHits) {
                 if (null != progress) {
-                    progress.call(resultList.size(), esResponse.getHits().getTotal());
+                    progress.call(i.getAndSet(i.get() + 1), totalNum.get());
                 }
-                List<String> tmp = new ArrayList<>();
-                names.forEach(name -> {
-                    String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
-                    tmp.add(value);
-                });
-                resultList.add(tmp);//添加row
+                Boolean scriptDeal = null;
+                if (null != executeScript) {
+                    //执行脚本
+                    scriptDeal = executeScript.evalAndFilter(script, innerHits.getSource());
+                }
+                if (null == scriptDeal || true == scriptDeal) {
+                    //脚本没有结果 | 脚本返回的是true
+                    List<String> tmp = new ArrayList<>();
+                    names.forEach(name -> {
+                        String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
+                        tmp.add(value);
+                    });
+                    resultList[0].add(tmp);//添加row
+                }
             }
-        });
-        return resultList;
+        };
+        ESResponse esResponse = this._searchWithScrollParam(index, scroll, body, total -> {
+            resultList[0] = new ArrayList<>(total);
+            log.info("ES匹配到数量:{}", total);
+            totalNum.set(total);
+            if (true == addHeader) {
+                resultList[0].add(names);//添加head
+            }
+        }, consumer);
+        /**
+         * 进行滚动查询
+         */
+        String scrollId = esResponse.getScrollId();
+        scrollServicePlus._search(scroll, scrollId, consumer);
+        return resultList[0];
     }
+
+
+    /**
+     * 搜索的数据存放到 函数式处理（滚动）
+     * <p>
+     * {@link SearchServicePlus#_searchScrollToConsumer(String, String, String, Consumer, Consumer)}
+     *
+     * @param index
+     * @param scroll
+     * @param body
+     * @param consumer 消费
+     */
+    public void _searchScrollToConsumer(String index, String scroll, String body, Consumer<InnerHits> consumer) {
+        this._searchScrollToConsumer(index, scroll, body, null, consumer);
+    }
+
 
     /**
      * 搜索的数据存放到 函数式处理（滚动）
@@ -152,35 +374,21 @@ public class SearchServicePlus {
      * @param body
      * @param consumer 消费
      */
-    public void _search(String index, String scroll, String body, Consumer<InnerHits> consumer) {
-        ESResponse esResponse = this._search(index, scroll, body);
+    public void _searchScrollToConsumer(String index,
+                                        String scroll,
+                                        String body,
+                                        Consumer<Integer> totalConsumer,
+                                        Consumer<InnerHits> consumer) {
+        ESResponse esResponse = this._searchWithScrollParam(index, scroll, body);
         log.info("ES匹配到数量:{}", esResponse.getHits().getTotal());
-        esResponse.getHits().getHits().forEach(innerHits -> {
-            consumer.accept(innerHits);
-        });
+        if (null != totalConsumer) {
+            totalConsumer.accept(esResponse.getHits().getTotal());
+        }
+        esResponse.getHits().getHits().forEach(consumer::accept);
         String scrollId = esResponse.getScrollId();
-        scrollServicePlus._search(scroll, scrollId, new Consumer<InnerHits>() {
-            @Override
-            public void accept(InnerHits innerHits) {
-                consumer.accept(innerHits);
-            }
-        });
+        scrollServicePlus._search(scroll, scrollId, innerHits -> consumer.accept(innerHits));
     }
 
-    /**
-     * 搜索的数据存放到 函数式处理（不滚动）
-     *
-     * @param index
-     * @param body
-     * @param consumer 消费
-     */
-    public void _search(String index, String body, Consumer<InnerHits> consumer) {
-        ESResponse esResponse = this._search(index, body);
-        log.info("ES匹配到数量:{}", esResponse.getHits().getTotal());
-        esResponse.getHits().getHits().forEach(innerHits -> {
-            consumer.accept(innerHits);
-        });
-    }
 
     /**
      * terms的查询
@@ -191,7 +399,7 @@ public class SearchServicePlus {
      * @return
      * @throws IOException
      */
-    public List<List<String>> _search(String index, String scroll, String field, List<String> values) throws IOException {
+    public List<List<String>> _searchToListTerms(String index, String scroll, String field, List<String> values) throws IOException {
         Body body = new Body();
         Terms terms = new Terms();
         terms.setField(field);
@@ -206,7 +414,7 @@ public class SearchServicePlus {
         body.setSize(10000);
         String bodyRequest = body.parse();
 
-        List<List<String>> lists = this._search(index, scroll, bodyRequest, 1000, false, null);
+        List<List<String>> lists = this._searchScrollToList(index, scroll, bodyRequest, null, null);
         return lists;
 
     }
@@ -220,7 +428,7 @@ public class SearchServicePlus {
      * @return
      * @throws IOException
      */
-    public void _search(String index, String scroll, String field, List<String> values, Consumer<InnerHits> consumer) throws IOException {
+    public void _searchScrollToListTerms(String index, String scroll, String field, List<String> values, Consumer<InnerHits> consumer) throws IOException {
         Body body = new Body();
         Terms terms = new Terms();
         terms.setField(field);
@@ -235,7 +443,7 @@ public class SearchServicePlus {
         body.setSize(10000);
         String bodyRequest = body.parse();
 
-        this._search(index, scroll, bodyRequest, consumer);
+        this._searchScrollToConsumer(index, scroll, bodyRequest, consumer);
     }
 
 }

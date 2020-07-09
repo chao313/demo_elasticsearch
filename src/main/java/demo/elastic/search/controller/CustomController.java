@@ -2,7 +2,7 @@ package demo.elastic.search.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.AwareUtil;
-import demo.elastic.search.engine.script.ExecuteScript;
+import demo.elastic.search.engine.script.impl.JavaScriptExecuteScript;
 import demo.elastic.search.feign.DocumentService;
 import demo.elastic.search.feign.MappingService;
 import demo.elastic.search.feign.ScrollService;
@@ -21,16 +21,12 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHost;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import rx.functions.Action2;
-import rx.functions.Func2;
 
 import javax.annotation.Resource;
+import javax.script.ScriptException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -70,6 +66,9 @@ public class CustomController {
     @Autowired
     private KafkaOutService kafkaOutService;
 
+    @Autowired
+    private JavaScriptExecuteScript javaScriptExecuteScript;
+
 
     @ApiOperation(value = "accounts.json 数据批量插入")
     @PostMapping(value = "/{index}/_bulk")
@@ -88,34 +87,18 @@ public class CustomController {
             @PathVariable(value = "index") String index,
             @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false) String scroll,
-            @RequestBody String body) throws IOException, IllegalAccessException {
+            @RequestBody String body) throws IOException, IllegalAccessException, ScriptException, NoSuchMethodException {
         List<List<String>> lists = new ArrayList<>();
         if (StringUtils.isBlank(scroll)) {
-            lists = searchServicePlus._search(index, body, 10000, true, new Action2<Integer, Integer>() {
-                @Override
-                public void call(Integer size, Integer total) {
-                    log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total));
-                }
-            });
-
+            lists = searchServicePlus._searchToList(index, body, true, (size, total) -> log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total)));
         } else {
-            lists = searchServicePlus._search(index, scroll, body, 10000, true, new Action2<Integer, Integer>() {
-                @Override
-                public void call(Integer size, Integer total) {
-                    log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total));
-                }
-            });
+            lists = searchServicePlus._searchScrollToList(index, scroll, body, true, (size, total) -> log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total)));
         }
-
         File file = new File("result.xlsx");
-        ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), new Action2<Integer, Integer>() {
-            @Override
-            public void call(Integer line, Integer size) {
-                log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size));
-            }
-        });
+        ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
         return Response.Ok(true);
     }
+
 
     @ApiOperation(value = "函数式处理发送到kafka")
     @PostMapping(value = "/{index}/_search/outputToKafka")
@@ -140,11 +123,11 @@ public class CustomController {
     ) {
 
         if (StringUtils.isBlank(scroll)) {
-            searchServicePlus._search(index, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchToConsumer(index, body, new Consumer<InnerHits>() {
                 @SneakyThrows
                 @Override
                 public void accept(InnerHits innerHits) {
-                    ExecuteScript.eval(script, innerHits.getSource());
+                    javaScriptExecuteScript.eval(script, innerHits.getSource());
                     JSONObject root0088 = JSONObject.parseObject(JSONObject.toJSON(innerHits.getSource()).toString());
                     kafkaOutService.load0088(topic, root0088, policyId);
                     log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, root0088);
@@ -152,11 +135,11 @@ public class CustomController {
             });
 
         } else {
-            searchServicePlus._search(index, scroll, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchScrollToConsumer(index, scroll, body, new Consumer<InnerHits>() {
                 @SneakyThrows
                 @Override
                 public void accept(InnerHits innerHits) {
-                    ExecuteScript.eval(script, innerHits.getSource());
+                    javaScriptExecuteScript.eval(script, innerHits.getSource());
                     JSONObject root0088 = JSONObject.parseObject(JSONObject.toJSON(innerHits.getSource()).toString());
                     kafkaOutService.load0088(topic, root0088, policyId);
                     log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, root0088);
@@ -190,60 +173,89 @@ public class CustomController {
             @ApiParam(name = "masterField", defaultValue = "F1_0088")
             @RequestParam(value = "masterField")
                     String masterField,
+            @ApiParam(name = "slaveIndex", defaultValue = "tb_object_6254")
             @RequestParam(value = "slaveIndex")
                     String slaveIndex,
+            @ApiParam(name = "slaveField", defaultValue = "F1_6254")
             @RequestParam(value = "slaveField")
                     String slaveField,
             @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false)
                     String scroll,
-            @ApiParam(name = "initialCapacity", value = "结果集的初始化大小", defaultValue = "1000")
-            @RequestParam(value = "initialCapacity", required = false)
-                    int initialCapacity,
-            @RequestBody String body) throws IOException, IllegalAccessException {
-        List<List<String>> result = new ArrayList<>(initialCapacity);
-        Set<String> masterFieldValues = new HashSet<>(1600000);
+            @RequestBody String body,
+            @ApiParam(name = "script", value = "_source 处理的脚本（这里是从脚本）", defaultValue = "dataMap[\"F23_0088\"] = \"11\"")
+            @RequestParam(value = "script", required = false)
+                    String script
+    ) throws IOException, IllegalAccessException {
+        final List<List<String>>[] result = new List[]{new ArrayList<>()};
+        final Set<String>[] masterFieldValues = new Set[]{new HashSet<>()};
         if (StringUtils.isBlank(scroll)) {
-            searchServicePlus._search(masterIndex, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchToConsumer(masterIndex, body, new Consumer<InnerHits>() {
                 @Override
                 public void accept(InnerHits innerHits) {
                     String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
-                    masterFieldValues.add(filedValue);
+                    masterFieldValues[0].add(filedValue);
+                }
+            }, new Consumer<Integer>() {
+                @Override
+                public void accept(Integer total) {
+                    /**
+                     * 初始化结果集
+                     */
+                    masterFieldValues[0] = new HashSet<>(total);//初始化数量
+                    if (total < 100100) {
+                        /**
+                         * 如何小于，直接初始化
+                         */
+                        result[0] = new ArrayList<>(total);
+                    } else {
+                        result[0] = new ArrayList<>(100100);
+                    }
                 }
             });
 
         } else {
-            searchServicePlus._search(masterIndex, scroll, body, new Consumer<InnerHits>() {
-                @Override
-                public void accept(InnerHits innerHits) {
-                    String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
-                    masterFieldValues.add(filedValue);
+            searchServicePlus._searchScrollToConsumer(masterIndex, scroll, body, total -> {
+                /**
+                 * 初始化结果集
+                 */
+                masterFieldValues[0] = new HashSet<>(total);//初始化数量
+                if (total < 100100) {
+                    /**
+                     * 如何小于，直接初始化
+                     */
+                    result[0] = new ArrayList<>(total);
+                } else {
+                    result[0] = new ArrayList<>(100100);
                 }
+            }, innerHits -> {
+                String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
+                masterFieldValues[0].add(filedValue);
             });
         }
 
         List<String> fieldNamesList = mappingServicePlus.getFieldNamesList(slaveIndex);
-        result.add(fieldNamesList);//存放字段名称
+        result[0].add(fieldNamesList);//存放字段名称
         List<String> dealValues = new ArrayList<>();
         int i = 0;
-        int total = masterFieldValues.size();
-        for (String value : masterFieldValues) {
+        int total = masterFieldValues[0].size();
+        for (String value : masterFieldValues[0]) {
             log.info("i : {} /total :{} -> {}", i++, total, ExcelUtil.percent(i, total));
             if (dealValues.size() < 1000) {
                 dealValues.add(value);
             } else {
                 try {
-                    List<List<String>> tmp = searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues);
-                    result.addAll(tmp);
+                    List<List<String>> tmp = searchServicePlus._searchToListTerms(slaveIndex, scroll, slaveField, dealValues);
+                    result[0].addAll(tmp);
                     dealValues.clear();
                     /**
                      * 存储
                      */
-                    log.info("result.size():{}", result.size());
-                    if (result.size() > 1000000) {
+                    log.info("result.size():{}", result[0].size());
+                    if (result[0].size() > 1000000) {
                         File file = new File("resul" + i + ".xlsx");
-                        ExcelUtil.writeListSXSS(result, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
-                        result.clear();
+                        ExcelUtil.writeListSXSS(result[0], new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
+                        result[0].clear();
                     }
                 } catch (Exception e) {
                     log.error("异常:{}", e.toString(), e);
@@ -251,12 +263,12 @@ public class CustomController {
             }
         }
 
-        List<List<String>> tmp = searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues);
-        result.addAll(tmp);
+        List<List<String>> tmp = searchServicePlus._searchToListTerms(slaveIndex, "1m", slaveField, dealValues);
+        result[0].addAll(tmp);
 
 
         File file = new File("resulEnd.xlsx");
-        ExcelUtil.writeListSXSS(result, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
+        ExcelUtil.writeListSXSS(result[0], new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
         return Response.Ok(true);
     }
 
@@ -285,9 +297,11 @@ public class CustomController {
             @ApiParam(name = "masterField", defaultValue = "F1_0088")
             @RequestParam(value = "masterField")
                     String masterField,
-            @RequestParam(value = "slaveIndex", defaultValue = "tb_object_6254")
+            @ApiParam(name = "slaveIndex", defaultValue = "tb_object_6254")
+            @RequestParam(value = "slaveIndex")
                     String slaveIndex,
-            @RequestParam(value = "slaveField", defaultValue = "F1_6254")
+            @ApiParam(name = "slaveField", defaultValue = "F1_6254")
+            @RequestParam(value = "slaveField")
                     String slaveField,
             @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false)
@@ -308,7 +322,7 @@ public class CustomController {
          */
         Set<String> masterFieldValues = new HashSet<>(1600000);
         if (StringUtils.isBlank(scroll)) {
-            searchServicePlus._search(masterIndex, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchToConsumer(masterIndex, body, new Consumer<InnerHits>() {
                 @Override
                 public void accept(InnerHits innerHits) {
                     String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
@@ -317,7 +331,7 @@ public class CustomController {
             });
 
         } else {
-            searchServicePlus._search(masterIndex, scroll, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchScrollToConsumer(masterIndex, scroll, body, new Consumer<InnerHits>() {
                 @Override
                 public void accept(InnerHits innerHits) {
                     String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
@@ -343,11 +357,11 @@ public class CustomController {
                     /**
                      * 处理1000条
                      */
-                    searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues, new Consumer<InnerHits>() {
+                    searchServicePlus._searchScrollToListTerms(slaveIndex, scroll, slaveField, dealValues, new Consumer<InnerHits>() {
                         @SneakyThrows
                         @Override
                         public void accept(InnerHits innerHits) {
-                            JSONObject json = ExecuteScript.eval(script, innerHits.getSource());
+                            JSONObject json = javaScriptExecuteScript.eval(script, innerHits.getSource());
                             kafkaOutService.load(topic, json, policyId, KafkaMsg.TB_OBJECT_6254);
                             log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, json);
                         }
@@ -361,11 +375,11 @@ public class CustomController {
         /**
          * 处理剩余数据
          */
-        searchServicePlus._search(slaveIndex, scroll, slaveField, dealValues, new Consumer<InnerHits>() {
+        searchServicePlus._searchScrollToListTerms(slaveIndex, scroll, slaveField, dealValues, new Consumer<InnerHits>() {
             @SneakyThrows
             @Override
             public void accept(InnerHits innerHits) {
-                JSONObject json = ExecuteScript.eval(script, innerHits.getSource());
+                JSONObject json = javaScriptExecuteScript.eval(script, innerHits.getSource());
                 kafkaOutService.load(topic, json, policyId, KafkaMsg.TB_OBJECT_6254);
                 log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, json);
             }
@@ -379,10 +393,6 @@ public class CustomController {
      * 提供主表的index,关联字段
      * 提供从表表的index,关联字段
      *
-     * @param masterIndex
-     * @param masterField
-     * @param slaveIndex
-     * @param slaveField
      * @param scroll
      * @param body
      * @return
