@@ -2,10 +2,17 @@ package demo.elastic.search.po.term.level.base;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
+import demo.elastic.search.po.Body;
 import demo.elastic.search.po.Parse;
+import demo.elastic.search.po.Query;
+import demo.elastic.search.po.compound.base.Bool;
+import demo.elastic.search.po.term.level.TermLevel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * <pre>
@@ -52,6 +59,21 @@ public class Term implements Parse {
         key.put(this.getField(), content);
         term.put(_term, key);
         return term.toJSONString();
+    }
+
+    public Term(String field, String value, String boost) {
+        this.field = field;
+        this.value = value;
+        this.boost = boost;
+    }
+
+    public Term(String field, String value) {
+        this.field = field;
+        this.value = value;
+        this.boost = "1.0";
+    }
+
+    public Term() {
     }
 
     public static String _term = "term";

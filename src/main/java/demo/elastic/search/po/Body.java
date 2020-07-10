@@ -8,9 +8,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import demo.elastic.search.po.compound.base.Bool;
 import demo.elastic.search.po.term.level.TermLevel;
+import demo.elastic.search.po.term.level.base.Terms;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * <pre>
@@ -70,7 +74,7 @@ public class Body {
         JSONArray mustJsonArray = TermLevel.dealTermLevel(must);
         boolJSONObject.put(Bool._must, mustJsonArray);
 
-        TermLevel must_not = this.getQuery().getBool().getMust_not();
+        TermLevel must_not = this.getQuery().getBool().getMustNot();
         JSONArray must_notJsonArray = TermLevel.dealTermLevel(must_not);
         boolJSONObject.put(Bool._must_not, must_notJsonArray);
 
@@ -83,6 +87,31 @@ public class Body {
         boolJSONObject.put(Bool._filter, filterJsonArray);
 
         return root.toString();
+    }
+
+    /**
+     * 当前只构建了bool查询
+     * 还有其他3个
+     *
+     * @return
+     */
+    public static Body build(Integer from, Integer size) {
+        Body body = new Body();
+        Query query = new Query();
+        Bool bool = new Bool();
+        TermLevel termLevelMust = new TermLevel();
+        bool.setMust(termLevelMust);
+        TermLevel termLevelMustNot = new TermLevel();
+        bool.setMustNot(termLevelMustNot);
+        TermLevel termLevelShould = new TermLevel();
+        bool.setShould(termLevelShould);
+        TermLevel termLevelFilter = new TermLevel();
+        bool.setFilter(termLevelFilter);
+        query.setBool(bool);
+        body.setQuery(query);
+        body.setFrom(from);
+        body.setSize(size);
+        return body;
     }
 
 

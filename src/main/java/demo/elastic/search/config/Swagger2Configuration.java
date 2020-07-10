@@ -1,5 +1,6 @@
 package demo.elastic.search.config;
 
+import com.google.common.collect.Sets;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.request.async.DeferredResult;
@@ -19,11 +20,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class Swagger2Configuration {
 
     @Bean
-    public Docket InnerApi() {
+    public Docket ESApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors
-                        .basePackage("demo.elastic.search"))
+                        .basePackage("demo.elastic.search.controller"))
                 .paths(PathSelectors.any())
                 .build()
                 .genericModelSubstitutes(DeferredResult.class)//异步http请求
@@ -31,7 +32,25 @@ public class Swagger2Configuration {
                 .pathMapping("/")
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false)
-                .groupName("InnerApi")
+                .groupName("ESApi")
+                ;
+    }
+
+    @Bean
+    public Docket OutPevcApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors
+                        .basePackage("demo.elastic.search.out"))
+                .paths(PathSelectors.any())
+                .build()
+                .genericModelSubstitutes(DeferredResult.class)//异步http请求
+                .forCodeGeneration(true)
+                .pathMapping("/")
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false)
+                .groupName("Out")
+//                .produces(Sets.newHashSet("application/octet-stream"))
                 ;
     }
 

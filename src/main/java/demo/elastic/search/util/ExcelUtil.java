@@ -306,7 +306,7 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, String sheetName, Action2<Integer, Integer> process)
+    public static SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, String sheetName, Action2<Integer, Integer> process)
             throws IOException {
         SXSSFWorkbook workbook = new SXSSFWorkbook();
         SXSSFSheet sheet = workbook.createSheet(sheetName);
@@ -327,7 +327,6 @@ public class ExcelUtil {
             }
         }
         workbook.write(outputStream);
-        outputStream.close();
         return workbook;
     }
 
@@ -336,17 +335,68 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, Action2<Integer, Integer> process)
+    public static XSSFWorkbook writeListXLS(List<List<String>> data, OutputStream outputStream, String sheetName, Action2<Integer, Integer> process)
+            throws IOException {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet(sheetName);
+        int line = 0;
+        int size = data.size();
+
+        for (List<String> list : data) {
+            XSSFRow row = sheet.createRow(line++);//sheet1
+            int low = 0;
+            for (String item : list) {
+                Cell cell = row.createCell(low++);
+                cell.setCellType(CellType.STRING);
+                String value = item;
+                cell.setCellValue(value);
+            }
+            if (null != process) {
+                process.call(line, size);//留作处理进度
+            }
+        }
+        workbook.write(outputStream);
+        return workbook;
+    }
+
+    /**
+     * 插入
+     *
+     * @throws IOException
+     */
+    public static SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream, Action2<Integer, Integer> process)
             throws IllegalAccessException, IOException {
         return writeListSXSS(data, outputStream, "Sheet1", process);
     }
 
+
     /**
      * 插入
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream)
+    public static XSSFWorkbook writeListXLS(List<List<String>> data, OutputStream outputStream, Action2<Integer, Integer> process)
+            throws IllegalAccessException, IOException {
+        return writeListXLS(data, outputStream, "Sheet1", process);
+    }
+
+    /**
+     * 插入
+     *
+     * @throws IOException
+     */
+    public static XSSFWorkbook writeListXLS(List<List<String>> data, OutputStream outputStream)
+            throws IllegalAccessException, IOException {
+        return writeListXLS(data, outputStream, "Sheet1", null);
+    }
+
+
+    /**
+     * 插入
+     *
+     * @throws IOException
+     */
+    public static SXSSFWorkbook writeListSXSS(List<List<String>> data, OutputStream outputStream)
             throws IllegalAccessException, IOException {
         return writeListSXSS(data, outputStream, "Sheet1", null);
     }
@@ -356,10 +406,12 @@ public class ExcelUtil {
      *
      * @throws IOException
      */
-    public static <T> SXSSFWorkbook writeListSXSS(List<List<String>> data, File file)
+    public static SXSSFWorkbook writeListSXSS(List<List<String>> data, File file)
             throws IllegalAccessException, IOException {
         OutputStream outputStream = new FileOutputStream(file);
-        return writeListSXSS(data, outputStream, "Sheet1", null);
+        SXSSFWorkbook sxssfWorkbook = writeListSXSS(data, outputStream, "Sheet1", null);
+        outputStream.close();
+        return sxssfWorkbook;
     }
 
     /**
@@ -434,6 +486,16 @@ public class ExcelUtil {
     public static List<List<String>> readList(InputStream inputStream, Type type, Action2<Integer, Integer> process) throws IOException {
         XSSFWorkbook workbook = buildWorkbook(inputStream, type);
         return readList(workbook, "Sheet1", process);
+    }
+
+    /**
+     * 从SXSS读取 -> 这里目前只处理 XLSX
+     *
+     * @throws IOException
+     */
+    public static List<List<String>> readList(InputStream inputStream, Type type) throws IOException {
+        XSSFWorkbook workbook = buildWorkbook(inputStream, type);
+        return readList(workbook, "Sheet1", null);
     }
 
     public static <T> void writeVosSXSSLog(String filePath, List<T> list) throws IOException {

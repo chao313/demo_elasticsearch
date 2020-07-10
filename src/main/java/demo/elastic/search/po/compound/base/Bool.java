@@ -61,7 +61,7 @@ public class Bool {
     @JSONField(name = "must")
     private TermLevel must;
     @JSONField(name = "must_not")
-    private TermLevel must_not;
+    private TermLevel mustNot;
     @JSONField(name = "should")
     private TermLevel should;
     @JSONField(name = "filter")
