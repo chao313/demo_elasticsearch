@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.out.es.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.AwareUtil;
@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 
@@ -88,13 +89,13 @@ public class CustomController {
     @ApiOperation(value = "导出全部的查询结果")
     @PostMapping(value = "/{index}/_search/outputToExcel")
     public Response _search(
-            @ApiParam(name = "index", defaultValue = "tb_object_0088")
+            @ApiParam(defaultValue = "tb_object_0088")
             @PathVariable(value = "index") String index,
-            @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
+            @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false) String scroll,
             @RequestBody String body) throws IOException, IllegalAccessException, ScriptException, NoSuchMethodException {
         List<List<String>> lists = new ArrayList<>();
-        final int[] i = {0};
+        AtomicReference<Integer> i = new AtomicReference<>(0);
         if (StringUtils.isBlank(scroll)) {
             lists = searchServicePlus._searchToList(index, body, true, (size, total) -> log.info("读取进度:{}/{}->{}", size, total, ExcelUtil.percent(size, total)));
         } else {
@@ -105,14 +106,14 @@ public class CustomController {
                 @Override
                 public void accept(List<List<String>> lists) {
                     if (lists.size() >= LIMIT) {
-                        File file = new File("result" + i[0]++ + ".xlsx");
+                        File file = new File("result" + i.getAndSet(i.get() + 1) + ".xlsx");
                         ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
                         lists.clear();
                     }
                 }
             });
         }
-        File file = new File("result" + i[0]++ + ".xlsx");
+        File file = new File("result" + i.getAndSet(i.get() + 1) + ".xlsx");
         ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, ExcelUtil.percent(line, size)));
         lists.clear();
         return Response.Ok(true);
