@@ -40,8 +40,8 @@ public enum Bootstrap {
 
     public static final String allowableValues = "39.107.236.187:9200,10.202.16.9:9200,127.0.0.1:8000,127.0.0.1:80";
 
-    public static final String IN_USE = "http://39.107.236.187:8000";
-//    public static final String IN_USE = "http://39.107.236.187:9200";
+//        public static final String IN_USE = "http://39.107.236.187:8000";
+    public static final String IN_USE = "http://39.107.236.187:9200";
 //    public static final String IN_USE = "http://127.0.0.1:80";
 //    public static final String IN_USE = "http://127.0.0.1:80";
 
