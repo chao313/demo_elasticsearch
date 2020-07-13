@@ -453,15 +453,17 @@ public class ExcelUtil {
         for (int line = 0; line <= lastRowNum; line++) {
             List<String> list = new ArrayList<>();
             Row row = sheet.getRow(line);
-            short lastCellNum = row.getLastCellNum();
-            for (int rowNum = 0; rowNum <= lastCellNum; rowNum++) {
-                Cell cell = row.getCell(rowNum);
-                String value = cell == null ? "" : cell.getStringCellValue();
-                list.add(value);
-            }
-            data.add(list);
-            if (null != process) {
-                process.call(line, lastRowNum);
+            if (null != row) {
+                Short lastCellNum = row.getLastCellNum();
+                for (int rowNum = 0; rowNum <= lastCellNum; rowNum++) {
+                    Cell cell = row.getCell(rowNum);
+                    String value = cell == null ? "" : cell.getStringCellValue();
+                    list.add(value);
+                }
+                data.add(list);
+                if (null != process) {
+                    process.call(line, lastRowNum);
+                }
             }
         }
         return data;

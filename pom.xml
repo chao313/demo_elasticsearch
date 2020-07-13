@@ -122,6 +122,41 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xlsx</include>
+                    <include>**/*.csv</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.md</include>
+                    <include>**/*.txt</include>
+                    <include>**/*.yml</include>
+                    <include>**/*.html</include>
+                    <include>**/*.js</include>
+                    <include>**/*.ico</include>
+                    <include>**/*.png</include>
+                    <include>**/*.css</include>
+                    <include>**/*.ttf</include>
+                    <include>**/*.woff</include>
+                    <include>**/*.woff2</include>
+                    <include>**/*.eot</include>
+                    <include>**/*.svg</include>
+                    <include>**/*.xls</include>
+                    <include>**/*.xlsx</include>
+                    <include>**/*.*</include>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

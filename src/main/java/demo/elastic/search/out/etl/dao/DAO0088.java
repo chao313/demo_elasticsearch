@@ -32,11 +32,11 @@ public class DAO0088 {
      * @param F6_0088
      * @return
      */
-    public List<Tb0088Vo> query0088ByF6(String F6_0088, String scroll) {
+    public List<Tb0088Vo> query0088ByF6(String F6_0088) {
         List<Tb0088Vo> tb0088Vos = new ArrayList<>();
         Body body = Body.build(0, 1000);
         body.getQuery().getBool().getMust().getTerm().add(new Term("F6_0088", F6_0088));
-        searchServicePlus._searchScrollToConsumer(index, scroll, body.parse(), new Consumer<InnerHits>() {
+        searchServicePlus._searchToConsumer(index, body.parse(), new Consumer<InnerHits>() {
             @Override
             public void accept(InnerHits innerHits) {
                 String F1_0088 = innerHits.getSource().get("F1_0088") == null ? " " : innerHits.getSource().get("F1_0088").toString();

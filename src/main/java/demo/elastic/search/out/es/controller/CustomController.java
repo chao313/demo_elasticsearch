@@ -137,7 +137,7 @@ public class CustomController {
             @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "ESETL2")
             @RequestParam(value = "policyId")
                     String policyId,
-            @ApiParam(name = "script", value = "_source 处理的脚本", defaultValue = "dataMap[\"F23_0088\"] = \"11\"")
+            @ApiParam(name = "script", value = "_source 处理的脚本", defaultValue = "dataMap[\"F23_0088\"]=\"18040100000000\";return dataMap;")
             @RequestParam(value = "script", required = false)
                     String script
     ) {
@@ -147,10 +147,19 @@ public class CustomController {
                 @SneakyThrows
                 @Override
                 public void accept(InnerHits innerHits) {
-                    javaScriptExecuteScript.eval(script, innerHits.getSource());
-                    JSONObject root0088 = JSONObject.parseObject(JSONObject.toJSON(innerHits.getSource()).toString());
-                    kafkaOutService.load0088(topic, root0088, policyId);
-                    log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, root0088);
+                    Boolean scriptDeal = null;
+                    if (StringUtils.isNotBlank(script)) {
+                        //执行脚本
+                        scriptDeal = javaScriptExecuteScript.evalAndFilter(script, innerHits.getSource());
+                    }
+                    if (null == scriptDeal || true == scriptDeal) {
+                        JSONObject root0088 = JSONObject.parseObject(JSONObject.toJSON(innerHits.getSource()).toString());
+                        kafkaOutService.load0088(topic, root0088, policyId);
+                        log.info("发送成功:topic:{},policyId:{},:json{}", topic, policyId, root0088);
+                    } else if (false == scriptDeal) {
+                        log.info("返回false->不处理：topic:{},policyId:{},json:{}", topic, policyId, innerHits.getSource());
+                    }
+
                 }
             });
 
@@ -159,10 +168,18 @@ public class CustomController {
                 @SneakyThrows
                 @Override
                 public void accept(InnerHits innerHits) {
-                    javaScriptExecuteScript.eval(script, innerHits.getSource());
-                    JSONObject root0088 = JSONObject.parseObject(JSONObject.toJSON(innerHits.getSource()).toString());
-                    kafkaOutService.load0088(topic, root0088, policyId);
-                    log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, root0088);
+                    Boolean scriptDeal = null;
+                    if (StringUtils.isNotBlank(script)) {
+                        //执行脚本
+                        scriptDeal = javaScriptExecuteScript.evalAndFilter(script, innerHits.getSource());
+                    }
+                    if (null == scriptDeal || true == scriptDeal) {
+                        JSONObject root0088 = JSONObject.parseObject(JSONObject.toJSON(innerHits.getSource()).toString());
+                        kafkaOutService.load0088(topic, root0088, policyId);
+                        log.info("发送成功:topic:{},policyId:{},json:{}", topic, policyId, root0088);
+                    } else if (false == scriptDeal) {
+                        log.info("返回false->不处理：topic:{},policyId:{},json:{}", topic, policyId, innerHits.getSource());
+                    }
                 }
             });
         }

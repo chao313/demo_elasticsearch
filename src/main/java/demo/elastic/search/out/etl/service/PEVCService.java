@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import rx.functions.Action2;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,12 +47,24 @@ public class PEVCService {
         });
         int i = 0;
         int total = sourceVos.size();
+        int biggest = 0;
+        for (SourceVo sourceVo : sourceVos) {
+            //找到最大值
+            biggest = sourceVo.getSource().size() > biggest ? sourceVo.getSource().size() : biggest;
+        }
+
+        for (SourceVo sourceVo : sourceVos) {
+            while (sourceVo.getSource().size() < biggest) {
+                sourceVo.getSource().add("");
+            }
+        }
+
         for (SourceVo sourceVo : sourceVos) {
             log.info("写入进度:{}/{}->{}", i++, total, ExcelUtil.percent(i, total));
             List<Tb0088Vo> result = new ArrayList<>();
             boolean flag = false;
             log.info("当前处理:{}", sourceVo);
-            List<Tb0088Vo> tb0088Vos = dao0088.query0088ByF6(sourceVo.F6_0088, "1m");
+            List<Tb0088Vo> tb0088Vos = dao0088.query0088ByF6(sourceVo.F6_0088);
             if (tb0088Vos.size() == 0) {
                 log.info("当前F6无法查出数据:{}", sourceVo.getSource());
                 sourceVo.getSource().add("当前F6无法查出数据");
@@ -177,7 +190,12 @@ public class PEVCService {
 
         /**处理数据源*/
         List<SourceVo> sourceVos = new ArrayList<>();
-        List<List<String>> lists = ExcelUtil.readList(inputStream, ExcelUtil.Type.XLSX);
+        List<List<String>> lists = ExcelUtil.readList(inputStream, ExcelUtil.Type.XLSX, new Action2<Integer, Integer>() {
+            @Override
+            public void call(Integer line, Integer lastRowNum) {
+                log.info("{},{} -> {}", line, lastRowNum, ExcelUtil.percent(line, lastRowNum));
+            }
+        });
         lists.forEach(list -> {
             String name = list.get(0).trim();
             String F6_0088 = list.get(1).trim();
