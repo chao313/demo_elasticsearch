@@ -32,8 +32,8 @@ public class PEVCController {
     private PEVCService pevcService;
 
 
-    @ApiOperation(value = "获取样例 EXCEL")
-    @GetMapping(value = "/getDemoExcel", produces = "application/octet-stream")
+    @ApiOperation(value = "获取样例 EXCEL", produces = "application/octet-stream")
+    @GetMapping(value = "/getDemoExcel")
     public ResponseEntity<byte[]> getDemoExcel() throws Exception {
         Resource demoExcelResource
                 = AwareUtil.resourceLoader.getResource("classpath:demo/elastic/search/out/etl/resource/demoPevcMatchF6AndF26.xlsx");
@@ -51,8 +51,8 @@ public class PEVCController {
      * @param excelFile
      * @return
      */
-    @ApiOperation(value = "上传数据,获取结果（这里上传特定格式的数据）")
-    @RequestMapping(value = "/matchF6AndF26OrF23", produces = "application/octet-stream", method = RequestMethod.POST)
+    @ApiOperation(value = "上传数据,获取结果（这里上传特定格式的数据）", produces = "application/octet-stream")
+    @PostMapping(value = "/matchF6AndF26OrF23")
     public Object matchF6AndF26OrF23(
             @ApiParam(value = "这里上传特定格式的数据")
             @RequestParam(name = "excelFile")
@@ -67,7 +67,7 @@ public class PEVCController {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ExcelUtil.writeListXLS(data, outputStream).close();
             HttpHeaders headers = new HttpHeaders();//设置响应
-            headers.add("Content-Disposition", "attachment;filename=" + "PevcMatchF6AndF26_" + DateUtil.getNow() + ".xlsx");//下载的文件名称
+            headers.add("Content-Disposition", "attachment;filename=" + "PevcMatchF6AndF26" + DateUtil.getNow() + ".xlsx");//下载的文件名称
             HttpStatus statusCode = HttpStatus.OK;//设置响应吗
             ResponseEntity<byte[]> response = new ResponseEntity<>(outputStream.toByteArray(), headers, statusCode);
             log.info("匹配正常");

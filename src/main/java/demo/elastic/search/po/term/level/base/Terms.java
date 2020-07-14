@@ -59,5 +59,19 @@ public class Terms implements Parse {
     public static String _terms = "terms";
     public static String _boost = "boost";
 
+    public Terms(String field, List<Object> value, String boost) {
+        this.field = field;
+        this.value = value;
+        this.boost = boost;
+    }
+
+    public Terms(String field, List<Object> value) {
+        this.field = field;
+        this.value = value;
+        this.boost = "1.0";
+    }
+
+    public Terms() {
+    }
 
 }

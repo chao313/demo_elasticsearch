@@ -281,6 +281,18 @@ public class ExcelUtil {
         return workbook;
     }
 
+
+    /**
+     * 插入
+     *
+     * @throws IOException
+     */
+    public static <T> SXSSFWorkbook writeVosSXSS(List<T> vos, OutputStream outputStream, boolean title, String sheetName)
+            throws IllegalAccessException, IOException {
+        return writeVosSXSS(vos, outputStream, title, sheetName, null);
+    }
+
+
     /**
      * 插入
      *
