@@ -42,8 +42,9 @@ public enum Bootstrap {
 
     //        public static final String IN_USE = "http://39.107.236.187:8000";
 //    public static final String IN_USE = "http://39.107.236.187:9200";
-    public static final String IN_USE = "http://127.0.0.1:80";
 //    public static final String IN_USE = "http://127.0.0.1:80";
+    public static final String IN_USE = "http://127.0.0.1:80";
+//    public static final String IN_USE = "http://10.202.16.9:9200";
 
     /**
      * 获取正在使用的ES的版本

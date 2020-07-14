@@ -8,13 +8,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
 import demo.elastic.search.po.compound.base.Bool;
 import demo.elastic.search.po.term.level.TermLevel;
-import demo.elastic.search.po.term.level.base.Terms;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * <pre>
@@ -52,10 +47,11 @@ public class Body {
     @JSONField(name = "size")
     private Integer size;
 
-//    @JSONField(name = "sort")
+    //    @JSONField(name = "sort")
 //    private List<String> sort;
-//    @JSONField(name = "aggs")
-//    private Aggs aggs;
+
+    @JSONField(name = "aggs")
+    private Aggs aggs;
 
 
     /**
@@ -85,6 +81,13 @@ public class Body {
         TermLevel filter = this.getQuery().getBool().getFilter();
         JSONArray filterJsonArray = TermLevel.dealTermLevel(filter);
         boolJSONObject.put(Bool._filter, filterJsonArray);
+
+        /**
+         * 处理aggs
+         */
+        Aggs aggs = this.getAggs();
+        JSONObject aggLevelJsonArray = Aggs.dealAggs(aggs);
+        root.put(Body._aggs, aggLevelJsonArray);
 
         return root.toString();
     }
