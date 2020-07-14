@@ -11,37 +11,38 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/xx")
 @Slf4j
 public class xxx {
 
 
-    @ApiImplicitParams(
-            @ApiImplicitParam(name = "listFile", value = "listFile", dataType = "file", paramType = "form")
-    )
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "listFile", value = "listFile", dataType = "__file", paramType = "form"),
+            @ApiImplicitParam(name = "field", value = "field", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "values", value = "values", dataTypeClass = List.class, paramType = "form", allowMultiple = true),
+            @ApiImplicitParam(name = "body", value = "body", dataTypeClass = Body.class, paramType = "form"),
+    })
+    @PostMapping(value = "/xxx")
     public Object _search(
-            @ApiParam(defaultValue = "tb_object_0088")
-            @PathVariable(value = "index") String index,
-            @ApiParam(defaultValue = "F6_0088", value = "下面的文件中需要匹配的值")
             @RequestParam(value = "field") String field,
+            @RequestParam Body body,
             @RequestParam(value = "values") List<String> values,
-            @RequestBody SearchTermsRequest searchTermsRequest,
+//            @RequestParam(name = "listFile")
+//                    MultipartFile listFile,
             HttpServletRequest r
     ) {
         try {
             InputStream inputStream = AwareUtil.resourceLoader.getResource("classpath:xx").getInputStream();
             List<String> list = IOUtils.readLines(inputStream);
-            Body body = searchTermsRequest.getBody();
+
         } catch (Exception e) {
             Response response = new Response<>();
             response.setCode(Code.System.FAIL);
@@ -50,7 +51,6 @@ public class xxx {
             log.error("发生异常:{}", e.getMessage(), e);
             return response;
         }
-        return null;
+        return "ok";
     }
-
 }
