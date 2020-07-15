@@ -20,10 +20,7 @@ import rx.functions.Action2;
 import javax.annotation.Resource;
 import javax.script.ScriptException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -330,7 +327,8 @@ public class SearchServicePlus {
                                                   ExecuteScript executeScript,
                                                   String script) {
         List<String> names = mappingServicePlus.getFieldNamesList(index);//获取
-        final List<List<String>>[] resultList = new List[]{new ArrayList<>()};
+//        final List<List<String>>[] resultList = new List[]{new ArrayList<>()};
+        AtomicReference<List<List<String>>> resultList = new AtomicReference<>();
         AtomicReference<Integer> i = new AtomicReference<>(0);
         AtomicReference<Integer> totalNum = new AtomicReference<>(0);
         /**
@@ -352,25 +350,34 @@ public class SearchServicePlus {
                 if (null == scriptDeal || true == scriptDeal) {
                     //脚本没有结果 | 脚本返回的是true
                     List<String> tmp = new ArrayList<>(names.size() * 2);
+//                    names.forEach(name -> {
+//                        String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
+//                        tmp.add(value);
+//                    });
+                    long start = new Date().getTime();
                     names.forEach(name -> {
-                        String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
-                        tmp.add(value);
+                        tmp.add(innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString());
                     });
+                    long end = new Date().getTime();
+                    log.info("foreach time:{}", end - start);
 //                    log.info("获取的数据:{}", tmp);
-                    resultList[0].add(tmp);//添加row
+                    start = new Date().getTime();
+                    resultList.get().add(tmp);//添加row
+                    end = new Date().getTime();
+                    log.info("add time:{}", end - start);
                 }
                 if (null != resultConsumer) {
                     //处理结果集
-                    resultConsumer.accept(resultList[0]);
+                    resultConsumer.accept(resultList.get());
                 }
             }
         };
         ESResponse esResponse = this._searchWithScrollParam(index, scroll, body, total -> {
-            resultList[0] = new ArrayList<>(total * 2);
+            resultList.set(new ArrayList<>(total * 2));
             log.info("ES匹配到数量:{}", total);
             totalNum.set(total);
             if (null != addHeader && true == addHeader) {
-                resultList[0].add(names);//添加head
+                resultList.get().add(names);//添加head
             }
         }, consumer);
         /**
@@ -378,7 +385,7 @@ public class SearchServicePlus {
          */
         String scrollId = esResponse.getScrollId();
         scrollServicePlus._search(scroll, scrollId, consumer);
-        return resultList[0];
+        return resultList.get();
     }
 
 

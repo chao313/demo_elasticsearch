@@ -4,6 +4,7 @@ package demo.elastic.search.out.kafka;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import demo.elastic.search.out.comm.OutType;
 import demo.elastic.search.out.kafka.vo.KafkaMessage;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,35 @@ import java.util.List;
  */
 @Service
 public class KafkaMsg {
+
+
+    public enum ToTable {
+        TB_OBJECT_6254("TB_OBJECT_6254"), TB_OBJECT_0088("TB_OBJECT_0088");
+
+        private String table;
+
+        public String getTable() {
+            return table;
+        }
+
+        public void setTable(String table) {
+            this.table = table;
+        }
+
+        ToTable(String table) {
+            this.table = table;
+        }
+
+        public static ToTable getOutTypeByType(String table) {
+            for (ToTable toTable : ToTable.values()) {
+                if (toTable.getTable().equals(table)) {
+                    return toTable;
+                }
+            }
+            return null;
+        }
+    }
+
 
     public final static String TB_OBJECT_6254 = "WIND.TB_OBJECT_6254";
     public final static String TB_OBJECT_0088 = "WIND.TB_OBJECT_0088";

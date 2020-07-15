@@ -159,6 +159,9 @@ public class CustomController {
             @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "ESETL2")
             @RequestParam(value = "policyId")
                     String policyId,
+            @ApiParam(name = "toTable", value = "发送的table", defaultValue = "toTable")
+            @RequestParam(value = "toTable")
+                    KafkaMsg.ToTable toTable,
             @ApiParam(name = "script", value = "_source 处理的脚本", defaultValue = "dataMap[\"F23_0088\"]=\"18040100000000\";return dataMap;")
             @RequestParam(value = "script", required = false)
                     String script
@@ -175,9 +178,9 @@ public class CustomController {
                         scriptDeal = javaScriptExecuteScript.evalAndFilter(script, innerHits.getSource());
                     }
                     if (null == scriptDeal || true == scriptDeal) {
-                        JSONObject root0088 = JSONObject.parseObject(JSONObject.toJSON(innerHits.getSource()).toString());
-                        kafkaOutService.load0088(topic, root0088, policyId);
-                        log.info("发送成功:topic:{},policyId:{},:json{}", topic, policyId, root0088);
+                        JSONObject json = JSONObject.parseObject(JSONObject.toJSON(innerHits.getSource()).toString());
+                        kafkaOutService.load(topic, json, policyId, toTable.getTable());
+                        log.info("发送成功:topic:{},policyId:{},:json{}", topic, policyId, json);
                     } else if (false == scriptDeal) {
                         log.info("返回false->不处理：topic:{},policyId:{},json:{}", topic, policyId, innerHits.getSource());
                     }
@@ -373,6 +376,9 @@ public class CustomController {
             @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "TB6254ETL")
             @RequestParam(value = "policyId")
                     String policyId,
+            @ApiParam(name = "toTable", value = "发送的table", defaultValue = "toTable")
+            @RequestParam(value = "toTable")
+                    KafkaMsg.ToTable toTable,
             @ApiParam(name = "script", value = "_source 处理的脚本（这里是的脚本返回 false 代表无效;如果要结束，return dataMap 即可）", defaultValue = "dataMap[\"F23_0088\"] = \"11\"")
             @RequestParam(value = "script", required = false)
                     String script
@@ -422,7 +428,7 @@ public class CustomController {
                         @Override
                         public void accept(InnerHits innerHits) {
                             JSONObject json = javaScriptExecuteScript.eval(script, innerHits.getSource());
-                            kafkaOutService.load(topic, json, policyId, KafkaMsg.TB_OBJECT_6254);
+                            kafkaOutService.load(topic, json, policyId, toTable.getTable());
                             log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, json);
                         }
                     });
@@ -440,7 +446,7 @@ public class CustomController {
             @Override
             public void accept(InnerHits innerHits) {
                 JSONObject json = javaScriptExecuteScript.eval(script, innerHits.getSource());
-                kafkaOutService.load(topic, json, policyId, KafkaMsg.TB_OBJECT_6254);
+                kafkaOutService.load(topic, json, policyId, toTable.getTable());
                 log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, json);
             }
         });
@@ -653,7 +659,10 @@ public class CustomController {
             for (String value : dealValues) {
                 log.info("处理进度:{}/{}->{}", i++, total, percent(i, total));
                 if (deal.size() < 1000) {
-                    deal.add(value);
+                    if (StringUtils.isNotBlank(value)) {
+                        //加入空判断
+                        deal.add(value);
+                    }
                 } else {
                     body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
                     List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
@@ -668,9 +677,9 @@ public class CustomController {
             List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), true);
             readToExcelList.addAll(lists);//先添加带header的
             readToExcelList.addAll(readToExcelListTmp);
-
+            log.info("查询完成，开始写入");
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ExcelUtil.writeListXLS(readToExcelList, outputStream);
+            ExcelUtil.writeListSXSS(readToExcelList, outputStream);
             String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
             switch (outType) {
                 case URL:
