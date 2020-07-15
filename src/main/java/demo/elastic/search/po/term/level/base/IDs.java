@@ -8,6 +8,7 @@ import lombok.Data;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <pre>
@@ -30,7 +31,7 @@ public class IDs implements Parse {
 
     @Override
     public String parse() {
-        if (null == values || values.size() == 0 || (values.size() == 1 && values.get(0) instanceof LinkedHashMap)) {
+        if (null == values || values.size() == 0 || (values.size() == 1 && values.get(0) instanceof Map)) {
             /**
              * 关键字段为空->返回空字符串
              *

@@ -14,9 +14,11 @@ import demo.elastic.search.feign.plus.ScrollServicePlus;
 import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.out.comm.OutType;
 import demo.elastic.search.out.etl.service.PEVCService;
 import demo.elastic.search.out.kafka.KafkaMsg;
 import demo.elastic.search.out.kafka.KafkaOutService;
+import demo.elastic.search.out.resource.service.ResourceService;
 import demo.elastic.search.po.Body;
 import demo.elastic.search.po.response.ESResponse;
 import demo.elastic.search.po.response.InnerHits;
@@ -26,6 +28,8 @@ import demo.elastic.search.util.DateUtil;
 import demo.elastic.search.util.ExcelUtil;
 import demo.elastic.search.util.JSONUtil;
 import demo.elastic.search.vo.SearchTermsRequest;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.SneakyThrows;
@@ -43,6 +47,7 @@ import rx.functions.Action2;
 
 import javax.annotation.Resource;
 import javax.script.ScriptException;
+import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -86,7 +91,10 @@ public class CustomController {
     @Autowired
     private JavaScriptExecuteScript javaScriptExecuteScript;
 
-    private static final Integer LIMIT = 1000000;
+    @Autowired
+    private ResourceService resourceService;
+
+    private static final Integer LIMIT = 500000;
 
 
     @ApiOperation(value = "accounts.json 数据批量插入")
@@ -596,58 +604,54 @@ public class CustomController {
         }
     }
 
-    @ApiOperation(value = "查询agg到excel，目前只支持aggTerms", produces = "application/octet-stream", notes =
-            "comstore_tb_object_0088<br>" +
-                    "{<br>" +
-                    "&nbsp;&nbsp;\"size\": 10,<br>" +
-                    "&nbsp;&nbsp;\"query\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;\"bool\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"filter\": [],<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"must_not\": [],<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"should\": [],<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"must\": [<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \"terms\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   \"F26_0088\": [<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     \"1223792949\",<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     \"1359299210\"<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   ],<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   \"boost\": \"1.0\"<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;},<br>" +
-                    "&nbsp;&nbsp;\"from\": 0,<br>" +
-                    "&nbsp;&nbsp;\"aggs\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;\"F6_0088\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"terms\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"field\": \"F6_0088\",<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"size\": 100000,<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"show_term_doc_count_error\": false,<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"min_doc_count\": 1<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;}<br>" +
-                    "}")
-    @PostMapping(value = "/{index}/_searchTermsToExcel")
+    @ApiOperation(value = "查询agg到excel，目前只支持aggTerms(values的优先级高于listFile)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "listFile", value = "listFile", dataType = "__file", paramType = "form"),
+            @ApiImplicitParam(name = "field", value = "field", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "values", value = "values", dataTypeClass = String.class, paramType = "form", allowMultiple = true)
+    })
+    @RequestMapping(value = "/{index}/_searchTermsToExcel", method = {RequestMethod.POST})
     public Object _search(
             @ApiParam(defaultValue = "tb_object_0088")
             @PathVariable(value = "index") String index,
             @ApiParam(defaultValue = "F6_0088", value = "下面的文件中需要匹配的值")
-            @RequestParam(value = "field") String field,
-            @RequestParam(value = "values") List<String> values,
-            @RequestBody SearchTermsRequest searchTermsRequest) {
+            @RequestParam(value = "field", required = false)
+                    String field,
+            @ApiParam(value = "请求体，需要复制")
+            @RequestParam(value = "request") List<String> request,
+            @RequestParam(value = "values", required = false) List<String> values,
+            @RequestParam(name = "listFile", required = false) MultipartFile listFile,
+            @RequestParam(name = "outType", required = false, defaultValue = "URL") OutType outType,
+            @ApiParam(hidden = true)
+            @RequestHeader(value = "host") String host,
+            HttpServletRequest httpServletRequest
+
+    ) {
         try {
-//            List<String> list = searchTermsRequest.getValues();
-            InputStream inputStream = AwareUtil.resourceLoader.getResource("classpath:xx").getInputStream();
-            List<String> list = IOUtils.readLines(inputStream);
-            Body body = searchTermsRequest.getBody();
-            List<List<String>> readToExcelListTmp = new ArrayList<>();//入excel的结果集
+            Body body = null;//请求体
+            List<String> dealValues;//待处理的值
+            /**
+             * 还原请求体
+             */
+            StringBuffer bodyStr = new StringBuffer();
+            request.forEach(line -> {
+                bodyStr.append(line.trim());
+            });
+            body = JSONObject.parseObject(bodyStr.toString(), Body.class);
+
+            if (null != values) {
+                dealValues = values;
+            } else {
+                dealValues = IOUtils.readLines(listFile.getInputStream());
+            }
+
+            List<List<String>> readToExcelListTmp = new ArrayList<>(1000000);//入excel的结果集
+            List<List<String>> readToExcelList = new ArrayList<>(1000000);//入excel的结果集
             int i = 0;
-            int total = list.size();
+            int total = dealValues.size();
             List<Object> deal = new ArrayList<>();
-            for (String value : list) {
+            for (String value : dealValues) {
+                log.info("处理进度:{}/{}->{}", i++, total, percent(i, total));
                 if (deal.size() < 1000) {
                     deal.add(value);
                 } else {
@@ -661,18 +665,27 @@ public class CustomController {
              * 追加title
              */
             body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
-            List<List<String>> readToExcelList = searchServicePlus._searchScrollToList(index, "1m", body.parse(), true);
+            List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), true);
+            readToExcelList.addAll(lists);//先添加带header的
             readToExcelList.addAll(readToExcelListTmp);
 
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ExcelUtil.writeListXLS(readToExcelList, outputStream);
+            String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
+            switch (outType) {
+                case URL:
+                    resourceService.addFile(outputStream.toByteArray(), fileName);
+                    String url = "http://" + host + resourceService.getContextPath() + "ResourceController/downloadByFileName?fileName=" + fileName;
 
-            HttpHeaders headers = new HttpHeaders();//设置响应
-            headers.add("Content-Disposition", "attachment;filename=" + "Agg" + DateUtil.getNow() + ".xlsx");//下载的文件名称
-            HttpStatus statusCode = HttpStatus.OK;//设置响应吗
-            ResponseEntity<byte[]> response = new ResponseEntity<>(outputStream.toByteArray(), headers, statusCode);
-            log.info("正常返回");
-            return response;
+                    return Response.Ok(url);
+                case EXCEL:
+                    HttpHeaders headers = new HttpHeaders();//设置响应
+                    headers.add("Content-Disposition", "attachment;filename=" + fileName);//下载的文件名称
+                    HttpStatus statusCode = HttpStatus.OK;//设置响应吗
+                    ResponseEntity<byte[]> response = new ResponseEntity<>(outputStream.toByteArray(), headers, statusCode);
+                    log.info("正常返回");
+                    return response;
+            }
         } catch (Exception e) {
             Response response = new Response<>();
             response.setCode(Code.System.FAIL);
@@ -681,6 +694,7 @@ public class CustomController {
             log.error("发生异常:{}", e.getMessage(), e);
             return response;
         }
+        return Response.fail("操作异常");
     }
 
 

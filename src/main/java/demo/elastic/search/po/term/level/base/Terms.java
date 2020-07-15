@@ -46,6 +46,12 @@ public class Terms implements Parse {
              */
             return "";
         }
+        if (StringUtils.isBlank(field)) {
+            /**
+             * 关键字段为空->返回空字符串
+             */
+            return "";
+        }
         JSONObject term = new JSONObject();
         JSONObject key = new JSONObject();
         key.put(this.getField(), this.getValue());

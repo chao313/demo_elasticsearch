@@ -207,7 +207,7 @@ public class SearchServicePlus {
                 }
                 if (null == scriptDeal || true == scriptDeal) {
                     //脚本没有结果 | 脚本返回的是true
-                    List<String> tmp = new ArrayList<>();
+                    List<String> tmp = new ArrayList<>(names.size() * 2);
                     names.forEach(name -> {
                         String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
                         tmp.add(value);
@@ -351,7 +351,7 @@ public class SearchServicePlus {
                 }
                 if (null == scriptDeal || true == scriptDeal) {
                     //脚本没有结果 | 脚本返回的是true
-                    List<String> tmp = new ArrayList<>();
+                    List<String> tmp = new ArrayList<>(names.size() * 2);
                     names.forEach(name -> {
                         String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
                         tmp.add(value);
