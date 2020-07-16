@@ -643,7 +643,6 @@ public class CustomController {
             request.forEach(line -> {
                 bodyStr.append(line.trim());
             });
-            body = JSONObject.parseObject(bodyStr.toString(), Body.class);
 
             if (null != values) {
                 dealValues = values;
@@ -652,7 +651,7 @@ public class CustomController {
             }
 
             List<List<String>> readToExcelListTmp = new ArrayList<>(1000000);//入excel的结果集
-            List<List<String>> readToExcelList = new ArrayList<>(1000000);//入excel的结果集
+            List<List<String>> readyToExcelList = new ArrayList<>(1000000);//入excel的结果集
             int i = 0;
             int total = dealValues.size();
             List<Object> deal = new ArrayList<>();
@@ -664,8 +663,10 @@ public class CustomController {
                         deal.add(value);
                     }
                 } else {
+                    body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
                     body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
-                    List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
+//                    List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
+                    List<List<String>> lists = searchServicePlus._searchToList(index, body.parse(), false);
                     readToExcelListTmp.addAll(lists);
                     deal.clear();
                 }
@@ -673,21 +674,27 @@ public class CustomController {
             /**
              * 追加title
              */
+            body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
             body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
             List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), true);
-            readToExcelList.addAll(lists);//先添加带header的
-            readToExcelList.addAll(readToExcelListTmp);
+            readyToExcelList.addAll(lists);//先添加带header的
+            readyToExcelList.addAll(readToExcelListTmp);
             log.info("查询完成，开始写入");
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ExcelUtil.writeListSXSS(readToExcelList, outputStream);
+
             String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
             switch (outType) {
                 case URL:
-                    resourceService.addFile(outputStream.toByteArray(), fileName);
+                    File file = resourceService.addNewFile(fileName);
+                    FileOutputStream fileOutputStream = FileUtils.openOutputStream(file);
+                    ExcelUtil.writeListSXSS(readyToExcelList, fileOutputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
+                    log.info("写入完成,准备return");
                     String url = "http://" + host + resourceService.getContextPath() + "ResourceController/downloadByFileName?fileName=" + fileName;
-
                     return Response.Ok(url);
                 case EXCEL:
+                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                    ExcelUtil.writeListSXSS(readyToExcelList, outputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
+                    log.info("写入完成,准备return");
+                    //返回
                     HttpHeaders headers = new HttpHeaders();//设置响应
                     headers.add("Content-Disposition", "attachment;filename=" + fileName);//下载的文件名称
                     HttpStatus statusCode = HttpStatus.OK;//设置响应吗

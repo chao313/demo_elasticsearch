@@ -3,6 +3,7 @@ package demo.elastic.search.out.resource.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -73,10 +74,44 @@ public class ResourceService {
      */
     public boolean addFile(byte[] bytes, String fileName) throws IOException {
         File file = new File(ResourceService.locationResourcePath + fileName);
-        FileUtils.write(file, String.valueOf(bytes), "UTF-8");
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+//        FileUtils.write(file, String.valueOf(bytes), "UTF-8");
         FileUtils.writeByteArrayToFile(file, bytes);
         return true;
     }
+
+    /**
+     * 添加新的文件(根据文件名称创建)
+     *
+     * @param fileName
+     * @return
+     * @throws IOException
+     */
+    public File addNewFile(String fileName) throws IOException {
+        File file = new File(ResourceService.locationResourcePath + fileName);
+        if (!file.exists()) {
+            file.createNewFile();
+        } else {
+            throw new RuntimeException("文件已经存在");
+        }
+        return file;
+    }
+
+//    /**
+//     * 添加文件
+//     *
+//     * @param fileName
+//     * @return
+//     * @throws IOException
+//     */
+//    public boolean addFile(byte[] bytes, String fileName) throws IOException {
+//        File file = new File(ResourceService.locationResourcePath + fileName);
+//        FileUtils.write(file, String.valueOf(bytes), "UTF-8");
+//
+//        return true;
+//    }
 
     /**
      * 添加文件(指定的root路径)

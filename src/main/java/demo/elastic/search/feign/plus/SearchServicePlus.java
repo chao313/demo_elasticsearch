@@ -180,22 +180,22 @@ public class SearchServicePlus {
                                             String script
     ) {
         List<String> names = mappingServicePlus.getFieldNamesList(index);//获取name
-        final List<List<String>>[] resultList = new List[]{new ArrayList<>()};
-        final int[] i = {0};
+        AtomicReference<List<List<String>>> result = new AtomicReference<>();
+        AtomicReference<Integer> i = new AtomicReference<>(0);
         AtomicReference<Integer> totalNum = new AtomicReference<>(0);
         this._searchWithoutScrollParam(index, body, total -> {
-            resultList[0] = new ArrayList<>(total);
+            result.set(new ArrayList<>(total));
             log.info("ES匹配到数量:{}", total);
             totalNum.set(total);
             if (true == addHeader) {
-                resultList[0].add(names);//添加head
+                result.get().add(names);//添加head
             }
         }, new Consumer<InnerHits>() {
             @SneakyThrows
             @Override
             public void accept(InnerHits innerHits) {
                 if (null != progress) {
-                    progress.call(i[0]++, totalNum.get());
+                    progress.call(i.getAndSet(i.get() + 1), totalNum.get());
                 }
                 Boolean scriptDeal = null;
                 if (null != executeScript) {
@@ -209,11 +209,11 @@ public class SearchServicePlus {
                         String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
                         tmp.add(value);
                     });
-                    resultList[0].add(tmp);//添加row
+                    result.get().add(tmp);//添加row
                 }
             }
         });
-        return resultList[0];
+        return result.get();
     }
 
     /**
@@ -247,6 +247,8 @@ public class SearchServicePlus {
      * 搜索的数据存放到 List<List<String>> (这个是scroll)
      * <p>
      * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Consumer, ExecuteScript, String)}
+     * <p>
+     * 注意:持续性查询会给ES造成压力,因为在ES缓存中有缓存
      *
      * @param index
      * @param scroll
