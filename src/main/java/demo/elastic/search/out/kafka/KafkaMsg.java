@@ -20,7 +20,7 @@ public class KafkaMsg {
 
 
     public enum ToTable {
-        TB_OBJECT_6254("TB_OBJECT_6254"), TB_OBJECT_0088("TB_OBJECT_0088");
+        TB_OBJECT_6254("WIND.TB_OBJECT_6254"), TB_OBJECT_0088("WIND.TB_OBJECT_0088");
 
         private String table;
 

@@ -52,6 +52,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static demo.elastic.search.util.ExcelUtil.percent;
 
@@ -635,7 +636,8 @@ public class CustomController {
     ) {
         try {
             Body body = null;//请求体
-            List<String> dealValues;//待处理的值
+            List<String> dealValues = new ArrayList<>();//待处理的值
+            List<String> dealValuesSource;//待处理的值
             /**
              * 还原请求体
              */
@@ -645,10 +647,17 @@ public class CustomController {
             });
 
             if (null != values) {
-                dealValues = values;
+                dealValuesSource = values;
             } else {
-                dealValues = IOUtils.readLines(listFile.getInputStream());
+                dealValuesSource = IOUtils.readLines(listFile.getInputStream());
             }
+            /**
+             * 移除空格
+             */
+            dealValuesSource.forEach(value -> {
+                dealValues.add(value.trim());
+            });
+
 
             List<List<String>> readToExcelListTmp = new ArrayList<>(1000000);//入excel的结果集
             List<List<String>> readyToExcelList = new ArrayList<>(1000000);//入excel的结果集
@@ -713,6 +722,113 @@ public class CustomController {
         return Response.fail("操作异常");
     }
 
+
+    @ApiOperation(value = "查询agg到kafka，目前只支持aggTerms(values的优先级高于listFile)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "listFile", value = "listFile", dataType = "__file", paramType = "form"),
+            @ApiImplicitParam(name = "field", value = "field", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "values", value = "values", dataTypeClass = String.class, paramType = "form", allowMultiple = true)
+    })
+    @RequestMapping(value = "/{index}/_searchTermsToKafka", method = {RequestMethod.POST})
+    public Response _search(
+            @ApiParam(defaultValue = "tb_object_0088")
+            @PathVariable(value = "index") String index,
+            @ApiParam(defaultValue = "F6_0088", value = "下面的文件中需要匹配的值")
+            @RequestParam(value = "field", required = false)
+                    String field,
+            @ApiParam(value = "请求体，需要复制")
+            @RequestParam(value = "request") List<String> request,
+            @RequestParam(value = "values", required = false) List<String> values,
+            @RequestParam(name = "listFile", required = false) MultipartFile listFile,
+            @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
+            @RequestParam(value = "scroll", required = false) String scroll,
+            @ApiParam(name = "topic", value = "输出为topic -> 提供topic", defaultValue = "TP_01009406")
+            @RequestParam(value = "topic")
+                    String topic,
+            @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "ESETL2")
+            @RequestParam(value = "policyId")
+                    String policyId,
+            @ApiParam(name = "toTable", value = "发送的table", defaultValue = "toTable")
+            @RequestParam(value = "toTable")
+                    KafkaMsg.ToTable toTable,
+            @ApiParam(name = "script", value = "_source 处理的脚本", defaultValue = "dataMap[\"F23_0088\"]=\"18040100000000\";return dataMap;")
+            @RequestParam(value = "script", required = false)
+                    String script
+
+    ) throws ScriptException, NoSuchMethodException, IOException {
+
+        Body body = null;//请求体
+        List<String> dealValues;//待处理的值
+        /**
+         * 还原请求体
+         */
+        StringBuffer bodyStr = new StringBuffer();
+        request.forEach(line -> {
+            bodyStr.append(line.trim());
+        });
+        /**
+         * 确定处理的terms
+         */
+        if (null != values) {
+            dealValues = values;
+        } else {
+            dealValues = IOUtils.readLines(listFile.getInputStream());
+        }
+
+        int i = 0;
+        int total = dealValues.size();
+        /**
+         * 定义消费者 -> 后面经常使用
+         */
+        Consumer<InnerHits> consumer = new Consumer<InnerHits>() {
+            @SneakyThrows
+            @Override
+            public void accept(InnerHits innerHits) {
+                Boolean scriptDeal = null;
+                if (StringUtils.isNotBlank(script)) {
+                    //执行脚本
+                    scriptDeal = javaScriptExecuteScript.evalAndFilter(script, innerHits.getSource());
+                }
+                if (null == scriptDeal || true == scriptDeal) {
+                    JSONObject json = JSONObject.parseObject(JSONObject.toJSON(innerHits.getSource()).toString());
+                    kafkaOutService.load(topic, json, policyId, toTable.getTable());
+                    log.info("发送成功:topic:{},policyId:{},:json{}", topic, policyId, json);
+                } else if (false == scriptDeal) {
+                    log.info("返回false->不处理：topic:{},policyId:{},json:{}", topic, policyId, innerHits.getSource());
+                }
+
+            }
+        };
+        List<Object> deal = new ArrayList<>();
+        for (String value : dealValues) {
+            log.info("处理进度:{}/{}->{}", i++, total, percent(i, total));
+            if (deal.size() < 1000) {
+                if (StringUtils.isNotBlank(value)) {
+                    //加入空判断
+                    deal.add(value);
+                }
+            } else {
+                body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
+                body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
+                if (StringUtils.isBlank(scroll)) {
+                    searchServicePlus._searchToConsumer(index, body.parse(), consumer);
+                } else {
+                    searchServicePlus._searchScrollToConsumer(index, scroll, body.parse(), consumer);
+                }
+                deal.clear();
+            }
+
+        }
+        //处理最后一份
+        body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
+        body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
+        if (StringUtils.isBlank(scroll)) {
+            searchServicePlus._searchToConsumer(index, body.parse(), consumer);
+        } else {
+            searchServicePlus._searchScrollToConsumer(index, scroll, body.parse(), consumer);
+        }
+        return Response.Ok(true);
+    }
 
 }
 
