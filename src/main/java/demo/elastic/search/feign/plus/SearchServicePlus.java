@@ -356,17 +356,11 @@ public class SearchServicePlus {
 //                        String value = innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString();
 //                        tmp.add(value);
 //                    });
-                    long start = new Date().getTime();
                     names.forEach(name -> {
                         tmp.add(innerHits.getSource().get(name) == null ? "" : innerHits.getSource().get(name).toString());
                     });
-                    long end = new Date().getTime();
-                    log.info("foreach time:{}", end - start);
 //                    log.info("获取的数据:{}", tmp);
-                    start = new Date().getTime();
                     resultList.get().add(tmp);//添加row
-                    end = new Date().getTime();
-                    log.info("add time:{}", end - start);
                 }
                 if (null != resultConsumer) {
                     //处理结果集
