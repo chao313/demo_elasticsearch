@@ -1,6 +1,6 @@
-package demo.elastic.search.po.compound;
+package demo.elastic.search.po.request.compound;
 
-import demo.elastic.search.po.compound.base.*;
+import demo.elastic.search.po.request.compound.base.*;
 import lombok.Data;
 
 @Data

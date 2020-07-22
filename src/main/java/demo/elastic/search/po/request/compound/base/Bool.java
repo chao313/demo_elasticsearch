@@ -1,10 +1,11 @@
 /**
  * Copyright 2020 bejson.com
  */
-package demo.elastic.search.po.compound.base;
+package demo.elastic.search.po.request.compound.base;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import demo.elastic.search.po.term.level.TermLevel;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import demo.elastic.search.po.request.level.TermLevel;
 import lombok.Data;
 
 /**
@@ -61,6 +62,7 @@ public class Bool {
     @JSONField(name = "must")
     private TermLevel must;
     @JSONField(name = "must_not")
+    @JsonProperty("must_not")
     private TermLevel mustNot;
     @JSONField(name = "should")
     private TermLevel should;

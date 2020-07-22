@@ -1,4 +1,4 @@
-package demo.elastic.search.po.term.level.base;
+package demo.elastic.search.po.request.level.base;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.po.Parse;
@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 

@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 /**
  * index的相关操作
  */
-@FeignClient(name = "index_alias", url = Bootstrap.IN_USE, configuration = FeignServiceConfig.class)
-public interface IndexService_alias {
+@FeignClient(name = "indexAlias", url = Bootstrap.IN_USE, configuration = FeignServiceConfig.class)
+public interface IndexServiceAlias {
 
     /**
      * 创建或更新索引别名

@@ -1,4 +1,4 @@
-package demo.elastic.search.po.term.level.base;
+package demo.elastic.search.po.request.level.base;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;

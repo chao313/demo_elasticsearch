@@ -1,18 +1,11 @@
-package demo.elastic.search.po.term.level.base;
+package demo.elastic.search.po.request.level.base;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
-import demo.elastic.search.po.Body;
 import demo.elastic.search.po.Parse;
-import demo.elastic.search.po.Query;
-import demo.elastic.search.po.compound.base.Bool;
-import demo.elastic.search.po.term.level.TermLevel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * <pre>

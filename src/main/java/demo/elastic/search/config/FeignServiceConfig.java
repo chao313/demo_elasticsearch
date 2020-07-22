@@ -46,7 +46,7 @@ public class FeignServiceConfig {
                     responseError = IOUtils.toString(response.body().asInputStream(), "UTF-8");
                     log.error("feign请求发生异常:{}", responseError);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("解析返回值异常:{}", response, e);
                 }
                 return new RuntimeException(responseError);
             }

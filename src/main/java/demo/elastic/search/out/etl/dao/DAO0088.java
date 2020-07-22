@@ -4,7 +4,7 @@ import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.out.etl.vo.Tb0088Vo;
 import demo.elastic.search.po.Body;
 import demo.elastic.search.po.response.InnerHits;
-import demo.elastic.search.po.term.level.base.Term;
+import demo.elastic.search.po.request.level.base.Term;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

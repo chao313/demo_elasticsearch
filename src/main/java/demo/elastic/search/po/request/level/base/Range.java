@@ -1,4 +1,4 @@
-package demo.elastic.search.po.term.level.base;
+package demo.elastic.search.po.request.level.base;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
@@ -9,13 +9,13 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * <pre>
- * {
+ *  {
  *     "query": {
- *         "wildcard": {
- *             "user": {
- *                 "value": "ki*y",
- *                 "boost": 1.0,
- *                 "rewrite": "constant_score"
+ *         "range" : {
+ *             "age" : {
+ *                 "gte" : 10,
+ *                 "lte" : 20,
+ *                 "boost" : 2.0
  *             }
  *         }
  *     }
@@ -23,24 +23,23 @@ import org.apache.commons.lang3.StringUtils;
  * </pre>
  */
 @Data
-public class Wildcard implements Parse {
+public class Range implements Parse {
 
     @ApiModelProperty(example = " ")
     @JSONField(name = "field")
-    private String field;
+    String field;
 
     @ApiModelProperty(example = " ")
-    @JSONField(name = "value")
-    private String value;
+    @JSONField(name = "gte")
+    private String gte;
 
+    @ApiModelProperty(example = " ")
+    @JSONField(name = "lte")
+    private String lte;
 
-    @ApiModelProperty(example = "1.0")
+    @ApiModelProperty(example = "2.0")
     @JSONField(name = "boost")
     private String boost;
-
-    @ApiModelProperty(example = "constant_score")
-    @JSONField(name = "rewrite")
-    private String rewrite;
 
 
     @Override
@@ -55,21 +54,21 @@ public class Wildcard implements Parse {
         JSONObject range = new JSONObject();
         JSONObject key = new JSONObject();
         JSONObject content = new JSONObject();
-        if (StringUtils.isNotBlank(this.getValue())) {
-            content.put("value", this.getValue());
+        if (StringUtils.isNotBlank(this.getGte())) {
+            content.put("gte", this.getGte());
         }
-        if (StringUtils.isNotBlank(this.getRewrite())) {
-            content.put("rewrite", this.getRewrite());
+        if (StringUtils.isNotBlank(this.getLte())) {
+            content.put("lte", this.getLte());
         }
         if (StringUtils.isNotBlank(this.getBoost())) {
             content.put("boost", this.getBoost());
         }
 
+
         key.put(this.getField(), content);
-        range.put(_wildcard, key);
+        range.put(_range, key);
         return range.toJSONString();
     }
 
-    public static String _wildcard = "wildcard";
+    public static String _range = "range";
 }
-

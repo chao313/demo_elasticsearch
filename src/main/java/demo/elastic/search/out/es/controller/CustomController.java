@@ -1,7 +1,5 @@
 package demo.elastic.search.out.es.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.AwareUtil;
 import demo.elastic.search.engine.script.impl.JavaScriptExecuteScript;
@@ -15,7 +13,6 @@ import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.out.comm.OutType;
-import demo.elastic.search.out.etl.service.PEVCService;
 import demo.elastic.search.out.kafka.KafkaMsg;
 import demo.elastic.search.out.kafka.KafkaOutService;
 import demo.elastic.search.out.resource.service.ResourceService;
@@ -23,11 +20,9 @@ import demo.elastic.search.po.Body;
 import demo.elastic.search.po.response.ESResponse;
 import demo.elastic.search.po.response.InnerHits;
 import demo.elastic.search.po.response.buckets.BucketsRoot;
-import demo.elastic.search.po.term.level.base.Terms;
+import demo.elastic.search.po.request.level.base.Terms;
 import demo.elastic.search.util.DateUtil;
 import demo.elastic.search.util.ExcelUtil;
-import demo.elastic.search.util.JSONUtil;
-import demo.elastic.search.vo.SearchTermsRequest;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -43,7 +38,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import rx.functions.Action2;
 
 import javax.annotation.Resource;
 import javax.script.ScriptException;
@@ -52,7 +46,6 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import static demo.elastic.search.util.ExcelUtil.percent;
 

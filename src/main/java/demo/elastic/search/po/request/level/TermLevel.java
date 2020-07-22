@@ -1,9 +1,9 @@
-package demo.elastic.search.po.term.level;
+package demo.elastic.search.po.request.level;
 
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import demo.elastic.search.po.term.level.base.*;
+import demo.elastic.search.po.request.level.base.*;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 

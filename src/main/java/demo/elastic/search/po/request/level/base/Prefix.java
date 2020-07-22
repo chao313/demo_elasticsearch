@@ -1,6 +1,7 @@
-package demo.elastic.search.po.term.level.base;
+package demo.elastic.search.po.request.level.base;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.annotation.JSONField;
 import demo.elastic.search.po.Parse;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,20 +11,26 @@ import org.apache.commons.lang3.StringUtils;
  * <pre>
  * {
  *     "query": {
- *         "type" : {
- *             "value" : "_doc"
+ *         "prefix": {
+ *             "user": {
+ *                 "value": "ki"
+ *             }
  *         }
  *     }
  * }
  * </pre>
  */
+
 @Data
-@Deprecated
-public class Type implements Parse {
+public class Prefix implements Parse {
 
     @ApiModelProperty(example = " ")
-    private String value;
+    @JSONField(name = "field")
+    String field;
 
+    @ApiModelProperty(example = " ")
+    @JSONField(name = "value")
+    private String value;
 
     @Override
     public String parse() {
@@ -33,12 +40,15 @@ public class Type implements Parse {
              */
             return "";
         }
-        JSONObject exists = new JSONObject();
+
+        JSONObject prefix = new JSONObject();
+        JSONObject key = new JSONObject();
         JSONObject content = new JSONObject();
         content.put("value", this.getValue());
-        exists.put(_type, content);
-        return exists.toJSONString();
+        key.put(this.getField(), content);
+        prefix.put(_prefix, key);
+        return prefix.toJSONString();
     }
 
-    public static String _type = "type";
+    public static String _prefix = "prefix";
 }

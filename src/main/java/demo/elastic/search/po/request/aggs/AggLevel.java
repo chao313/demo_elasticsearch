@@ -1,9 +1,9 @@
-//package demo.elastic.search.po.aggs;
+//package demo.elastic.search.po.request.aggs;
 //
 //
 //import com.alibaba.fastjson.JSONArray;
 //import com.alibaba.fastjson.JSONObject;
-//import demo.elastic.search.po.aggs.base.AggTerms;
+//import demo.elastic.search.po.request.aggs.base.AggTerms;
 //import lombok.Data;
 //import org.apache.commons.lang3.StringUtils;
 //

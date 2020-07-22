@@ -1,7 +1,4 @@
-/**
- * Copyright 2020 bejson.com
- */
-package demo.elastic.search.po.term.level.base;
+package demo.elastic.search.po.request.level.base;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.po.Parse;
@@ -13,24 +10,24 @@ import org.apache.commons.lang3.StringUtils;
  * <pre>
  * {
  *     "query": {
- *         "exists": {
- *             "field": "user"
+ *         "type" : {
+ *             "value" : "_doc"
  *         }
  *     }
  * }
  * </pre>
  */
-
 @Data
-public class Exists implements Parse {
+@Deprecated
+public class Type implements Parse {
 
     @ApiModelProperty(example = " ")
-    private String field;
+    private String value;
 
 
     @Override
     public String parse() {
-        if (StringUtils.isBlank(field) || StringUtils.isBlank(field.trim())) {
+        if (StringUtils.isBlank(value) || StringUtils.isBlank(value.trim())) {
             /**
              * 关键字段为空->返回空字符串
              */
@@ -38,10 +35,10 @@ public class Exists implements Parse {
         }
         JSONObject exists = new JSONObject();
         JSONObject content = new JSONObject();
-        content.put("field", this.getField());
-        exists.put(_exists, content);
+        content.put("value", this.getValue());
+        exists.put(_type, content);
         return exists.toJSONString();
     }
 
-    public static String _exists = "exists";
+    public static String _type = "type";
 }

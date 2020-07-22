@@ -6,8 +6,8 @@ package demo.elastic.search.po;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
-import demo.elastic.search.po.compound.base.Bool;
-import demo.elastic.search.po.term.level.TermLevel;
+import demo.elastic.search.po.request.compound.base.Bool;
+import demo.elastic.search.po.request.level.TermLevel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

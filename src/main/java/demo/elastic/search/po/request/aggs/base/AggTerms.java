@@ -1,4 +1,4 @@
-package demo.elastic.search.po.aggs.base;
+package demo.elastic.search.po.request.aggs.base;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
