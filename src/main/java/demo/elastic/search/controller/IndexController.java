@@ -53,6 +53,16 @@ public class IndexController {
         return Response.Ok(JSONObject.parse(s));
     }
 
+
+    @ApiOperation(value = "返回索引的信息")
+    @RequestMapping(value = "/{index}", method = RequestMethod.GET)
+    public Response get(
+            @ApiParam(value = "索引名称")
+            @PathVariable(value = "index") String index) {
+        String s = indexService.get(index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
     @ApiOperation(value = "删除index")
     @RequestMapping(value = "/{index}", method = RequestMethod.DELETE)
     public Response delete(
@@ -130,6 +140,72 @@ public class IndexController {
             @ApiParam(value = "要创建的目标索引的名称")
             @PathVariable(value = "target_index") String target_index) {
         String s = indexService._clone(source_index, target_index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "_flush index")
+    @RequestMapping(value = "/{index}/_flush", method = RequestMethod.GET)
+    public Response _flush(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index) {
+        String s = indexService._flush(index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+
+    @ApiOperation(value = "返回有关 索引分片中Lucene段的低级信息")
+    @RequestMapping(value = "/{index}/_segments", method = RequestMethod.GET)
+    public Response _segments(@ApiParam(value = "(可选，字符串）索引名称的逗号分隔列表或通配符表达式，用于限制请求") @PathVariable(value = "index") String index) {
+        String s = indexService._segments(index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "返回索引的设置信息")
+    @RequestMapping(value = "/{index}/_settings", method = RequestMethod.GET)
+    public Response _settings(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index) {
+        String s = indexService._settings(index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "返回索引的设置信息")
+    @RequestMapping(value = "/{index}/_settings/{setting}", method = RequestMethod.GET)
+    public Response _settings(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index,
+                              @ApiParam(value = "(可选，字符串)用于限制请求的设置名称的逗号分隔列表或通配符表达式") @PathVariable(value = "setting") String setting) {
+        String s = indexService._settings(index, setting);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "返回有关正在进行和已完成的碎片恢复的信息")
+    @RequestMapping(value = "/{index}/_recovery", method = RequestMethod.GET)
+    public Response _recovery(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index) {
+        String s = indexService._recovery(index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "返回一个或多个索引中有关副本分片的存储信息")
+    @RequestMapping(value = "/{index}/_shard_stores", method = RequestMethod.GET)
+    public Response _shard_stores(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index) {
+        String s = indexService._shard_stores(index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "使用更少的主碎片将现有索引缩减为新索引")
+    @RequestMapping(value = "/{source_index}/_shrink/{target_index}", method = RequestMethod.POST)
+    public Response _shrink(
+            @ApiParam(value = "要克隆的源索引的名称")
+            @PathVariable(value = "source_index") String source_index,
+            @ApiParam(value = "要创建的目标索引的名称")
+            @PathVariable(value = "target_index") String target_index) {
+        String s = indexService._shrink(source_index, target_index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "将现有索引拆分为具有更多主碎片的新索引")
+    @RequestMapping(value = "/{source_index}/_split/{target_index}", method = RequestMethod.POST)
+    public Response _split(
+            @ApiParam(value = "要克隆的源索引的名称")
+            @PathVariable(value = "source_index") String source_index,
+            @ApiParam(value = "要创建的目标索引的名称")
+            @PathVariable(value = "target_index") String target_index) {
+        String s = indexService._split(source_index, target_index);
         return Response.Ok(JSONObject.parse(s));
     }
 }

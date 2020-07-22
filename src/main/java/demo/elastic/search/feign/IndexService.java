@@ -64,17 +64,22 @@ public interface IndexService {
      * @return
      */
     @RequestMapping(value = "/{index}", method = RequestMethod.PUT, headers = {"content-type=application/json"})
-    String create(@ApiParam(value = "索引名称")
-                  @PathVariable(value = "index") String index,
+    String create(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index,
                   @RequestBody CreateIndex createIndex);
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-index.html"</a>
+     * 返回索引的信息
+     */
+    @RequestMapping(value = "/{index}", method = RequestMethod.GET)
+    String get(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-delete-index.html"></a>
      * 删除index
      */
     @RequestMapping(value = "/{index}", method = RequestMethod.DELETE)
-    String delete(@ApiParam(value = "索引名称")
-                  @PathVariable(value = "index") String index);
+    String delete(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-close.html"></a>
@@ -83,16 +88,14 @@ public interface IndexService {
      * 封闭索引被禁止进行读/写操作，并且不允许开放索引允许的所有操作。无法对文档建立索引或在封闭索引中搜索文档。这使封闭索引不必维护用于索引或搜索文档的内部数据结构，从而导致群集上的开销较小。
      */
     @RequestMapping(value = "/{index}/_close", method = RequestMethod.POST)
-    String _close(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)")
-                  @PathVariable(value = "index") String index);
+    String _close(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-open-close.html"></a>
      * 打开index
      */
     @RequestMapping(value = "/{index}/_open", method = RequestMethod.POST)
-    String _open(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)")
-                 @PathVariable(value = "index") String index);
+    String _open(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/freeze-index-api.html"></a>
@@ -100,24 +103,21 @@ public interface IndexService {
      * 冻结index
      */
     @RequestMapping(value = "/{index}/_freeze", method = RequestMethod.POST)
-    String _freeze(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)")
-                   @PathVariable(value = "index") String index);
+    String _freeze(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/unfreeze-index-api.html"></a>
      * 冻结index
      */
     @RequestMapping(value = "/{index}/_unfreeze", method = RequestMethod.POST)
-    String _unfreeze(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)")
-                     @PathVariable(value = "index") String index);
+    String _unfreeze(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html"></a>
      * 获取index的stats
      */
     @RequestMapping(value = "/{index}/_stats/{index-metric}", method = RequestMethod.GET)
-    String _stats(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)")
-                  @PathVariable(value = "index") String index,
+    String _stats(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index,
                   @ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)", defaultValue = "_all", allowableValues = "_all,completion,fielddata,flush,get,indexing,merge,query_cache,refresh,request_cache,search,segments,store,suggest,translog,warmer")
                   @PathVariable(value = "index-metric") String index_metric
     );
@@ -127,9 +127,7 @@ public interface IndexService {
      * 刷新index
      */
     @RequestMapping(value = "/{index}/_refresh", method = RequestMethod.GET)
-    String _refresh(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)")
-                    @PathVariable(value = "index") String index
-    );
+    String _refresh(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-clone-index.html"></a>
@@ -166,10 +164,89 @@ public interface IndexService {
      * .不建议使用以 开头的名称，但隐藏索引和由插件管理的内部索引 除外
      */
     @RequestMapping(value = "/{source_index}/_clone/{target_index}", method = RequestMethod.POST)
-    String _clone(@ApiParam(value = "要克隆的源索引的名称")
-                  @PathVariable(value = "source_index") String source_index,
-                  @ApiParam(value = "要创建的目标索引的名称")
-                  @PathVariable(value = "target_index") String target_index
+    String _clone(@ApiParam(value = "要克隆的源索引的名称") @PathVariable(value = "source_index") String source_index,
+                  @ApiParam(value = "要创建的目标索引的名称") @PathVariable(value = "target_index") String target_index
+    );
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-flush.html"></a>
+     * flush index
+     */
+    @RequestMapping(value = "/{index}/_flush", method = RequestMethod.GET)
+    String _flush(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html"></a>
+     * 返回有关 索引分片中Lucene段的低级信息
+     */
+    @RequestMapping(value = "/{index}/_segments", method = RequestMethod.GET)
+    String _segments(@ApiParam(value = "(可选，字符串）索引名称的逗号分隔列表或通配符表达式，用于限制请求") @PathVariable(value = "index") String index);
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-settings.html"></a>
+     * 返回索引的设置信息
+     */
+    @RequestMapping(value = "/{index}/_settings", method = RequestMethod.GET)
+    String _settings(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index);
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-get-settings.html"></a>
+     * 返回索引的设置信息
+     */
+    @RequestMapping(value = "/{index}/_settings/{setting}", method = RequestMethod.GET)
+    String _settings(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index,
+                     @ApiParam(value = "(可选，字符串)用于限制请求的设置名称的逗号分隔列表或通配符表达式") @PathVariable(value = "setting") String setting);
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-recovery.html"></a>
+     * 返回有关正在进行和已完成的碎片恢复的信息
+     */
+    @RequestMapping(value = "/{index}/_recovery", method = RequestMethod.GET)
+    String _recovery(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index);
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-shards-stores.html"></a>
+     * 返回一个或多个索引中有关副本分片的存储信息
+     */
+    @RequestMapping(value = "/{index}/_shard_stores", method = RequestMethod.GET)
+    String _shard_stores(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-shrink-index.html"></a>
+     * <p>
+     * 使用更少的主碎片将现有索引缩减为新索引
+     * <p>
+     * -----------------------------------------------------------------
+     * 在收缩索引之前：
+     * <p>
+     * 索引必须是只读的。
+     * 索引中每个分片的副本必须位于同一节点上。
+     * 该集群的健康状态必须是绿色的。
+     * -----------------------------------------------------------------
+     * 参数 {@link #_clone(String, String)}
+     */
+    @RequestMapping(value = "/{source_index}/_shrink/{target_index}", method = RequestMethod.POST)
+    String _shrink(@ApiParam(value = "要克隆的源索引的名称") @PathVariable(value = "source_index") String source_index,
+                   @ApiParam(value = "要创建的目标索引的名称") @PathVariable(value = "target_index") String target_index
+    );
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-split-index.html"></a>
+     * <p>
+     * 将现有索引拆分为具有更多主碎片的新索引
+     * <p>
+     * -----------------------------------------------------------------
+     * 在收缩索引之前：
+     * <p>
+     * 索引必须是只读的。
+     * 索引中每个分片的副本必须位于同一节点上。
+     * 该集群的健康状态必须是绿色的。
+     * -----------------------------------------------------------------
+     * 参数 {@link #_clone(String, String)}
+     */
+    @RequestMapping(value = "/{source_index}/_split/{target_index}", method = RequestMethod.POST)
+    String _split(@ApiParam(value = "要克隆的源索引的名称") @PathVariable(value = "source_index") String source_index,
+                  @ApiParam(value = "要创建的目标索引的名称") @PathVariable(value = "target_index") String target_index
     );
 }
 
