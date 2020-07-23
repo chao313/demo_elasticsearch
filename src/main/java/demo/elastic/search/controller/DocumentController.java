@@ -147,11 +147,42 @@ public class DocumentController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "将文档从一个索引复制到另一索引")
-    @DeleteMapping(value = "/_reindex")
+    @ApiOperation(value = "将文档从一个索引复制到另一索引", notes = "<pre>{<br>" +
+            "&nbsp;\"conflicts\": \"\",<br>" +
+            "&nbsp;\"dest\": {<br>" +
+            "&nbsp;&nbsp;\"index\": \"\",<br>" +
+            "&nbsp;&nbsp;\"op_type\": \"\",<br>" +
+            "&nbsp;&nbsp;\"version_type\": \"\"<br>" +
+            "&nbsp;},<br>" +
+            "&nbsp;\"script\": {<br>" +
+            "&nbsp;&nbsp;\"lang\": \"\",<br>" +
+            "&nbsp;&nbsp;\"source\": \"\"<br>" +
+            "&nbsp;},<br>" +
+            "&nbsp;\"source\": {<br>" +
+            "&nbsp;&nbsp;\"_source\": [],<br>" +
+            "&nbsp;&nbsp;\"index\": \"\",<br>" +
+            "&nbsp;&nbsp;\"max_docs\": \"\",<br>" +
+            "&nbsp;&nbsp;\"query\": \"\",<br>" +
+            "&nbsp;&nbsp;\"remote\": {<br>" +
+            "&nbsp;&nbsp;&nbsp;\"connect_timeout\": \"\",<br>" +
+            "&nbsp;&nbsp;&nbsp;\"host\": \"\",<br>" +
+            "&nbsp;&nbsp;&nbsp;\"password\": \"\",<br>" +
+            "&nbsp;&nbsp;&nbsp;\"socket_timeout\": \"\",<br>" +
+            "&nbsp;&nbsp;&nbsp;\"username\": \"\"<br>" +
+            "&nbsp;&nbsp;},<br>" +
+            "&nbsp;&nbsp;\"size\":\"\",<br>" +
+            "&nbsp;&nbsp;\"slice\": {<br>" +
+            "&nbsp;&nbsp;&nbsp;\"id\": \"\",<br>" +
+            "&nbsp;&nbsp;&nbsp;\"max\": \"\"<br>" +
+            "&nbsp;&nbsp;}<br>" +
+            "&nbsp;}<br>" +
+            "}</pre>")
+    @PostMapping(value = "/_reindex")
     public Response _reindex(@RequestBody ReIndexRequest reIndexRequest) throws JsonProcessingException {
         JsonMapper jsonMapper = new JsonMapper();
+        jsonMapper.
         jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         String body = jsonMapper.writeValueAsString(reIndexRequest);
         String s = documentService._reindex(body);
         return Response.Ok(JSONObject.parse(s));
