@@ -175,6 +175,17 @@ public interface IndexService {
     @RequestMapping(value = "/{index}/_flush", method = RequestMethod.GET)
     String _flush(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
 
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-synced-flush-api.html"></a>
+     * 同步 flush index
+     * <p>
+     * Sync-flush已弃用，并将在8.0中删除。请改用冲洗。刷新与在Elasticsearch 7.6或更高版本上的同步刷新具有相同的效果
+     *
+     */
+    @RequestMapping(value = "/{index}/_flush/synced", method = RequestMethod.GET)
+    String _flush_synced(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index);
+
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-segments.html"></a>
      * 返回有关 索引分片中Lucene段的低级信息
@@ -248,5 +259,17 @@ public interface IndexService {
     String _split(@ApiParam(value = "要克隆的源索引的名称") @PathVariable(value = "source_index") String source_index,
                   @ApiParam(value = "要创建的目标索引的名称") @PathVariable(value = "target_index") String target_index
     );
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-forcemerge.html"></a>
+     * 在一个或多个索引的分片上强制合并
+     * <p>
+     * 使用强制合并API可以在一个或多个索引的分片上强制合并。合并通过将每个分片中的某些片段合并在一起来减少其数量，还可以释放已删除文档所占用的空间。
+     * 合并通常自动发生，但是有时手动触发合并很有用。
+     */
+    @RequestMapping(value = "/{index}/_forcemerge", method = RequestMethod.POST)
+    String _forcemerge(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
+
+
 }
 

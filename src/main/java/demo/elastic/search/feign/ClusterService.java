@@ -16,6 +16,39 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ClusterService {
 
     /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-allocation-explain.html#cluster-allocation-explain-api-query-params"></a>
+     * 提供集群中分片分配的说明
+     * <p>
+     * include_disk_info
+     * （可选，布尔值）如果为true，则返回有关磁盘使用情况和碎片大小的信息。默认为false。
+     * include_yes_decisions
+     * （可选，布尔值）如果为true，则返回YES决策说明。默认为false。
+     * <p>
+     * current_node
+     * （可选，字符串）指定节点ID或节点名称，以仅说明当前位于指定节点上的分片。
+     * index
+     * （可选，字符串）指定要为其解释的索引的名称。
+     * primary
+     * （可选，布尔值）如果为true，则返回给定分片ID的主分片的说明。
+     * shard
+     * （可选，整数）指定您要解释的分片的ID。
+     */
+    @RequestMapping(value = "/_cluster/allocation/explain", method = RequestMethod.GET)
+    String _cluster_allocation_explain(
+            @ApiParam(value = "（可选，布尔值）如果为true，则返回有关磁盘使用情况和碎片大小的信息。默认为false")
+            @RequestParam(value = "include_disk_info", defaultValue = "false") Boolean include_disk_info,
+            @ApiParam(value = "（可选，布尔值）如果为true，则返回YES决策说明。默认为false")
+            @RequestParam(value = "include_yes_decisions", defaultValue = "false") Boolean include_yes_decisions,
+            @ApiParam(value = "（可选，字符串）指定节点ID或节点名称，以仅说明当前位于指定节点上的分片")
+            @RequestParam(value = "current_node", required = false) String current_node,
+            @ApiParam(value = "（可选，字符串）指定要为其解释的索引的名称")
+            @RequestParam(value = "index", required = false) String index,
+            @ApiParam(value = "可选，布尔值）如果为true，则返回给定分片ID的主分片的说明。")
+            @RequestParam(value = "primary", required = false) Boolean primary,
+            @ApiParam(value = "（可选，整数）指定您要解释的分片的ID")
+            @RequestParam(value = "shard", required = false) Integer shard);
+
+    /**
      * 功能:获取集群范围内的设置
      *
      * @param flat_settings    是否以平面格式返回,默认是false

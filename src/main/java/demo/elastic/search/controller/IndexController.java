@@ -45,10 +45,8 @@ public class IndexController {
             "&nbsp;&nbsp;&nbsp; }<br>" +
             "&nbsp; }")
     @RequestMapping(value = "/{index}", method = RequestMethod.PUT)
-    public Response create(
-            @ApiParam(value = "索引名称")
-            @PathVariable(value = "index") String index,
-            @RequestBody CreateIndex body) {
+    public Response create(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index,
+                           @RequestBody CreateIndex body) {
         String s = indexService.create(index, body);
         return Response.Ok(JSONObject.parse(s));
     }
@@ -56,18 +54,14 @@ public class IndexController {
 
     @ApiOperation(value = "返回索引的信息")
     @RequestMapping(value = "/{index}", method = RequestMethod.GET)
-    public Response get(
-            @ApiParam(value = "索引名称")
-            @PathVariable(value = "index") String index) {
+    public Response get(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index) {
         String s = indexService.get(index);
         return Response.Ok(JSONObject.parse(s));
     }
 
     @ApiOperation(value = "删除index")
     @RequestMapping(value = "/{index}", method = RequestMethod.DELETE)
-    public Response delete(
-            @ApiParam(value = "索引名称")
-            @PathVariable(value = "index") String index) {
+    public Response delete(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index) {
         String s = indexService.delete(index);
         return Response.Ok(JSONObject.parse(s));
     }
@@ -75,9 +69,7 @@ public class IndexController {
 
     @ApiOperation(value = "关闭index")
     @RequestMapping(value = "/{index}/_close", method = RequestMethod.POST)
-    public Response close(
-            @ApiParam(value = "索引名称")
-            @PathVariable(value = "index") String index) {
+    public Response close(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index) {
         String s = indexService._close(index);
         return Response.Ok(JSONObject.parse(s));
     }
@@ -85,27 +77,21 @@ public class IndexController {
 
     @ApiOperation(value = "打开index")
     @RequestMapping(value = "/{index}/_open", method = RequestMethod.POST)
-    public Response _open(
-            @ApiParam(value = "索引名称")
-            @PathVariable(value = "index") String index) {
+    public Response _open(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index) {
         String s = indexService._open(index);
         return Response.Ok(JSONObject.parse(s));
     }
 
     @ApiOperation(value = "冻结index")
     @RequestMapping(value = "/{index}/_freeze", method = RequestMethod.POST)
-    public Response _freeze(
-            @ApiParam(value = "索引名称")
-            @PathVariable(value = "index") String index) {
+    public Response _freeze(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index) {
         String s = indexService._freeze(index);
         return Response.Ok(JSONObject.parse(s));
     }
 
     @ApiOperation(value = "解冻index")
     @RequestMapping(value = "/{index}/_unfreeze", method = RequestMethod.POST)
-    public Response _unfreeze(
-            @ApiParam(value = "索引名称")
-            @PathVariable(value = "index") String index) {
+    public Response _unfreeze(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index) {
         String s = indexService._unfreeze(index);
         return Response.Ok(JSONObject.parse(s));
     }
@@ -124,9 +110,7 @@ public class IndexController {
 
     @ApiOperation(value = "刷新index")
     @RequestMapping(value = "/{index}/_refresh", method = RequestMethod.GET)
-    public Response _refresh(
-            @ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)")
-            @PathVariable(value = "index") String index) {
+    public Response _refresh(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index) {
         String s = indexService._refresh(index);
         return Response.Ok(JSONObject.parse(s));
     }
@@ -135,10 +119,8 @@ public class IndexController {
     @ApiOperation(value = "克隆index")
     @RequestMapping(value = "/{source_index}/_clone/{target_index}", method = RequestMethod.POST)
     public Response _clone(
-            @ApiParam(value = "要克隆的源索引的名称")
-            @PathVariable(value = "source_index") String source_index,
-            @ApiParam(value = "要创建的目标索引的名称")
-            @PathVariable(value = "target_index") String target_index) {
+            @ApiParam(value = "要克隆的源索引的名称") @PathVariable(value = "source_index") String source_index,
+            @ApiParam(value = "要创建的目标索引的名称") @PathVariable(value = "target_index") String target_index) {
         String s = indexService._clone(source_index, target_index);
         return Response.Ok(JSONObject.parse(s));
     }
@@ -147,6 +129,13 @@ public class IndexController {
     @RequestMapping(value = "/{index}/_flush", method = RequestMethod.GET)
     public Response _flush(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index) {
         String s = indexService._flush(index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "同步 flush index")
+    @RequestMapping(value = "/{index}/_flush/synced", method = RequestMethod.GET)
+    public Response _flush_synced(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index) {
+        String s = indexService._flush_synced(index);
         return Response.Ok(JSONObject.parse(s));
     }
 
@@ -190,10 +179,8 @@ public class IndexController {
     @ApiOperation(value = "使用更少的主碎片将现有索引缩减为新索引")
     @RequestMapping(value = "/{source_index}/_shrink/{target_index}", method = RequestMethod.POST)
     public Response _shrink(
-            @ApiParam(value = "要克隆的源索引的名称")
-            @PathVariable(value = "source_index") String source_index,
-            @ApiParam(value = "要创建的目标索引的名称")
-            @PathVariable(value = "target_index") String target_index) {
+            @ApiParam(value = "要克隆的源索引的名称") @PathVariable(value = "source_index") String source_index,
+            @ApiParam(value = "要创建的目标索引的名称") @PathVariable(value = "target_index") String target_index) {
         String s = indexService._shrink(source_index, target_index);
         return Response.Ok(JSONObject.parse(s));
     }
@@ -201,11 +188,16 @@ public class IndexController {
     @ApiOperation(value = "将现有索引拆分为具有更多主碎片的新索引")
     @RequestMapping(value = "/{source_index}/_split/{target_index}", method = RequestMethod.POST)
     public Response _split(
-            @ApiParam(value = "要克隆的源索引的名称")
-            @PathVariable(value = "source_index") String source_index,
-            @ApiParam(value = "要创建的目标索引的名称")
-            @PathVariable(value = "target_index") String target_index) {
+            @ApiParam(value = "要克隆的源索引的名称") @PathVariable(value = "source_index") String source_index,
+            @ApiParam(value = "要创建的目标索引的名称") @PathVariable(value = "target_index") String target_index) {
         String s = indexService._split(source_index, target_index);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "在一个或多个索引的分片上强制合并")
+    @RequestMapping(value = "/{index}/_forcemerge", method = RequestMethod.POST)
+    public Response _forcemerge(@ApiParam(value = "索引名称(可以用,分隔,要操作所有索引，请使用_all)") @PathVariable(value = "index") String index) {
+        String s = indexService._forcemerge(index);
         return Response.Ok(JSONObject.parse(s));
     }
 }

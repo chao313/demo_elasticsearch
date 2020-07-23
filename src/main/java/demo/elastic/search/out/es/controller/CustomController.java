@@ -744,7 +744,7 @@ public class CustomController {
             @ApiParam(name = "toTable", value = "发送的table", defaultValue = "toTable")
             @RequestParam(value = "toTable")
                     KafkaMsg.ToTable toTable,
-            @ApiParam(name = "script", value = "_source 处理的脚本", defaultValue = "dataMap[\"F23_0088\"]=\"18040100000000\";return dataMap;")
+            @ApiParam(name = "script", value = "_source 处理的脚本", defaultValue = "delete dataMap[\"RP_GEN_DATETIME2\"];delete dataMap[\"SEQID\"];dataMap[\"F23_0088\"]=\"18040100000000\";return dataMap;")
             @RequestParam(value = "script", required = false)
                     String script
 
@@ -820,6 +820,7 @@ public class CustomController {
         } else {
             searchServicePlus._searchScrollToConsumer(index, scroll, body.parse(), consumer);
         }
+        log.info("执行完成");
         return Response.Ok(true);
     }
 

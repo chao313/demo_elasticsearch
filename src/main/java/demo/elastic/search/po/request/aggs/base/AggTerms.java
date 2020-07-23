@@ -49,7 +49,7 @@ public class AggTerms implements Parse {
     @JSONField(name = "min_doc_count")
     Integer min_doc_count;
 
-    @ApiModelProperty(example = "{ \"_count\" : \"asc\" }")
+    //    @ApiModelProperty(example = "{ \"_count\" : \"asc\" }")
     @JSONField(name = "order")
     Map<String, String> order;
 
