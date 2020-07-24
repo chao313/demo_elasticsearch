@@ -1,7 +1,6 @@
 package demo.elastic.search.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.feign.DocumentService;
@@ -55,7 +54,7 @@ public class DocumentController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "批量操作(提供执行多种方式index，create，delete，和update在一个请求的动作) 注意最后一行要单独换行")
+    @ApiOperation(value = "批量操作", notes = "(提供执行多种方式index，create，delete，和update在一个请求的动作) 注意最后一行要单独换行")
     @PostMapping(value = "/{index}/_bulk")
     public Response _bulk(
             @ApiParam(value = "（必需，字符串）包含文档的索引的名称") @PathVariable(value = "index") String index,
@@ -179,12 +178,9 @@ public class DocumentController {
             "}</pre>")
     @PostMapping(value = "/_reindex")
     public Response _reindex(@RequestBody ReIndexRequest reIndexRequest) throws JsonProcessingException {
-        JsonMapper jsonMapper = new JsonMapper();
-        jsonMapper.
-        jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        jsonMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-        String body = jsonMapper.writeValueAsString(reIndexRequest);
-        String s = documentService._reindex(body);
+        JsonMapper mapper = new JsonMapper();
+        String body = mapper.writeValueAsString(reIndexRequest);
+        String s = documentService._reindex(reIndexRequest);
         return Response.Ok(JSONObject.parse(s));
     }
 

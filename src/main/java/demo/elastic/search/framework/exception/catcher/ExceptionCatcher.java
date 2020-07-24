@@ -3,6 +3,7 @@ package demo.elastic.search.framework.exception.catcher;
 
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * 全局捕获异常
  */
 @ControllerAdvice
+@Slf4j
 public class ExceptionCatcher {
 
     @ExceptionHandler(value = Exception.class)
@@ -24,6 +26,7 @@ public class ExceptionCatcher {
         response.setMsg(Code.System.SYSTEM_ERROR_CODE_MSG);
         response.addException(e);
         response.setError(e.getMessage());
+        log.error("e:", e.toString(), e);
         return response;
     }
 }

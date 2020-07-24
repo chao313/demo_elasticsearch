@@ -2,6 +2,7 @@ package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.FeignServiceConfig;
+import demo.elastic.search.po.request.index.doc.reindex.ReIndexRequest;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -166,9 +167,11 @@ public interface DocumentService {
      * <p>
      * conflicts
      * （可选，枚举）设置为proceed即使发生冲突也继续重新编制索引。默认为abort。
-     *
-     *
+     * <p>要开启白名单
+     * reindex.remote.whitelist: "otherhost:9200, another:9200, 127.0.10.*:9200, localhost:*"
+     * -> 支持通配 *:*
+     * -> 两个集群间的复制,必须能端口相通
      */
     @RequestMapping(value = "_reindex", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String _reindex(@RequestBody String body);
+    String _reindex(@RequestBody ReIndexRequest body);
 }
