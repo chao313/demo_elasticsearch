@@ -271,5 +271,16 @@ public interface IndexService {
     String _forcemerge(@ApiParam(value = "索引名称(要操作所有索引，请使用_all或*)") @PathVariable(value = "index") String index);
 
 
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-put-mapping.html"></a>
+     * 将新字段添加到现有索引或更改现有字段的搜索设置
+     * <p>
+     * 使用强制合并API可以在一个或多个索引的分片上强制合并。合并通过将每个分片中的某些片段合并在一起来减少其数量，还可以释放已删除文档所占用的空间。
+     * 合并通常自动发生，但是有时手动触发合并很有用。
+     */
+    @RequestMapping(value = "/{index}/_mapping", method = RequestMethod.PUT)
+    String _mapping(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index);
+
+
 }
 

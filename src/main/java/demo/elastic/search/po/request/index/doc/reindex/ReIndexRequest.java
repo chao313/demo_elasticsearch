@@ -74,7 +74,7 @@ public class ReIndexRequest {
         private Slice slice;
         //（可选，整数）要重新编制索引的最大文档数
         private Integer max_docs;
-        private String query;
+        private Object query;
         //（可选，查询对象）指定要使用查询DSL重新编制索引的文档
         private Remote remote;
         //（可选，字符串）如果重新true索引所有源字段。设置为列表以重新索引选择字段。默认为true。

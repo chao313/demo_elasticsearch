@@ -1,18 +1,16 @@
 package demo.elastic.search.config;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.util.StdConverter;
 import demo.elastic.search.po.request.index.doc.reindex.ReIndexRequest;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -22,6 +20,12 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MyJackSonConverter extends StdConverter<ReIndexRequest, ReIndexRequest> {
 
 
+    /**
+     * 这里还不是很明白 -> 前后一致可以解决问题
+     *
+     * @param reIndexRequest
+     * @return
+     */
     @SneakyThrows
     @Override
     public ReIndexRequest convert(ReIndexRequest reIndexRequest) {
@@ -42,6 +46,10 @@ public class MyJackSonConverter extends StdConverter<ReIndexRequest, ReIndexRequ
             i = new AtomicReference<>(0);
             this.loop(jsonNode, i);
         } while (i.get() > 0);
+        /**
+         * ! 在插件里不能调用 JsonMapper 转换器 -> 会无限调用自己！
+         */
+        //ReIndexRequest result = mapper.readValue(jsonNode.toString(), ReIndexRequest.class);
         ReIndexRequest result = JSON.toJavaObject(JSON.parseObject(jsonNode.toString()), ReIndexRequest.class);
         return result;
 
