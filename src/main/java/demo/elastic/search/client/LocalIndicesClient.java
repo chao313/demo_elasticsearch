@@ -364,7 +364,7 @@ public final class LocalIndicesClient {
     /**
      * Checks if the index (indices) exists or not.
      * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-exists.html">
-     * Indices Exists API on elastic.co</a>
+     * Indices ExistsParam API on elastic.co</a>
      * ----------------------------------------
      * 检查一个或者多个indices的是否存在
      * ----------------------------------------
@@ -1091,7 +1091,7 @@ public final class LocalIndicesClient {
     /**
      * Asynchronously checks if the index (indices) exists or not.
      * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-exists.html">
-     * Indices Exists API on elastic.co</a>
+     * Indices ExistsParam API on elastic.co</a>
      * ----------------------------------------
      * 异步检查一个或者多个indices的是否存在
      * ----------------------------------------
@@ -1501,7 +1501,7 @@ public final class LocalIndicesClient {
     /**
      * Checks if the index (indices) exists or not.
      * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-exists.html">
-     * Indices Exists API on elastic.co</a>
+     * Indices ExistsParam API on elastic.co</a>
      * ----------------------------------------
      * 检查一个或者多个indices的是否存在（已经弃用 {@link #exists(GetIndexRequest, RequestOptions)} ）
      * ----------------------------------------
@@ -1521,7 +1521,7 @@ public final class LocalIndicesClient {
     /**
      * Asynchronously checks if the index (indices) exists or not.
      * See <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-exists.html">
-     * Indices Exists API on elastic.co</a>
+     * Indices ExistsParam API on elastic.co</a>
      * ----------------------------------------
      * 异步检查一个或者多个indices的是否存在（已经弃用 {@link #existsAsync(GetIndexRequest, RequestOptions, ActionListener)} ）
      * ----------------------------------------

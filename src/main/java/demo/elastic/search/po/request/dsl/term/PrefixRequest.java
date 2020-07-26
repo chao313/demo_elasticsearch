@@ -1,4 +1,4 @@
-package demo.elastic.search.po.request.dsl;
+package demo.elastic.search.po.request.dsl.term;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

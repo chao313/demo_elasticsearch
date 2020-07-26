@@ -3,7 +3,8 @@ package demo.elastic.search.controller;
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.po.request.dsl.*;
+import demo.elastic.search.po.request.dsl.compound.BoolRequest;
+import demo.elastic.search.po.request.dsl.term.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
@@ -126,6 +127,20 @@ public class SearchController {
     @PostMapping(value = "/DSL/terms/{index}/_search")
     public Response _search(@PathVariable(value = "index") String index, @RequestBody TermsRequest termsRequest) {
         String result = searchService.DSL_search(index, termsRequest);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "DSL检索(wildcard)")
+    @PostMapping(value = "/DSL/wildcard/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody WildcardRequest wildcardRequest) {
+        String result = searchService.DSL_search(index, wildcardRequest);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "bool查询")
+    @PostMapping(value = "/DSL/bool/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody BoolRequest boolRequest) {
+        String result = searchService.DSL_bool_search(index, boolRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 

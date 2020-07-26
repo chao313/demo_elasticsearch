@@ -1,4 +1,4 @@
-package demo.elastic.search.po.request.dsl;
+package demo.elastic.search.po.request.dsl.term;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -27,10 +27,10 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class FuzzyRequest {
 
-    private DSLFuzzy query = new DSLFuzzy();
+    private FuzzyQuery query = new FuzzyQuery();
 
     @Data
-    public static class DSLFuzzy {
+    public static class FuzzyQuery {
         private Map<String, FuzzyParam> fuzzy = new HashMap<>();
     }
 

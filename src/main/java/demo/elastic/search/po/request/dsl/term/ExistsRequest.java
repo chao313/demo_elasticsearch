@@ -1,4 +1,4 @@
-package demo.elastic.search.po.request.dsl;
+package demo.elastic.search.po.request.dsl.term;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -6,15 +6,15 @@ import lombok.Data;
 @Data
 public class ExistsRequest {
 
-    private QueryExists query;
+    private ExistsQuery query;
 
     @Data
-    public static class QueryExists {
-        private Exists exists;
+    public static class ExistsQuery {
+        private ExistsParam exists;
     }
 
     @Data
-    public static class Exists {
+    public static class ExistsParam {
 
         @ApiModelProperty(example = " ")
         private String field;
