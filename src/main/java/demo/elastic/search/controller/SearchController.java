@@ -3,6 +3,7 @@ package demo.elastic.search.controller;
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.po.request.dsl.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
@@ -55,8 +56,7 @@ public class SearchController {
                     "</pre>")
     @PostMapping(value = "/{index}/_search")
     public Response _search(
-            @ApiParam(defaultValue = "tb_object_0088")
-            @PathVariable(value = "index") String index,
+            @ApiParam(defaultValue = "tb_object_0088") @PathVariable(value = "index") String index,
             @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false) String scroll,
             @RequestBody String body) {
@@ -67,6 +67,65 @@ public class SearchController {
             result = searchService._search(index, scroll, body);
         }
 
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+
+    @ApiOperation(value = "DSL检索(存在)")
+    @PostMapping(value = "/DSL/exists/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody ExistsRequest existsRequest) {
+        String result;
+        result = searchService.DSL_search(index, existsRequest);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "DSL检索(相似)")
+    @PostMapping(value = "/DSL/fuzzy/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody FuzzyRequest fuzzyRequest) {
+        String result;
+        result = searchService.DSL_search(index, fuzzyRequest);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "DSL检索(ids)")
+    @PostMapping(value = "/DSL/ids/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody IDsRequest iDsRequest) {
+        String result = searchService.DSL_search(index, iDsRequest);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "DSL检索(prefix)")
+    @PostMapping(value = "/DSL/prefix/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody PrefixRequest prefixRequest) {
+        String result = searchService.DSL_search(index, prefixRequest);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "DSL检索(range)")
+    @PostMapping(value = "/DSL/range/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody RangeRequest rangeRequest) {
+        String result = searchService.DSL_search(index, rangeRequest);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "DSL检索(regexp)")
+    @PostMapping(value = "/DSL/regexp/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody RegexpRequest regexpRequest) {
+        String result = searchService.DSL_search(index, regexpRequest);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "DSL检索(term)")
+    @PostMapping(value = "/DSL/term/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody TermRequest termRequest) {
+        String result = searchService.DSL_search(index, termRequest);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "DSL检索(term)")
+    @PostMapping(value = "/DSL/terms/{index}/_search")
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody TermsRequest termsRequest) {
+        String result = searchService.DSL_search(index, termsRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 

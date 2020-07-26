@@ -1,16 +1,32 @@
 package demo.elastic.search.config;
 
+import com.fasterxml.classmate.TypeResolver;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Sets;
+import demo.elastic.search.po.request.dsl.FuzzyRequest;
+import demo.elastic.search.po.request.dsl.PrefixRequest;
+import demo.elastic.search.po.request.dsl.RangeRequest;
+import demo.elastic.search.po.request.dsl.RegexpRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.AlternateTypeRules;
+import springfox.documentation.schema.Model;
+import springfox.documentation.schema.WildcardType;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.*;
+
+import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 /**
  * Created by hwc on 2017/1/16.
@@ -19,9 +35,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class Swagger2Configuration {
 
+
+    @Autowired
+    private TypeResolver typeResolver;
+
     @Bean
     public Docket ESApi() {
-        return new Docket(DocumentationType.SWAGGER_2)
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors
                         .basePackage("demo.elastic.search.controller"))
@@ -32,8 +52,25 @@ public class Swagger2Configuration {
                 .pathMapping("/")
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false)
-                .groupName("ESApi")
-                ;
+                .groupName("ESApi");
+
+        docket.alternateTypeRules(AlternateTypeRules.newMapRule(String.class, WildcardType.class));
+        docket.alternateTypeRules(AlternateTypeRules.newMapRule(String.class, HashMap.class));
+        docket.alternateTypeRules(AlternateTypeRules.newMapRule(String.class, RegexpRequest.RegexpParam.class));
+        docket.alternateTypeRules(AlternateTypeRules.newMapRule(String.class, Dictionary.class));
+//        docket.alternateTypeRules( //自定义规则，如果遇到DeferredResult，则把泛型类转成json
+//                newRule(typeResolver.resolve(LinkedHashMap.class,typeResolver
+//                        typeResolver.resolve(JsonNode.class, WildcardType.class)),
+//                        typeResolver.resolve(WildcardType.class)));
+
+
+//        docket.alternateTypeRules(//解决返回对象为Map>时，Swagger页面报错
+//                AlternateTypeRules.newRule(
+//                        typeResolver.resolve(Map.class, String.class, typeResolver.resolve(List.class, FuzzyRequest.FuzzyParam.class)),
+//                        typeResolver.resolve(Map.class, String.class, WildcardType.class), Ordered.HIGHEST_PRECEDENCE)
+//        );
+        return docket;
+
     }
 
     @Bean
