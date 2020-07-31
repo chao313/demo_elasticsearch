@@ -55,9 +55,10 @@ public class BoolRequestTest {
      *                 }
      * }
      * </pre>
+     * 测试must
      */
     @Test
-    public void testBoolRequest() {
+    public void testBoolMustRequest() {
         BoolRequest request = new BoolRequest();
         request.getQuery().getBool().getMust().add(ExistsRequest.builderQuery("F8_0088"));
         request.getQuery().getBool().getMust().add(FuzzyRequest.builderQuery("F11_0088", "美元"));
@@ -68,6 +69,21 @@ public class BoolRequestTest {
         request.getQuery().getBool().getMust().add(TermRequest.builderQuery("F2_0088", "北京字节跳动网络技术有限公司"));
         request.getQuery().getBool().getMust().add(TermsRequest.builderQuery("F8_0088", Arrays.asList("张一鸣")));
         request.getQuery().getBool().getMust().add(WildcardRequest.builderQuery("F8_0088", "张?鸣"));
+        log.info("请求body:{}", request.getRequestBody());
+        String response = searchService.DSL_bool_search("tb_object_0088", request);
+        log.info("response:{}", response);
+    }
+
+    /**
+     * 测试must和must_not
+     */
+    @Test
+    public void testBoolMustAndMustNotRequest() {
+        BoolRequest request = new BoolRequest();
+        request.getQuery().getBool().getMust().add(RegexpRequest.builderQuery("F8_0088", "张一鸣"));
+//        request.getQuery().getBool().getMust_not().add(RegexpRequest.builderQuery("F2_0088", "北京字节跳动网络技术有限公司"));
+//        request.getQuery().getBool().getShould().add(RegexpRequest.builderQuery("F2_0088", "上海字节跳动网络技术有限公司"));
+//        request.getQuery().getBool().getShould().add(RegexpRequest.builderQuery("F2_0088", "北京字节跳动网络技术有限公司"));
         log.info("请求body:{}", request.getRequestBody());
         String response = searchService.DSL_bool_search("tb_object_0088", request);
         log.info("response:{}", response);

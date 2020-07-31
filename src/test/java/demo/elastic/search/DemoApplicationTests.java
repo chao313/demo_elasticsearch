@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest(classes = DemoApplication.class)
 @Slf4j
 class DemoApplicationTests {
+
     @Autowired
     SearchService searchService;
 

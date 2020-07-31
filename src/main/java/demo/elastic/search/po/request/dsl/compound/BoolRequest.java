@@ -9,7 +9,7 @@ import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class BoolRequest extends ToRequestBody {
+public class BoolRequest extends ToRequestBody implements DSLQuery {
 
     private BoolQuery query = new BoolQuery();
 
@@ -20,22 +20,10 @@ public class BoolRequest extends ToRequestBody {
 
     @Data
     public static class MustQuery {
-        //        List<TermRequest.TermQuery> must;
-//        TermRequest.TermQuery must;
         List<DSLQuery> must = new ArrayList<>();
+        List<DSLQuery> must_not = new ArrayList<>();
+        List<DSLQuery> should = new ArrayList<>();
+        List<DSLQuery> filter = new ArrayList<>();
     }
-
-    //    public static class MustParam {
-//
-//        //        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT)
-//        ExistsRequest.ExistsQuery exists = new ExistsRequest.ExistsQuery();
-////        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT)
-////        @JsonUnwrapped
-////        RegexpRequest.RegexpQuery regexp = new RegexpRequest.RegexpQuery();
-//
-////        Map<String, FuzzyRequest.FuzzyParam> fuzzy = new HashMap<>();
-//    }
-//
-
 
 }
