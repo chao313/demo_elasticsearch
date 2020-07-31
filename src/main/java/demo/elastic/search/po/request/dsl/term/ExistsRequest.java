@@ -1,7 +1,7 @@
 package demo.elastic.search.po.request.dsl.term;
 
 import demo.elastic.search.po.request.ToRequestBody;
-import demo.elastic.search.po.request.dsl.compound.DSLQuery;
+import demo.elastic.search.po.request.dsl.DSLQuery;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

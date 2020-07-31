@@ -1,4 +1,4 @@
-package demo.elastic.search.po.request.dsl.compound;
+package demo.elastic.search.po.request.dsl;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

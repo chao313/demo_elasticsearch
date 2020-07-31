@@ -2,6 +2,7 @@ package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.FeignServiceConfig;
+import demo.elastic.search.po.request.QueryBaseRequest;
 import demo.elastic.search.po.request.dsl.compound.BoolRequest;
 import demo.elastic.search.po.request.dsl.term.*;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -104,5 +105,11 @@ public interface SearchService {
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
     String DSL_bool_search(@PathVariable(value = "index") String index, @RequestBody BoolRequest boolRequest);
+
+    /**
+     * 整体搜索
+     */
+    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
+    String _search(@PathVariable(value = "index") String index, @RequestBody QueryBaseRequest queryBaseRequest);
 
 }

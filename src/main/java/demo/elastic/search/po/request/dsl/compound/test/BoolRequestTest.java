@@ -80,10 +80,10 @@ public class BoolRequestTest {
     @Test
     public void testBoolMustAndMustNotRequest() {
         BoolRequest request = new BoolRequest();
-        request.getQuery().getBool().getMust().add(RegexpRequest.builderQuery("F8_0088", "张一鸣"));
+//        request.getQuery().getBool().getMust().add(RegexpRequest.builderQuery("F8_0088", "张一鸣"));
 //        request.getQuery().getBool().getMust_not().add(RegexpRequest.builderQuery("F2_0088", "北京字节跳动网络技术有限公司"));
-//        request.getQuery().getBool().getShould().add(RegexpRequest.builderQuery("F2_0088", "上海字节跳动网络技术有限公司"));
-//        request.getQuery().getBool().getShould().add(RegexpRequest.builderQuery("F2_0088", "北京字节跳动网络技术有限公司"));
+        request.getQuery().getBool().getShould().add(RegexpRequest.builderQuery("F2_0088", "上海字节跳动网络技术有限公司"));
+        request.getQuery().getBool().getShould().add(IDsRequest.builderQuery(Arrays.asList("{6CE55C9D-F8CB-4A1E-9EC1-A5D0BF8D7897}")));
         log.info("请求body:{}", request.getRequestBody());
         String response = searchService.DSL_bool_search("tb_object_0088", request);
         log.info("response:{}", response);
