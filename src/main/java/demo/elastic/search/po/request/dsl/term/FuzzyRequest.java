@@ -2,8 +2,12 @@ package demo.elastic.search.po.request.dsl.term;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import demo.elastic.search.po.request.ToRequestBody;
+import demo.elastic.search.po.request.dsl.compound.DSLQuery;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,35 +29,59 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class FuzzyRequest {
+public class FuzzyRequest extends ToRequestBody {
 
     private FuzzyQuery query = new FuzzyQuery();
 
     @Data
-    public static class FuzzyQuery {
+    public static class FuzzyQuery implements DSLQuery {
         private Map<String, FuzzyParam> fuzzy = new HashMap<>();
     }
 
     @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class FuzzyParam {
-
         @ApiModelProperty(example = " ")
         String value;
-
         @ApiModelProperty(example = "AUTO")
         String fuzziness;
-
         @ApiModelProperty(example = "50")
         Integer max_expansions;
-
         @ApiModelProperty(example = "0")
         Integer prefixLength;
-
         @ApiModelProperty(example = "true")
         Boolean transpositions;
-
         @ApiModelProperty(example = "constant_score")
         String rewrite;
+    }
 
+    public static FuzzyRequest builderRequest(String key, String value) {
+        return builderRequest(key, value, "AUTO", 50, 0, true, "constant_score");
+    }
+
+    public static FuzzyRequest builderRequest(String key, String value, String fuzziness) {
+        return builderRequest(key, value, fuzziness, 50, 0, true, "constant_score");
+    }
+
+
+    public static FuzzyRequest builderRequest(String key, String value, String fuzziness, Integer max_expansions, Integer prefixLength, Boolean transpositions, String rewrite) {
+        FuzzyRequest request = new FuzzyRequest();
+        request.getQuery().getFuzzy().put(key, new FuzzyParam(value, fuzziness, max_expansions, prefixLength, transpositions, rewrite));
+        return request;
+    }
+
+    public static FuzzyQuery builderQuery(String key, String value) {
+        return builderRequest(key, value, "AUTO", 50, 0, true, "constant_score").getQuery();
+    }
+
+    public static FuzzyQuery builderQuery(String key, String value, String fuzziness) {
+        return builderRequest(key, value, fuzziness, 50, 0, true, "constant_score").getQuery();
+    }
+
+
+    public static FuzzyQuery builderQuery(String key, String value, String fuzziness, Integer max_expansions, Integer prefixLength, Boolean transpositions, String rewrite) {
+        return builderRequest(key, value, fuzziness, max_expansions, prefixLength, transpositions, rewrite).getQuery();
     }
 }

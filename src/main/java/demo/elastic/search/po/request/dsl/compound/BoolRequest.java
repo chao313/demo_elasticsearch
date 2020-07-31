@@ -1,18 +1,15 @@
 package demo.elastic.search.po.request.dsl.compound;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import demo.elastic.search.po.request.dsl.term.ExistsRequest;
-import demo.elastic.search.po.request.dsl.term.FuzzyRequest;
-import demo.elastic.search.po.request.dsl.term.RegexpRequest;
+import demo.elastic.search.po.request.ToRequestBody;
 import lombok.Data;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class BoolRequest {
+public class BoolRequest extends ToRequestBody {
 
     private BoolQuery query = new BoolQuery();
 
@@ -23,18 +20,22 @@ public class BoolRequest {
 
     @Data
     public static class MustQuery {
-        private MustParam must = new MustParam();
+        //        List<TermRequest.TermQuery> must;
+//        TermRequest.TermQuery must;
+        List<DSLQuery> must = new ArrayList<>();
     }
 
-    @Data
-    public static class MustParam {
-        @JsonUnwrapped
-        ExistsRequest.ExistsQuery exists = new ExistsRequest.ExistsQuery();
-        @JsonUnwrapped
-        RegexpRequest.RegexpQuery regexp = new RegexpRequest.RegexpQuery();
-
-//        Map<String, FuzzyRequest.FuzzyParam> fuzzy = new HashMap<>();
-    }
+    //    public static class MustParam {
+//
+//        //        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+//        ExistsRequest.ExistsQuery exists = new ExistsRequest.ExistsQuery();
+////        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+////        @JsonUnwrapped
+////        RegexpRequest.RegexpQuery regexp = new RegexpRequest.RegexpQuery();
+//
+////        Map<String, FuzzyRequest.FuzzyParam> fuzzy = new HashMap<>();
+//    }
+//
 
 
 }

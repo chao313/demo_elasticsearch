@@ -91,6 +91,8 @@ public interface SearchService {
     /**
      * DSL搜索
      * 返回包含与通配符模式匹配的术语的文档
+     * ?, which matches any single character
+     * *, which can match zero or more characters, including an empty one
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
