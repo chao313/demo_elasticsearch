@@ -2,7 +2,9 @@ package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.FeignServiceConfig;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,63 +39,87 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "cat", url = Bootstrap.IN_USE, configuration = FeignServiceConfig.class)
 public interface CatService {
 
-    /**
-     * @return
-     */
+    @ApiOperation(value = "列出Cat的全部接口")
     @RequestMapping(value = "/_cat", method = RequestMethod.GET)
     String _cat();
 
+    @ApiOperation(value = "列出当前配置的index的alias,包括filter和router的信息")
+    @RequestMapping(value = "/_cat/aliases", method = RequestMethod.GET)
+    String _cat_aliases(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "列出分配给每个数据节点的分片数量及其磁盘空间的快照")
     @RequestMapping(value = "/_cat/allocation", method = RequestMethod.GET)
-    String _cat_allocation(@RequestParam(value = "v") String v);
+    String _cat_allocation(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "列出单个索引或集群中所有索引的文档计数的快速访问")
+    @RequestMapping(value = "/_cat/count", method = RequestMethod.GET)
+    String _cat_count(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "列出单个索引或集群中所有索引的文档计数的快速访问")
+    @RequestMapping(value = "/_cat/count/{index}", method = RequestMethod.GET)
+    String _cat_count(@RequestParam(value = "v") Boolean v,
+                      @PathVariable(value = "index") String index);
+
+    @ApiOperation(value = "列出集群中每个数据节点上的字段数据当前使用的堆内存量")
+    @RequestMapping(value = "/_cat/fielddata", method = RequestMethod.GET)
+    String _cat_fielddata(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "列出集群中每个数据节点上的字段数据当前使用的堆内存量")
+    @RequestMapping(value = "/_cat/fielddata/{field}", method = RequestMethod.GET)
+    String _cat_fielddata_field(@RequestParam(value = "v") Boolean v,
+                                @PathVariable(value = "field") String field);
+
+    @ApiOperation(value = "返回集群的运行状况")
+    @RequestMapping(value = "/_cat/health", method = RequestMethod.GET)
+    String _cat_health(@RequestParam(value = "v") Boolean v);
+
+
+    @ApiOperation(value = "列出index")
+    @RequestMapping(value = "/_cat/indices", method = RequestMethod.GET)
+    String _cat_indices(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "列出index")
+    @RequestMapping(value = "/_cat/indices/{index}", method = RequestMethod.GET)
+    String _cat_indices_index(@RequestParam(value = "v") Boolean v,
+                              @PathVariable(value = "index") String index);
 
     @RequestMapping(value = "/_cat/shards", method = RequestMethod.GET)
-    String _cat_shards(@RequestParam(value = "v") String v);
+    String _cat_shards(@RequestParam(value = "v") Boolean v);
 
     @RequestMapping(value = "/_cat/master", method = RequestMethod.GET)
-    String _cat_master(@RequestParam(value = "v") String v);
+    String _cat_master(@RequestParam(value = "v") Boolean v);
 
     @RequestMapping(value = "/_cat/nodes", method = RequestMethod.GET)
-    String _cat_nodes(@RequestParam(value = "v") String v);
-
-    @RequestMapping(value = "/_cat/indices", method = RequestMethod.GET)
-    String _cat_indices(@RequestParam(value = "v") String v);
+    String _cat_nodes(@RequestParam(value = "v") Boolean v);
 
     @RequestMapping(value = "/_cat/segments", method = RequestMethod.GET)
-    String _cat_segments(@RequestParam(value = "v") String v);
+    String _cat_segments(@RequestParam(value = "v") Boolean v);
 
-    @RequestMapping(value = "/_cat/count", method = RequestMethod.GET)
-    String _cat_count(@RequestParam(value = "v") String v);
 
     @RequestMapping(value = "/_cat/recovery", method = RequestMethod.GET)
-    String _cat_recovery(@RequestParam(value = "v") String v);
+    String _cat_recovery(@RequestParam(value = "v") Boolean v);
 
-    @RequestMapping(value = "/_cat/health", method = RequestMethod.GET)
-    String _cat_health(@RequestParam(value = "v") String v);
 
     @RequestMapping(value = "/_cat/pending_tasks", method = RequestMethod.GET)
-    String _cat_pending_tasks(@RequestParam(value = "v") String v);
+    String _cat_pending_tasks(@RequestParam(value = "v") Boolean v);
 
-    @RequestMapping(value = "/_cat/aliases", method = RequestMethod.GET)
-    String _cat_aliases(@RequestParam(value = "v") String v);
 
     @RequestMapping(value = "/_cat/thread_pool", method = RequestMethod.GET)
-    String _cat_thread_pool(@RequestParam(value = "v") String v);
+    String _cat_thread_pool(@RequestParam(value = "v") Boolean v);
 
     @RequestMapping(value = "/_cat/plugins", method = RequestMethod.GET)
-    String _cat_plugins(@RequestParam(value = "v") String v);
+    String _cat_plugins(@RequestParam(value = "v") Boolean v);
 
-    @RequestMapping(value = "/_cat/fielddata", method = RequestMethod.GET)
-    String _cat_fielddata(@RequestParam(value = "v") String v);
 
     @RequestMapping(value = "/_cat/nodeattrs", method = RequestMethod.GET)
-    String _cat_nodeattrs(@RequestParam(value = "v") String v);
+    String _cat_nodeattrs(@RequestParam(value = "v") Boolean v);
 
 
     @RequestMapping(value = "/_cat/repositories", method = RequestMethod.GET)
-    String _cat_repositories(@RequestParam(value = "v") String v);
+    String _cat_repositories(@RequestParam(value = "v") Boolean v);
 
     @RequestMapping(value = "/_cat/templates", method = RequestMethod.GET)
-    String _cat_templates(@RequestParam(value = "v") String v);
+    String _cat_templates(@RequestParam(value = "v") Boolean v);
 
 
 }
