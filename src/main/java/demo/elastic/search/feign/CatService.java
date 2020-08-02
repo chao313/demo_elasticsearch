@@ -83,43 +83,88 @@ public interface CatService {
     String _cat_indices_index(@RequestParam(value = "v") Boolean v,
                               @PathVariable(value = "index") String index);
 
-    @RequestMapping(value = "/_cat/shards", method = RequestMethod.GET)
-    String _cat_shards(@RequestParam(value = "v") Boolean v);
-
+    @ApiOperation(value = "返回master节点的信息，包括ID绑定IP地址和名称")
     @RequestMapping(value = "/_cat/master", method = RequestMethod.GET)
     String _cat_master(@RequestParam(value = "v") Boolean v);
 
-    @RequestMapping(value = "/_cat/nodes", method = RequestMethod.GET)
-    String _cat_nodes(@RequestParam(value = "v") Boolean v);
-
-    @RequestMapping(value = "/_cat/segments", method = RequestMethod.GET)
-    String _cat_segments(@RequestParam(value = "v") Boolean v);
-
-
-    @RequestMapping(value = "/_cat/recovery", method = RequestMethod.GET)
-    String _cat_recovery(@RequestParam(value = "v") Boolean v);
-
-
-    @RequestMapping(value = "/_cat/pending_tasks", method = RequestMethod.GET)
-    String _cat_pending_tasks(@RequestParam(value = "v") Boolean v);
-
-
-    @RequestMapping(value = "/_cat/thread_pool", method = RequestMethod.GET)
-    String _cat_thread_pool(@RequestParam(value = "v") Boolean v);
-
-    @RequestMapping(value = "/_cat/plugins", method = RequestMethod.GET)
-    String _cat_plugins(@RequestParam(value = "v") Boolean v);
-
-
+    @ApiOperation(value = "返回有关自定义节点属性的信息")
     @RequestMapping(value = "/_cat/nodeattrs", method = RequestMethod.GET)
     String _cat_nodeattrs(@RequestParam(value = "v") Boolean v);
 
+    @ApiOperation(value = "返回有关群集节点的信息")
+    @RequestMapping(value = "/_cat/nodes", method = RequestMethod.GET)
+    String _cat_nodes(@RequestParam(value = "v") Boolean v);
 
+    @ApiOperation(value = "返回正在挂起的task")
+    @RequestMapping(value = "/_cat/pending_tasks", method = RequestMethod.GET)
+    String _cat_pending_tasks(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "返回一个群集的每个节点上运行的插件的列表")
+    @RequestMapping(value = "/_cat/plugins", method = RequestMethod.GET)
+    String _cat_plugins(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "返回有关正在进行的和已完成的碎片恢复的信息")
+    @RequestMapping(value = "/_cat/recovery", method = RequestMethod.GET)
+    String _cat_recovery(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "返回有关正在进行的和已完成的碎片恢复的信息(指定index)")
+    @RequestMapping(value = "/_cat/recovery/{index}", method = RequestMethod.GET)
+    String _cat_recovery_index(@RequestParam(value = "v") Boolean v,
+                               @PathVariable(value = "index") String index);
+
+    @ApiOperation(value = "返回快照仓库")
     @RequestMapping(value = "/_cat/repositories", method = RequestMethod.GET)
     String _cat_repositories(@RequestParam(value = "v") Boolean v);
 
+    @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
+    @RequestMapping(value = "/_cat/shards", method = RequestMethod.GET)
+    String _cat_shards(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
+    @RequestMapping(value = "/_cat/shards/{index}", method = RequestMethod.GET)
+    String _cat_shards_index(@RequestParam(value = "v") Boolean v,
+                             @PathVariable(value = "index") String index);
+
+    @ApiOperation(value = "返回index中的低级关于Lucene段的信息碎片")
+    @RequestMapping(value = "/_cat/segments", method = RequestMethod.GET)
+    String _cat_segments(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "返回index中的低级关于Lucene段的信息碎片")
+    @RequestMapping(value = "/_cat/segments/{index}", method = RequestMethod.GET)
+    String _cat_segments_index(@RequestParam(value = "v") Boolean v,
+                               @PathVariable(value = "index") String index);
+
+    @ApiOperation(value = "返回信息有关快照存储在一个或多个存储库")
+    @RequestMapping(value = "/_cat/snapshots/{repository}", method = RequestMethod.GET)
+    String _cat_snapshots(@RequestParam(value = "v") Boolean v,
+                          @PathVariable(value = "repository") String repository);
+
+    @ApiOperation(value = "返回有关在群集中当前正在执行的任务的信息")
+    @RequestMapping(value = "/_cat/tasks", method = RequestMethod.GET)
+    String _cat_tasks(@RequestParam(value = "v") Boolean v,
+                      @RequestParam(value = "detailed", defaultValue = "false") Boolean detailed);
+
+    @ApiOperation(value = "返回群集中的index template的信息")
     @RequestMapping(value = "/_cat/templates", method = RequestMethod.GET)
     String _cat_templates(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "返回群集中的index template的信息")
+    @RequestMapping(value = "/_cat/templates/{template_name}", method = RequestMethod.GET)
+    String _cat_templates(@RequestParam(value = "v") Boolean v,
+                          @PathVariable(value = "template_name") String template_name);
+
+    @ApiOperation(value = "返回在群集中每个节点的返回线程池统计信息")
+    @RequestMapping(value = "/_cat/thread_pool", method = RequestMethod.GET)
+    String _cat_thread_pool(@RequestParam(value = "v") Boolean v);
+
+    @ApiOperation(value = "返回在群集中每个节点的返回线程池统计信息")
+    @RequestMapping(value = "/_cat/thread_pool/{thread_pool}", method = RequestMethod.GET)
+    String _cat_thread_pool(@RequestParam(value = "v") Boolean v,
+                            @PathVariable(value = "thread_pool") String thread_pool);
+
+    @ApiOperation(value = "返回有关转换的配置和使用信息")
+    @RequestMapping(value = "/_cat/transforms", method = RequestMethod.POST)
+    String _cat_transforms(@RequestParam(value = "v") Boolean v);
 
 
 }
