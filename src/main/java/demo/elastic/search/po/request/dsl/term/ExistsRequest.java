@@ -1,21 +1,25 @@
 package demo.elastic.search.po.request.dsl.term;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExistsRequest extends ToRequestBody {
 
     private ExistsQuery query = new ExistsQuery();
 
     @Data
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class ExistsQuery implements DSLQuery {
         private ExistsParam exists = new ExistsParam();
     }
 
     @Data
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class ExistsParam {
 
         @ApiModelProperty(example = " ")
