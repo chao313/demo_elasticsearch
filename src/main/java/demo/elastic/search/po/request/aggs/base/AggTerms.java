@@ -50,8 +50,8 @@ public class AggTerms implements Parse {
     Integer min_doc_count;
 
     //    @ApiModelProperty(example = "{ \"_count\" : \"asc\" }")
-    @JSONField(name = "order")
-    Map<String, String> order;
+//    @JSONField(name = "order")
+//    Map<String, String> order;
 
     @Override
     public String parse() {
@@ -78,9 +78,9 @@ public class AggTerms implements Parse {
         if (null != this.getShow_term_doc_count_error()) {
             content.put(_show_term_doc_count_error, this.getShow_term_doc_count_error());
         }
-        if (null != this.getOrder()) {
-            content.put(_order, this.getOrder());
-        }
+//        if (null != this.getOrder()) {
+//            content.put(_order, this.getOrder());
+//        }
         if (null != this.getMin_doc_count()) {
             content.put(_min_doc_count, this.getMin_doc_count());
         }

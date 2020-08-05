@@ -90,6 +90,11 @@ public class ResourceService {
      * @throws IOException
      */
     public File addNewFile(String fileName) throws IOException {
+        File locationResourcePathDir = new File(ResourceService.locationResourcePath);
+        if (!locationResourcePathDir.exists()) {
+            //如果文件夹不存在
+            locationResourcePathDir.mkdirs();
+        }
         File file = new File(ResourceService.locationResourcePath + fileName);
         if (!file.exists()) {
             file.createNewFile();

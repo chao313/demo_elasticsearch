@@ -88,7 +88,8 @@ public class CustomController {
     @Autowired
     private ResourceService resourceService;
 
-    private static final Integer LIMIT = 1000000;
+    //    private static final Integer LIMIT = 1000000;
+    private static final Integer LIMIT = 500000;
 
 
     @ApiOperation(value = "accounts.json 数据批量插入")
@@ -628,6 +629,7 @@ public class CustomController {
 
     ) {
         try {
+            List<String> paths = new ArrayList<>();//存放地址
             Body body = null;//请求体
             List<String> dealValues = new ArrayList<>();//待处理的值
             List<String> dealValuesSource;//待处理的值
@@ -667,31 +669,51 @@ public class CustomController {
                 } else {
                     body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
                     body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
-//                    List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
-                    List<List<String>> lists = searchServicePlus._searchToList(index, body.parse(), false);
+                    List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
                     readToExcelListTmp.addAll(lists);
+                    /**
+                     * 分段写入
+                     */
+                    if (readToExcelListTmp.size() >= LIMIT) {
+                        String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
+                        File file = resourceService.addNewFile(fileName);
+                        paths.add(fileName);
+                        ExcelUtil.writeListSXSS(readToExcelListTmp, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
+                        readToExcelListTmp.clear();//清空全部
+                    }
                     deal.clear();
                 }
             }
+            if (deal.size() > 0) {
+                body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
+                body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
+                List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
+                readToExcelListTmp.addAll(lists);
+            }
+
             /**
              * 追加title
              */
-            body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
-            body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
-            List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), true);
-            readyToExcelList.addAll(lists);//先添加带header的
+            List<String> names = mappingServicePlus.getFieldNamesList(index);//获取name
+            readyToExcelList.add(names);//追加title
             readyToExcelList.addAll(readToExcelListTmp);
             log.info("查询完成，开始写入");
 
+
             String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
+            paths.add(fileName);
             switch (outType) {
                 case URL:
                     File file = resourceService.addNewFile(fileName);
                     FileOutputStream fileOutputStream = FileUtils.openOutputStream(file);
                     ExcelUtil.writeListSXSS(readyToExcelList, fileOutputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
                     log.info("写入完成,准备return");
-                    String url = "http://" + host + resourceService.getContextPath() + "ResourceController/downloadByFileName?fileName=" + fileName;
-                    return Response.Ok(url);
+                    List<String> urls = new ArrayList<>();
+                    paths.forEach(path -> {
+                        String url = "http://" + host + resourceService.getContextPath() + "ResourceController/downloadByFileName?fileName=" + fileName;
+                        urls.add(url);
+                    });
+                    return Response.Ok(urls);
                 case EXCEL:
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     ExcelUtil.writeListSXSS(readyToExcelList, outputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));

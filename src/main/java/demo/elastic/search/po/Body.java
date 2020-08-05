@@ -11,6 +11,8 @@ import demo.elastic.search.po.request.level.TermLevel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * <pre>
  *  curl -X GET  "http://39.107.236.187:9200/bank/_doc/_search?pretty" -H 'Content-Type: application/json' -d'
@@ -53,6 +55,8 @@ public class Body {
     @JSONField(name = "aggs")
     private Aggs aggs;
 
+    @JSONField(name = "_source")
+    private List<String> _source;
 
     /**
      * 用于解析请求体
