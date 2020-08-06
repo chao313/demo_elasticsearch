@@ -629,7 +629,12 @@ public class CustomController {
 
     ) {
         try {
-            List<String> paths = new ArrayList<>();//存放地址
+            /**
+             * 获取 title
+             */
+            List<String> names = mappingServicePlus.getFieldNamesList(index);//获取name
+
+            List<String> filesNames = new ArrayList<>();//存放地址
             Body body = null;//请求体
             List<String> dealValues = new ArrayList<>();//待处理的值
             List<String> dealValuesSource;//待处理的值
@@ -655,7 +660,7 @@ public class CustomController {
 
 
             List<List<String>> readToExcelListTmp = new ArrayList<>(1000000);//入excel的结果集
-            List<List<String>> readyToExcelList = new ArrayList<>(1000000);//入excel的结果集
+            readToExcelListTmp.add(names);//添加Title
             int i = 0;
             int total = dealValues.size();
             List<Object> deal = new ArrayList<>();
@@ -671,15 +676,17 @@ public class CustomController {
                     body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
                     List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
                     readToExcelListTmp.addAll(lists);
+
                     /**
                      * 分段写入
                      */
-                    if (readToExcelListTmp.size() >= LIMIT) {
+                    while (readToExcelListTmp.size() > LIMIT) {
+                        List<List<String>> middle = readToExcelListTmp.subList(0, LIMIT);
                         String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
                         File file = resourceService.addNewFile(fileName);
-                        paths.add(fileName);
-                        ExcelUtil.writeListSXSS(readToExcelListTmp, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
-                        readToExcelListTmp.clear();//清空全部
+                        filesNames.add(fileName);
+                        ExcelUtil.writeListSXSS(middle, new FileOutputStream(file), (line, sz) -> log.info("写入进度:{}/{}->{}", line, sz, percent(line, sz)));
+                        middle.clear();
                     }
                     deal.clear();
                 }
@@ -692,40 +699,33 @@ public class CustomController {
             }
 
             /**
-             * 追加title
+             * 分段写入
              */
-            List<String> names = mappingServicePlus.getFieldNamesList(index);//获取name
-            readyToExcelList.add(names);//追加title
-            readyToExcelList.addAll(readToExcelListTmp);
-            log.info("查询完成，开始写入");
-
-
-            String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
-            paths.add(fileName);
-            switch (outType) {
-                case URL:
-                    File file = resourceService.addNewFile(fileName);
-                    FileOutputStream fileOutputStream = FileUtils.openOutputStream(file);
-                    ExcelUtil.writeListSXSS(readyToExcelList, fileOutputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
-                    log.info("写入完成,准备return");
-                    List<String> urls = new ArrayList<>();
-                    paths.forEach(path -> {
-                        String url = "http://" + host + resourceService.getContextPath() + "ResourceController/downloadByFileName?fileName=" + fileName;
-                        urls.add(url);
-                    });
-                    return Response.Ok(urls);
-                case EXCEL:
-                    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                    ExcelUtil.writeListSXSS(readyToExcelList, outputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
-                    log.info("写入完成,准备return");
-                    //返回
-                    HttpHeaders headers = new HttpHeaders();//设置响应
-                    headers.add("Content-Disposition", "attachment;filename=" + fileName);//下载的文件名称
-                    HttpStatus statusCode = HttpStatus.OK;//设置响应吗
-                    ResponseEntity<byte[]> response = new ResponseEntity<>(outputStream.toByteArray(), headers, statusCode);
-                    log.info("正常返回");
-                    return response;
+            while (readToExcelListTmp.size() > LIMIT) {
+                List<List<String>> middle = readToExcelListTmp.subList(0, LIMIT);
+                String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
+                File file = resourceService.addNewFile(fileName);
+                filesNames.add(fileName);
+                ExcelUtil.writeListSXSS(middle, new FileOutputStream(file), (line, sz) -> log.info("写入进度:{}/{}->{}", line, sz, percent(line, sz)));
+                middle.clear();
             }
+            /**
+             * 最后写入
+             */
+            if (readToExcelListTmp.size() > 0) {
+                String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
+                File file = resourceService.addNewFile(fileName);
+                filesNames.add(fileName);
+                FileOutputStream fileOutputStream = FileUtils.openOutputStream(file);
+                ExcelUtil.writeListSXSS(readToExcelListTmp, fileOutputStream, (line, sz) -> log.info("写入进度:{}/{}->{}", line, sz, percent(line, sz)));
+            }
+            List<String> urls = new ArrayList<>();
+            filesNames.forEach(path -> {
+                String url = "http://" + host + resourceService.getContextPath() + "ResourceController/downloadByFileName?fileName=" + path;
+                urls.add(url);
+            });
+            log.info("提取完成,return");
+            return Response.Ok(urls);
         } catch (Exception e) {
             Response response = new Response<>();
             response.setCode(Code.System.FAIL);
@@ -734,7 +734,6 @@ public class CustomController {
             log.error("发生异常:{}", e.getMessage(), e);
             return response;
         }
-        return Response.fail("操作异常");
     }
 
 
