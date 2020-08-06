@@ -89,7 +89,7 @@ public class CustomController {
     private ResourceService resourceService;
 
     //    private static final Integer LIMIT = 1000000;
-    private static final Integer LIMIT = 500000;
+    private static final Integer LIMIT = 5;
 
 
     @ApiOperation(value = "accounts.json 数据批量插入")
@@ -110,7 +110,12 @@ public class CustomController {
             @PathVariable(value = "index") String index,
             @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false) String scroll,
-            @RequestBody String body) throws IOException, IllegalAccessException, ScriptException, NoSuchMethodException {
+            @RequestBody String body,
+            @ApiParam(hidden = true)
+            @RequestHeader(value = "host") String host,
+            HttpServletRequest httpServletRequest
+    ) throws IOException, IllegalAccessException, ScriptException, NoSuchMethodException {
+        List<String> filesNames = new ArrayList<>();//文件名称
         List<List<String>> lists = new ArrayList<>();
         AtomicReference<Integer> i = new AtomicReference<>(0);
         if (StringUtils.isBlank(scroll)) {
@@ -123,17 +128,29 @@ public class CustomController {
                 @Override
                 public void accept(List<List<String>> lists) {
                     if (lists.size() >= LIMIT) {
-                        File file = new File("result" + i.getAndSet(i.get() + 1) + ".xlsx");
+                        String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
+                        filesNames.add(fileName);
+                        File file = resourceService.addNewFile(fileName);
                         ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
                         lists.clear();
                     }
                 }
             });
         }
-        File file = new File("result" + i.getAndSet(i.get() + 1) + ".xlsx");
-        ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
-        lists.clear();
-        return Response.Ok(true);
+        if (lists.size() > 0) {
+            String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
+            filesNames.add(fileName);
+            File file = resourceService.addNewFile(fileName);
+            ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
+            lists.clear();
+        }
+
+        List<String> urls = new ArrayList<>();
+        filesNames.forEach(path -> {
+            String url = "http://" + host + resourceService.getContextPath() + "ResourceController/downloadByFileName?fileName=" + path;
+            urls.add(url);
+        });
+        return Response.Ok(urls);
     }
 
 
