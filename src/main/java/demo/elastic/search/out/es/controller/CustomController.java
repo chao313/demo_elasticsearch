@@ -89,7 +89,7 @@ public class CustomController {
     private ResourceService resourceService;
 
     //    private static final Integer LIMIT = 1000000;
-    private static final Integer LIMIT = 5;
+    private static final Integer LIMIT = 500000;
 
 
     @ApiOperation(value = "accounts.json 数据批量插入")
