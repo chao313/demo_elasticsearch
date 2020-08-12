@@ -13,14 +13,16 @@ import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.out.comm.OutType;
+import demo.elastic.search.out.db.mysql.service.DBService;
 import demo.elastic.search.out.kafka.KafkaMsg;
 import demo.elastic.search.out.kafka.KafkaOutService;
 import demo.elastic.search.out.resource.service.ResourceService;
 import demo.elastic.search.po.Body;
+import demo.elastic.search.po.request.level.base.Terms;
 import demo.elastic.search.po.response.ESResponse;
 import demo.elastic.search.po.response.InnerHits;
 import demo.elastic.search.po.response.buckets.BucketsRoot;
-import demo.elastic.search.po.request.level.base.Terms;
+import demo.elastic.search.service.ThreadPoolExecutorService;
 import demo.elastic.search.util.DateUtil;
 import demo.elastic.search.util.ExcelUtil;
 import io.swagger.annotations.ApiImplicitParam;
@@ -42,7 +44,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -88,8 +94,15 @@ public class CustomController {
     @Autowired
     private ResourceService resourceService;
 
+    @Autowired
+    private DBService dbService;
+
+    @Autowired
+    private ThreadPoolExecutorService threadPoolExecutorService;
+
     //    private static final Integer LIMIT = 1000000;
     private static final Integer LIMIT = 500000;
+    private static final Integer LIMIT_DB = 50000;
 
 
     @ApiOperation(value = "accounts.json 数据批量插入")
@@ -105,7 +118,7 @@ public class CustomController {
 
     @ApiOperation(value = "导出全部的查询结果")
     @PostMapping(value = "/{index}/_search/outputToExcel")
-    public Response _search(
+    public Response _searchOutputToExcel(
             @ApiParam(defaultValue = "tb_object_0088")
             @PathVariable(value = "index") String index,
             @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
@@ -153,10 +166,62 @@ public class CustomController {
         return Response.Ok(urls);
     }
 
+    @ApiOperation(value = "导出全部的查询结果")
+    @PostMapping(value = "/{index}/_search/outputToDB")
+    public Response _searchOutputToDB(
+            @ApiParam(defaultValue = "tb_object_0088")
+            @PathVariable(value = "index") String index,
+            @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
+            @RequestParam(value = "scroll", required = false) String scroll,
+            @RequestBody String body
+    ) throws Exception {
+        String targetTable = index + "_" + DateUtil.getNow();
+        dbService.cloneTableStruct(index, targetTable);//创建新的表
+        List<String> fieldNames = mappingServicePlus.getFieldNamesList(index);//获取name
+        List<List<String>> lists = new ArrayList<>();
+        AtomicReference<Integer> i = new AtomicReference<>(0);
+        if (StringUtils.isBlank(scroll)) {
+            lists = searchServicePlus._searchToList(index, body, false, (size, total) -> log.info("读取进度:{}/{}->{}", size, total, percent(size, total)));
+        } else {
+            lists = searchServicePlus._searchScrollToList(index, scroll, body, false, (size, total) -> {
+                log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
+            }, new Consumer<List<List<String>>>() {
+                @SneakyThrows
+                @Override
+                public void accept(List<List<String>> lists) {
+                    if (lists.size() >= LIMIT_DB) {
+                        List<List<String>> tmp = new ArrayList<>(lists);
+                        threadPoolExecutorService.addWork(new Runnable() {
+                            @Override
+                            public void run() {
+                                dbService.batchInsert(targetTable, tmp, fieldNames);
+                            }
+                        });
+                        lists.clear();
+                    }
+                }
+            });
+        }
+        if (lists.size() > 0) {
+            List<List<String>> tmp = new ArrayList<>(lists);
+            threadPoolExecutorService.addWork(new Runnable() {
+                @Override
+                public void run() {
+                    dbService.batchInsert(targetTable, tmp, fieldNames);
+                }
+            });
+            lists.clear();
+        }
+
+        threadPoolExecutorService.waitComplete();
+        log.info("提取完成,return");
+        return Response.Ok(targetTable);
+    }
+
 
     @ApiOperation(value = "函数式处理发送到kafka")
     @PostMapping(value = "/{index}/_search/outputToKafka")
-    public Response _search(
+    public Response _searchOutputToKafka(
             @ApiParam(name = "index", defaultValue = "tb_object_0088")
             @PathVariable(value = "index")
                     String index,
@@ -629,7 +694,7 @@ public class CustomController {
             @ApiImplicitParam(name = "values", value = "values", dataTypeClass = String.class, paramType = "form", allowMultiple = true)
     })
     @RequestMapping(value = "/{index}/_searchTermsToExcel", method = {RequestMethod.POST})
-    public Object _search(
+    public Object _searchTermsToExcel(
             @ApiParam(defaultValue = "tb_object_0088")
             @PathVariable(value = "index") String index,
             @ApiParam(defaultValue = "F6_0088", value = "下面的文件中需要匹配的值")
@@ -753,6 +818,133 @@ public class CustomController {
         }
     }
 
+    @ApiOperation(value = "查询agg到DB，目前只支持aggTerms(values的优先级高于listFile)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "listFile", value = "listFile", dataType = "__file", paramType = "form"),
+            @ApiImplicitParam(name = "field", value = "field", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "values", value = "values", dataTypeClass = String.class, paramType = "form", allowMultiple = true)
+    })
+    @RequestMapping(value = "/{index}/_searchTermsToDb", method = {RequestMethod.POST})
+    public Object _searchTermsToDb(
+            @ApiParam(defaultValue = "tb_object_0088")
+            @PathVariable(value = "index") String index,
+            @ApiParam(defaultValue = "F6_0088", value = "下面的文件中需要匹配的值")
+            @RequestParam(value = "field", required = false)
+                    String field,
+            @ApiParam(value = "请求体，需要复制")
+            @RequestParam(value = "request") List<String> request,
+            @RequestParam(value = "values", required = false) List<String> values,
+            @RequestParam(name = "listFile", required = false) MultipartFile listFile,
+            @RequestParam(name = "outType", required = false, defaultValue = "URL") OutType outType
+
+    ) throws Exception {
+
+        String targetTable = index + "_" + DateUtil.getNow();
+        dbService.cloneTableStruct(index, targetTable);//创建新的表
+        /**
+         * 获取 title
+         */
+        List<String> fieldNames = mappingServicePlus.getFieldNamesList(index);//获取name
+
+        List<String> filesNames = new ArrayList<>();//存放地址
+        Body body = null;//请求体
+        List<String> dealValues = new ArrayList<>();//待处理的值
+        List<String> dealValuesSource;//待处理的值
+        /**
+         * 还原请求体
+         */
+        StringBuffer bodyStr = new StringBuffer();
+        request.forEach(line -> {
+            bodyStr.append(line.trim());
+        });
+
+        if (null != values) {
+            dealValuesSource = values;
+        } else {
+            dealValuesSource = IOUtils.readLines(listFile.getInputStream());
+        }
+        /**
+         * 移除空格
+         */
+        dealValuesSource.forEach(value -> {
+            dealValues.add(value.trim());
+        });
+
+
+        List<List<String>> readToExcelListTmp = new ArrayList<>(1000000);//入excel的结果集
+        int i = 0;
+        int total = dealValues.size();
+        List<Object> deal = new ArrayList<>();
+        for (String value : dealValues) {
+            log.info("处理进度:{}/{}->{}", i++, total, percent(i, total));
+            if (deal.size() < 1000) {
+                if (StringUtils.isNotBlank(value)) {
+                    //加入空判断
+                    deal.add(value);
+                }
+            } else {
+                body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
+                body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
+                List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
+                readToExcelListTmp.addAll(lists);
+
+                /**
+                 * 分段写入
+                 */
+                while (readToExcelListTmp.size() > LIMIT_DB) {
+                    List<List<String>> middle = readToExcelListTmp.subList(0, LIMIT_DB);
+                    List<List<String>> tmp = new ArrayList<>(middle);
+                    threadPoolExecutorService.addWork(new Runnable() {
+                        @Override
+                        public void run() {
+                            dbService.batchInsert(targetTable, tmp, fieldNames);
+                        }
+                    });
+                    middle.clear();
+                }
+                deal.clear();
+            }
+        }
+        if (deal.size() > 0) {
+            body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
+            body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
+            List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
+            readToExcelListTmp.addAll(lists);
+        }
+
+        /**
+         * 分段写入
+         */
+        while (readToExcelListTmp.size() > LIMIT_DB) {
+            List<List<String>> middle = readToExcelListTmp.subList(0, LIMIT_DB);
+            List<List<String>> tmp = new ArrayList<>(middle);
+            threadPoolExecutorService.addWork(new Runnable() {
+                @Override
+                public void run() {
+                    dbService.batchInsert(targetTable, tmp, fieldNames);
+                }
+            });
+            middle.clear();
+        }
+        /**
+         * 最后写入
+         */
+        if (readToExcelListTmp.size() > 0) {
+            List<List<String>> tmp = new ArrayList<>(readToExcelListTmp);
+            threadPoolExecutorService.addWork(new Runnable() {
+                @Override
+                public void run() {
+                    dbService.batchInsert(targetTable, tmp, fieldNames);
+                }
+            });
+        }
+
+        threadPoolExecutorService.waitComplete();
+        log.info("提取完成,return");
+        return Response.Ok(targetTable);
+
+    }
+
 
     @ApiOperation(value = "查询agg到kafka，目前只支持aggTerms(values的优先级高于listFile)")
     @ApiImplicitParams({
@@ -761,7 +953,7 @@ public class CustomController {
             @ApiImplicitParam(name = "values", value = "values", dataTypeClass = String.class, paramType = "form", allowMultiple = true)
     })
     @RequestMapping(value = "/{index}/_searchTermsToKafka", method = {RequestMethod.POST})
-    public Response _search(
+    public Response _searchTermsToKafka(
             @ApiParam(defaultValue = "tb_object_0088")
             @PathVariable(value = "index") String index,
             @ApiParam(defaultValue = "F6_0088", value = "下面的文件中需要匹配的值")
