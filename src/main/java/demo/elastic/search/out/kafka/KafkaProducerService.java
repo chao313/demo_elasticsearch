@@ -59,4 +59,21 @@ public class KafkaProducerService {
         return flag;
     }
 
+    /**
+     * @param topic 需要发送的topic
+     * @param msg   发送的msg
+     * @return
+     */
+    protected boolean load(String topic, String key, String msg) {
+        boolean flag = false;
+        RecordMetadata recordMetadata = null;
+        try {
+            kafkaProducer.send(new ProducerRecord<String, String>(topic, key, msg), new ProducerCallback());
+            flag = true;
+        } catch (TimeoutException e) {
+            log.error("send data to kafka has Exception {}", e.toString(), e);
+        }
+        return flag;
+    }
+
 }

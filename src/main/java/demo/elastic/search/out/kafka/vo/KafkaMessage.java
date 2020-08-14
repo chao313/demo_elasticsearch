@@ -8,21 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KafkaMessage {
-    @JSONField(
-            name = "MsgID"
-    )
+    @JSONField(name = "MsgID")
     private String MsgID;
-    @JSONField(
-            name = "MsgHead"
-    )
+    @JSONField(name = "MsgHead")
     private demo.elastic.search.out.kafka.vo.MsgHead MsgHead;
-    @JSONField(
-            name = "Data"
-    )
+    @JSONField(name = "Data")
     private String Data;
-    @JSONField(
-            name = "DataArray"
-    )
+    @JSONField(name = "DataArray")
     private String DataArray;
 
     public String getMsgID() {

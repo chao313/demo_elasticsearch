@@ -2,11 +2,14 @@ package demo.elastic.search.out.kafka;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.out.kafka.vo.KafkaMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -51,5 +54,17 @@ public class KafkaOutService {
         KafkaMessage kafkaMessage = kafkaMsg.getKafakMsg(UUID.randomUUID().toString(),
                 policyId, result);
         kafkaProducerService.load(topic, JSON.toJSONString(kafkaMessage));
+    }
+
+    /**
+     * 这里是原始库数据，转成json入kafka
+     *
+     * @param topic
+     * @param msgId
+     */
+    public void load(String topic, Object data, String msgId, String policyId) {
+        KafkaMessage kafkaMessage = kafkaMsg.getKafakMsg(UUID.randomUUID().toString(),
+                policyId, JSON.parseObject(JSON.toJSON(data).toString()));
+        kafkaProducerService.load(topic, msgId, JSON.toJSONString(kafkaMessage));
     }
 }

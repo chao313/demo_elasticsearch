@@ -377,9 +377,8 @@ public class CustomController {
         int total = masterFieldValues[0].size();
         for (String value : masterFieldValues[0]) {
             log.info("i : {} /total :{} -> {}", i++, total, percent(i, total));
-            if (dealValues.size() < 1000) {
-                dealValues.add(value);
-            } else {
+            dealValues.add(value);
+            if (dealValues.size() >= 1000) {
                 try {
                     Terms terms = new Terms();
                     terms.setField(slaveField);
@@ -493,9 +492,8 @@ public class CustomController {
         int total = masterFieldValues.size();
         for (String value : masterFieldValues) {
             log.info("i : {} /total :{} -> {}", i++, total, percent(i, total));
-            if (dealValues.size() < 1000) {
-                dealValues.add(value);
-            } else {
+            dealValues.add(value);
+            if (dealValues.size() >= 1000) {
                 try {
                     /**
                      * 处理1000条
@@ -748,12 +746,11 @@ public class CustomController {
             List<Object> deal = new ArrayList<>();
             for (String value : dealValues) {
                 log.info("处理进度:{}/{}->{}", i++, total, percent(i, total));
-                if (deal.size() < 1000) {
-                    if (StringUtils.isNotBlank(value)) {
-                        //加入空判断
-                        deal.add(value);
-                    }
-                } else {
+                if (StringUtils.isNotBlank(value)) {
+                    //加入空判断
+                    deal.add(value);
+                }
+                if (deal.size() >= 1000) {
                     body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
                     body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
                     List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
@@ -846,7 +843,6 @@ public class CustomController {
          */
         List<String> fieldNames = mappingServicePlus.getFieldNamesList(index);//获取name
 
-        List<String> filesNames = new ArrayList<>();//存放地址
         Body body = null;//请求体
         List<String> dealValues = new ArrayList<>();//待处理的值
         List<String> dealValuesSource;//待处理的值
@@ -877,12 +873,11 @@ public class CustomController {
         List<Object> deal = new ArrayList<>();
         for (String value : dealValues) {
             log.info("处理进度:{}/{}->{}", i++, total, percent(i, total));
-            if (deal.size() < 1000) {
-                if (StringUtils.isNotBlank(value)) {
-                    //加入空判断
-                    deal.add(value);
-                }
-            } else {
+            if (StringUtils.isNotBlank(value)) {
+                //加入空判断
+                deal.add(value);
+            }
+            if (deal.size() >= 1000) {
                 body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
                 body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
                 List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", body.parse(), false);
@@ -1025,12 +1020,11 @@ public class CustomController {
         List<Object> deal = new ArrayList<>();
         for (String value : dealValues) {
             log.info("处理进度:{}/{}->{}", i++, total, percent(i, total));
-            if (deal.size() < 1000) {
-                if (StringUtils.isNotBlank(value)) {
-                    //加入空判断
-                    deal.add(value);
-                }
-            } else {
+            if (StringUtils.isNotBlank(value)) {
+                //加入空判断
+                deal.add(value);
+            }
+            if (deal.size() >= 1000) {
                 body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
                 body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
                 if (StringUtils.isBlank(scroll)) {
