@@ -175,9 +175,22 @@ public class CustomController {
             @RequestParam(value = "scroll", required = false) String scroll,
             @RequestBody String body
     ) throws Exception {
-        String targetTable = index + "_" + DateUtil.getNow();
-        dbService.cloneTableStruct(index, targetTable);//创建新的表
+        String tableName = null;
+        if (index.matches("comstore_(.*)")) {
+            tableName = index.replaceAll("comstore_(.*)", "$1");
+        }
+        if (index.matches("(.*)?_ext")) {
+            tableName = index.replaceAll("(.*)?_ext", "$1");
+        }
+        if (index.matches("comstore_(.*)?_ext")) {
+            tableName = index.replaceAll("comstore_(.*)?_ext", "$1");
+        }
+
+        String targetTable = tableName + "_" + DateUtil.getNow();
+        dbService.cloneTableStruct(tableName, targetTable);//创建新的表
         List<String> fieldNames = mappingServicePlus.getFieldNamesList(index);//获取name
+        fieldNames.remove("row_feature");
+        fieldNames.remove("ES_MOD_TIME");
         List<List<String>> lists = new ArrayList<>();
         AtomicReference<Integer> i = new AtomicReference<>(0);
         if (StringUtils.isBlank(scroll)) {
