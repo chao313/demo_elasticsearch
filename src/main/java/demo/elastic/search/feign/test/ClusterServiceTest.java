@@ -23,8 +23,28 @@ public class ClusterServiceTest {
      * comstore_tb_object_6913      comstore_tb_object_6913_v1      -      -             -
      */
     @Test
-    public void _cat_aliases() {
+    public void _cluster_allocation_explain() {
         String response = clusterService._cluster_allocation_explain(true, true, null, null, true, null);
+        log.info("response:{}", response);
+    }
+
+    /**
+     * <pre>
+     * {
+     *     "persistent":{
+     *         "action.destructive_requires_name":"true",
+     *         "cluster.routing.allocation.enable":"all",
+     *         "logger.discovery.zen.fd":"trace"
+     *     },
+     *     "transient":{
+     *
+     *     }
+     * }
+     * </pre>
+     */
+    @Test
+    public void _cluster_settings() {
+        String response = clusterService._cluster_settings(true, true, "30s", "30s");
         log.info("response:{}", response);
     }
 

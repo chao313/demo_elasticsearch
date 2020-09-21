@@ -47,7 +47,7 @@ public class ThreadPoolExecutorService {
     public synchronized boolean waitComplete() throws Exception {
         ThreadPoolExecutor threadPoolExecutor = threadPoolExecutorThreadLocal.get();
         if (threadPoolExecutor == null) {
-            throw new Exception("线程池为空，请初始化");
+            throw new Exception("线程池为空，请初始化,可能未执行addWork方法");
         }
         for (; ; ) {
             log.info("当前剩余作业:{}", blockingQueueThreadLocal.get().size());

@@ -51,6 +51,11 @@ public interface CatService {
     @RequestMapping(value = "/_cat/allocation", method = RequestMethod.GET)
     String _cat_allocation(@RequestParam(value = "v") Boolean v);
 
+    @ApiOperation(value = "列出指定数据节点的分片数量及其磁盘空间的快照")
+    @RequestMapping(value = "/_cat/allocation/{node_id}", method = RequestMethod.GET)
+    String _cat_allocation_nodeId(@RequestParam(value = "v") Boolean v,
+                                  @PathVariable(value = "node_id") String node_id);
+
     @ApiOperation(value = "列出单个索引或集群中所有索引的文档计数的快速访问")
     @RequestMapping(value = "/_cat/count", method = RequestMethod.GET)
     String _cat_count(@RequestParam(value = "v") Boolean v);

@@ -42,6 +42,13 @@ public class CatController {
         return catService._cat_allocation(v);
     }
 
+        @ApiOperation(value = "列出指定数据节点的分片数量及其磁盘空间的快照 (e.g. dataNode-dwserver18-4)")
+    @GetMapping(value = "/_cat/allocation/{node_id}")
+    public String _cat_allocation_nodeId(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                                         @ApiParam(value = "节点Id") @PathVariable(value = "node_id") String node_id) {
+        return catService._cat_allocation_nodeId(v, node_id);
+    }
+
     @ApiOperation(value = "提供对单个索引或集群中所有索引的文档计数的快速访问")
     @GetMapping(value = "/_cat/count")
     public String _cat_count(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {

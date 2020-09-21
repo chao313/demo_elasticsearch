@@ -76,6 +76,16 @@ public class CatServiceTest {
     }
 
     /**
+     * shards disk.indices disk.used disk.avail disk.total disk.percent host         ip           node
+     * 716        1.1tb     1.6tb      1.8tb      3.4tb           47 10.200.6.168 10.200.6.168 dataNode-dwserver18-4
+     */
+    @Test
+    public void _cat_allocation_nodeId() {
+        String response = catService._cat_allocation_nodeId(true,"dataNode-dwserver18-4");
+        log.info("response:{}", response);
+    }
+
+    /**
      * epoch      timestamp count
      * 1596304547 17:55:47  5464792
      */

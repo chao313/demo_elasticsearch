@@ -48,7 +48,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -176,6 +175,7 @@ public class CustomController {
             @RequestBody String body
     ) throws Exception {
         String tableName = null;
+        tableName = index;
         if (index.matches("comstore_(.*)")) {
             tableName = index.replaceAll("comstore_(.*)", "$1");
         }
