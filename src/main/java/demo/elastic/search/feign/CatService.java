@@ -79,6 +79,14 @@ public interface CatService {
     String _cat_health(@RequestParam(value = "v") Boolean v);
 
 
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-indices.html"></a>
+     * health status index                            pri rep docs.count docs.deleted store.size pri.store.size
+     * green  open   comstore_tb_object_6891_v2         6   1     675393        10761    464.4mb        232.2mb
+     * green  open   comstore_tb_object_6570_v2         6   1      61880           10       49mb         24.5mb\
+     * 可以获得全部索引的
+     * 健康状况，索引状态，主分片数量，复制分片数量，文档数量，文档删除数量，索引的存储size，主分片的存储size
+     */
     @ApiOperation(value = "列出index")
     @RequestMapping(value = "/_cat/indices", method = RequestMethod.GET)
     String _cat_indices(@RequestParam(value = "v") Boolean v);
@@ -88,17 +96,198 @@ public interface CatService {
     String _cat_indices_index(@RequestParam(value = "v") Boolean v,
                               @PathVariable(value = "index") String index);
 
+    /**
+     * id                     host         ip           node
+     * erCsPp8sQa-P5TfEqbeW0A 10.200.6.168 10.200.6.168 masterNode-dwserver18-1
+     */
     @ApiOperation(value = "返回master节点的信息，包括ID绑定IP地址和名称")
     @RequestMapping(value = "/_cat/master", method = RequestMethod.GET)
     String _cat_master(@RequestParam(value = "v") Boolean v);
 
+    /**
+     * node                    host         ip           attr   value
+     * dataNode-dwserver18-3   10.200.6.168 10.200.6.168 master false
+     * masterNode-dwserver17-1 10.200.2.204 10.200.2.204 data   false
+     * masterNode-dwserver17-1 10.200.2.204 10.200.2.204 master true
+     */
     @ApiOperation(value = "返回有关自定义节点属性的信息")
     @RequestMapping(value = "/_cat/nodeattrs", method = RequestMethod.GET)
     String _cat_nodeattrs(@RequestParam(value = "v") Boolean v);
 
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-nodes.html"></a>
+     * ip， i
+     * （默认）IP地址，例如127.0.1.1。
+     * heap.percent，hp，heapPercent
+     * （默认）最大配置堆，例如7。
+     * ram.percent，rp，ramPercent
+     * （默认）已使用的总内存百分比，例如47。
+     * file_desc.percent，fdp，fileDescriptorPercent
+     * （默认）使用的文件描述符百分比，例如1。
+     * node.role，r，role，nodeRole
+     * （默认）节点的角色。返回的值包括d（数据节点），i （目标节点），m（主资格节点），l（机器学习节点），v （仅投票节点），t（转换节点），r（远程集群客户端节点）和-（仅协调节点） ）。
+     * <p>
+     * 例如，dim指示符合主机资格的数据和摄取节点。参见 Node。
+     * <p>
+     * master， m
+     * （默认值）指示该节点是否为当选的主节点。返回的值包括*（当选的主服务器）和-（当选的主服务器）。
+     * name， n
+     * （默认）节点名称，例如I8hydUG。
+     * id， nodeId
+     * 节点的ID，例如k0zy。
+     * pid， p
+     * 进程ID，例如13061。
+     * port， po
+     * 绑定的运输港口，例如9300。
+     * http_address， http
+     * 绑定的http地址，例如127.0.0.1:9200。
+     * version， v
+     * Elasticsearch版本，例如7.9.1。
+     * build， b
+     * Elasticsearch构建哈希，例如5c03844。
+     * jdk， j
+     * Java版本，例如1.8.0。
+     * disk.total，dt，diskTotal
+     * 总磁盘空间，例如458.3gb。
+     * disk.used，du，diskUsed
+     * 已使用的磁盘空间，例如259.8gb。
+     * disk.avail，d，disk，diskAvail
+     * 可用磁盘空间，例如198.4gb。
+     * disk.used_percent，dup，diskUsedPercent
+     * 已用磁盘空间百分比，例如47。
+     * heap.current，hc，heapCurrent
+     * 已用堆，例如311.2mb。
+     * ram.current，rc，ramCurrent
+     * 已用的总内存，例如513.4mb。
+     * ram.max，rm，ramMax
+     * 总内存，例如2.9gb。
+     * file_desc.current，fdc，fileDescriptorCurrent
+     * 使用的文件描述符，例如123。
+     * file_desc.max，fdm，fileDescriptorMax
+     * 文件描述符的最大数量，例如1024。
+     * cpu
+     * 最近的系统CPU使用率，例如百分比12。
+     * load_1m， l
+     * 最近的平均负载，例如0.22。
+     * load_5m， l
+     * 最近五分钟的平均负载，例如0.78。
+     * load_15m， l
+     * 最近15分钟的平均负载，例如1.24。
+     * uptime， u
+     * 节点正常运行时间，例如17.3m。
+     * completion.size，cs，completionSize
+     * 完成大小，例如0b。
+     * fielddata.memory_size，fm，fielddataMemory
+     * 已使用的字段数据缓存存储器，例如0b。
+     * fielddata.evictions，fe，fielddataEvictions
+     * 字段数据缓存逐出，例如0。
+     * query_cache.memory_size，qcm，queryCacheMemory
+     * 已使用的查询缓存存储器，例如0b。
+     * query_cache.evictions，qce，queryCacheEvictions
+     * 查询缓存逐出，例如0。
+     * request_cache.memory_size，rcm，requestCacheMemory
+     * 已使用的请求缓存存储器，例如0b。
+     * request_cache.evictions，rce，requestCacheEvictions
+     * 请求缓存逐出，例如0。
+     * request_cache.hit_count，rchc，requestCacheHitCount
+     * 请求缓存命中计数，例如0。
+     * request_cache.miss_count，rcmc，requestCacheMissCount
+     * 请求缓存未命中计数，例如0。
+     * flush.total，ft，flushTotal
+     * 冲洗次数，例如1。
+     * flush.total_time，ftt，flushTotalTime
+     * 花在冲洗上的时间，例如1。
+     * get.current，gc，getCurrent
+     * 当前获取操作的数量，例如0。
+     * get.time，gti，getTime
+     * 花费的时间，例如14ms。
+     * get.total，gto，getTotal
+     * 获取操作的数量，例如2。
+     * get.exists_time，geti，getExistsTime
+     * 成功获取所花费的时间，例如14ms。
+     * get.exists_total，geto，getExistsTotal
+     * 成功执行get操作的次数，例如2。
+     * get.missing_time，gmti，getMissingTime
+     * 花费失败的时间，例如0s。
+     * get.missing_total，gmto，getMissingTotal
+     * 获取操作失败的次数，例如1。
+     * indexing.delete_current，idc，indexingDeleteCurrent
+     * 当前删除操作的数量，例如0。
+     * indexing.delete_time，idti，indexingDeleteTime
+     * 删除所花费的时间，例如2ms。
+     * indexing.delete_total，idto，indexingDeleteTotal
+     * 删除操作的数量，例如2。
+     * indexing.index_current，iic，indexingIndexCurrent
+     * 当前索引操作的数量，例如0。
+     * indexing.index_time，iiti，indexingIndexTime
+     * 用于建立索引的时间，例如134ms。
+     * indexing.index_total，iito，indexingIndexTotal
+     * 索引操作的数量，例如1。
+     * indexing.index_failed，iif，indexingIndexFailed
+     * 索引操作失败的次数，例如0。
+     * merges.current，mc，mergesCurrent
+     * 当前合并操作的数量，例如0。
+     * merges.current_docs，mcd，mergesCurrentDocs
+     * 当前合并文档的数量，例如0。
+     * merges.current_size，mcs，mergesCurrentSize
+     * 当前合并的大小，例如0b。
+     * merges.total，mt，mergesTotal
+     * 完成的合并操作的数量，例如0。
+     * merges.total_docs，mtd，mergesTotalDocs
+     * 合并文档的数量，例如0。
+     * merges.total_size，mts，mergesTotalSize
+     * 当前合并的大小，例如0b。
+     * merges.total_time，mtt，mergesTotalTime
+     * 合并文档所花费的时间，例如0s。
+     * refresh.total，rto，refreshTotal
+     * 刷新次数，例如16。
+     * refresh.time，rti，refreshTime
+     * 刷新所花费的时间，例如91ms。
+     * script.compilations，scrcc，scriptCompilations
+     * 脚本编译总数，例如17。
+     * script.cache_evictions，scrce，scriptCacheEvictions
+     * 从缓存中逐出的已编译脚本总数，例如6。
+     * search.fetch_current，sfc，searchFetchCurrent
+     * 当前的提取阶段操作，例如0。
+     * search.fetch_time，sfti，searchFetchTime
+     * 在抓取阶段花费的时间，例如37ms。
+     * search.fetch_total，sfto，searchFetchTotal
+     * 提取操作的数量，例如7。
+     * search.open_contexts，so，searchOpenContexts
+     * 打开搜索上下文，例如0。
+     * search.query_current，sqc，searchQueryCurrent
+     * 当前的查询阶段操作，例如0。
+     * search.query_time，sqti，searchQueryTime
+     * 在查询阶段花费的时间，例如43ms。
+     * search.query_total，sqto，searchQueryTotal
+     * 查询操作的数量，例如9。
+     * search.scroll_current，scc，searchScrollCurrent
+     * 打开滚动上下文，例如2。
+     * search.scroll_time，scti，searchScrollTime
+     * 时间滚动上下文保持打开状态，例如2m。
+     * search.scroll_total，scto，searchScrollTotal
+     * 完成滚动上下文，例如1。
+     * segments.count，sc，segmentsCount
+     * 段数，例如4。
+     * segments.memory，sm，segmentsMemory
+     * 段使用的内存，例如1.4kb。
+     * segments.index_writer_memory，siwm，segmentsIndexWriterMemory
+     * 索引编写器使用的内存，例如18mb。
+     * segments.version_map_memory，svmm，segmentsVersionMapMemory
+     * 版本映射使用的内存，例如1.0kb。
+     * segments.fixed_bitset_memory，sfbm，fixedBitsetMemory
+     * 固定位集使用的内存用于嵌套对象字段类型，而类型过滤器用于join字段中引用的类型，例如1.0kb。
+     * suggest.current，suc，suggestCurrent
+     * 当前建议操作的数量，例如0。
+     * suggest.time，suti，suggestTime
+     * 建议所花费的时间，例如0。
+     * suggest.total，suto，suggestTotal
+     * 建议操作的数量，例如0。
+     */
     @ApiOperation(value = "返回有关群集节点的信息")
     @RequestMapping(value = "/_cat/nodes", method = RequestMethod.GET)
-    String _cat_nodes(@RequestParam(value = "v") Boolean v);
+    String _cat_nodes(@RequestParam(value = "v") Boolean v,
+                      @RequestParam(value = "h") String h);
 
     @ApiOperation(value = "返回正在挂起的task")
     @RequestMapping(value = "/_cat/pending_tasks", method = RequestMethod.GET)
@@ -108,6 +297,16 @@ public interface CatService {
     @RequestMapping(value = "/_cat/plugins", method = RequestMethod.GET)
     String _cat_plugins(@RequestParam(value = "v") Boolean v);
 
+    /**
+     * index                            shard time    type       stage source_host  target_host  repository snapshot files files_percent bytes       bytes_percent total_files total_bytes translog translog_percent total_translog
+     * comstore_tb_object_6891_v2       0     39      store      done  10.200.6.45  10.200.6.45  n/a        n/a      0     100.0%        0           100.0%        43          39999805    0        100.0%           0
+     * comstore_tb_object_6891_v2       0     47      replica    done  10.200.6.45  10.200.2.204 n/a        n/a      0     0.0%          0           0.0%          0           0           0        100.0%           0
+     * comstore_tb_object_6891_v2       1     68      store      done  10.200.6.168 10.200.6.168 n/a        n/a      0     100.0%        0           100.0%        31          40148758    0        100.0%           0
+     * <p>
+     * type 为 store 表示从本地恢复
+     * type 为 replica 表示复制，从其他节点恢复
+     * type 为 snapshot 表示从快照恢复
+     */
     @ApiOperation(value = "返回有关正在进行的和已完成的碎片恢复的信息")
     @RequestMapping(value = "/_cat/recovery", method = RequestMethod.GET)
     String _cat_recovery(@RequestParam(value = "v") Boolean v);
@@ -121,6 +320,27 @@ public interface CatService {
     @RequestMapping(value = "/_cat/repositories", method = RequestMethod.GET)
     String _cat_repositories(@RequestParam(value = "v") Boolean v);
 
+    /**
+     * index                           shard prirep ip           segment generation docs.count docs.deleted     size size.memory committed searchable version compound
+     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _f3q         19574      53789          451   17.9mb       50079 true      true       5.5.0   false
+     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1p3x        79197      52514         1367   18.5mb       58281 true      true       5.5.0   false
+     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un0        86364       5950            0      2mb       10110 true      true       5.5.0   true
+     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un1        86365          1            0    4.7kb        2637 true      true       5.5.0   true
+     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un2        86366          1            0    4.7kb        2637 true      true       5.5.0   true
+     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un3        86367          1            0    4.7kb        2637 true      true       5.5.0   true
+     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un4        86368          1            0    4.7kb        2637 true      true       5.5.0   true
+     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _f02         19442      53786          451   17.9mb       50199 true      true       5.5.0   false
+     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1ov0        78876      52641         1367   18.6mb       58622 true      true       5.5.0   false
+     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5r        85743       5826            0      2mb        9762 true      true       5.5.0   true
+     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5s        85744          1            0    4.7kb        2637 true      true       5.5.0   true
+     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5t        85745          1            0    4.7kb        2637 true      true       5.5.0   true
+     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5u        85746          1            0    4.7kb        2637 true      true       5.5.0   true
+     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5v        85747          1            0    4.7kb        2637 true      true       5.5.0   true
+     * c
+     *
+     * @param v
+     * @return
+     */
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @RequestMapping(value = "/_cat/shards", method = RequestMethod.GET)
     String _cat_shards(@RequestParam(value = "v") Boolean v);

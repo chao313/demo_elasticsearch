@@ -42,7 +42,7 @@ public class CatController {
         return catService._cat_allocation(v);
     }
 
-        @ApiOperation(value = "列出指定数据节点的分片数量及其磁盘空间的快照 (e.g. dataNode-dwserver18-4)")
+    @ApiOperation(value = "列出指定数据节点的分片数量及其磁盘空间的快照 (e.g. dataNode-dwserver18-4)")
     @GetMapping(value = "/_cat/allocation/{node_id}")
     public String _cat_allocation_nodeId(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
                                          @ApiParam(value = "节点Id") @PathVariable(value = "node_id") String node_id) {
@@ -108,8 +108,9 @@ public class CatController {
 
     @ApiOperation(value = "返回有关群集节点的信息")
     @GetMapping(value = "/_cat/nodes")
-    public String _cat_nodes(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
-        return catService._cat_nodes(v);
+    public String _cat_nodes(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                             @ApiParam(value = "要显示的以逗号分隔的列名称列表(ip,cpu,port...)") @RequestParam(value = "h") String h) {
+        return catService._cat_nodes(v, h);
     }
 
     @ApiOperation(value = "返回正在挂起的task")
