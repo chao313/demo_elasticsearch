@@ -146,16 +146,18 @@ public class CatController {
 
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @GetMapping(value = "/_cat/shards")
-    public String _cat_shards(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
-        return catService._cat_shards(v);
+    public String _cat_shards(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                              @ApiParam(value = "要显示的以逗号分隔的列名称列表(index,shard,prirep...)") @RequestParam(value = "h") String h) {
+        return catService._cat_shards(v, h);
     }
 
 
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @GetMapping(value = "/_cat/shards/{index}")
     public String _cat_shards(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
-                              @PathVariable(value = "index") String index) {
-        return catService._cat_shards_index(v, index);
+                              @PathVariable(value = "index") String index,
+                              @ApiParam(value = "要显示的以逗号分隔的列名称列表(index,shard,prirep...)") @RequestParam(value = "h") String h) {
+        return catService._cat_shards_index(v, index,h);
     }
 
     @ApiOperation(value = "返回index中的低级关于Lucene段的信息碎片")

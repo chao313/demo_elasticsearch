@@ -321,34 +321,19 @@ public interface CatService {
     String _cat_repositories(@RequestParam(value = "v") Boolean v);
 
     /**
-     * index                           shard prirep ip           segment generation docs.count docs.deleted     size size.memory committed searchable version compound
-     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _f3q         19574      53789          451   17.9mb       50079 true      true       5.5.0   false
-     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1p3x        79197      52514         1367   18.5mb       58281 true      true       5.5.0   false
-     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un0        86364       5950            0      2mb       10110 true      true       5.5.0   true
-     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un1        86365          1            0    4.7kb        2637 true      true       5.5.0   true
-     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un2        86366          1            0    4.7kb        2637 true      true       5.5.0   true
-     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un3        86367          1            0    4.7kb        2637 true      true       5.5.0   true
-     * comstore_tb_object_6891_v2      0     p      10.200.6.45  _1un4        86368          1            0    4.7kb        2637 true      true       5.5.0   true
-     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _f02         19442      53786          451   17.9mb       50199 true      true       5.5.0   false
-     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1ov0        78876      52641         1367   18.6mb       58622 true      true       5.5.0   false
-     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5r        85743       5826            0      2mb        9762 true      true       5.5.0   true
-     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5s        85744          1            0    4.7kb        2637 true      true       5.5.0   true
-     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5t        85745          1            0    4.7kb        2637 true      true       5.5.0   true
-     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5u        85746          1            0    4.7kb        2637 true      true       5.5.0   true
-     * comstore_tb_object_6891_v2      0     r      10.200.2.204 _1u5v        85747          1            0    4.7kb        2637 true      true       5.5.0   true
-     * c
+     * <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-shards.html'></a>
      *
-     * @param v
-     * @return
      */
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @RequestMapping(value = "/_cat/shards", method = RequestMethod.GET)
-    String _cat_shards(@RequestParam(value = "v") Boolean v);
+    String _cat_shards(@RequestParam(value = "v") Boolean v,
+                       @RequestParam(value = "h") String h);
 
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @RequestMapping(value = "/_cat/shards/{index}", method = RequestMethod.GET)
     String _cat_shards_index(@RequestParam(value = "v") Boolean v,
-                             @PathVariable(value = "index") String index);
+                             @PathVariable(value = "index") String index,
+                             @RequestParam(value = "h") String h);
 
     @ApiOperation(value = "返回index中的低级关于Lucene段的信息碎片")
     @RequestMapping(value = "/_cat/segments", method = RequestMethod.GET)

@@ -65,10 +65,8 @@ public class ClusterController {
      * 功能:获取集群健康状态
      */
     @ApiOperation(value = "返回集群健康状态")
-    @GetMapping(value = "/_cluster/health/{index}")
-    public Response _cluster_health(@RequestParam(value = "index", required = false) String index,
-
-                                    @ApiParam(allowableValues = "cluster,indices,shards", defaultValue = "cluster")
+    @GetMapping(value = "/_cluster/health")
+    public Response _cluster_health(@ApiParam(allowableValues = "cluster,indices,shards", defaultValue = "cluster")
                                     @RequestParam(value = "level") String level,
                                     @RequestParam(value = "local", defaultValue = "false") Boolean local,
                                     @ApiParam(allowableValues = "30s,1m", defaultValue = "30s")
@@ -85,7 +83,37 @@ public class ClusterController {
                                     @RequestParam(value = "wait_for_nodes", required = false) String wait_for_nodes,
                                     @ApiParam(allowableValues = "green,yellow,red", defaultValue = "green")
                                     @RequestParam(value = "wait_for_status", required = false) String wait_for_status) {
-        String result = clusterService._cluster_health(index, level, local, master_timeout, timeout, wait_for_active_shards, wait_for_events,
+        String result = clusterService._cluster_health(level, local, master_timeout, timeout, wait_for_active_shards, wait_for_events,
+                wait_for_no_initializing_shards, wait_for_no_relocating_shards, wait_for_nodes, wait_for_status);
+        return Response.Ok(JSONObject.parse(result));
+
+    }
+
+    /**
+     * 功能:获取集群健康状态（指定索引）
+     */
+    @ApiOperation(value = "返回集群健康状态(指定索引)")
+    @GetMapping(value = "/_cluster/health/{index}")
+    public Response _cluster_health_index(@RequestParam(value = "index", required = false) String index,
+
+                                          @ApiParam(allowableValues = "cluster,indices,shards", defaultValue = "cluster")
+                                          @RequestParam(value = "level") String level,
+                                          @RequestParam(value = "local", defaultValue = "false") Boolean local,
+                                          @ApiParam(allowableValues = "30s,1m", defaultValue = "30s")
+                                          @RequestParam(value = "master_timeout") String master_timeout,
+                                          @ApiParam(allowableValues = "30s,1m", defaultValue = "30s")
+                                          @RequestParam(value = "timeout") String timeout,
+                                          @ApiParam(allowableValues = "0,1,all", defaultValue = "0")
+                                          @RequestParam(value = "wait_for_active_shards") String wait_for_active_shards,
+                                          @ApiParam(allowableValues = "immediate,urgent,high,normal,low,languid")
+                                          @RequestParam(value = "wait_for_events", required = false) String wait_for_events,
+                                          @RequestParam(value = "wait_for_no_initializing_shards", defaultValue = "false") Boolean wait_for_no_initializing_shards,
+                                          @RequestParam(value = "wait_for_no_relocating_shards", defaultValue = "false") Boolean wait_for_no_relocating_shards,
+                                          @ApiParam(allowableValues = ">=2,<=3,>3", defaultValue = "<=3")
+                                          @RequestParam(value = "wait_for_nodes", required = false) String wait_for_nodes,
+                                          @ApiParam(allowableValues = "green,yellow,red", defaultValue = "green")
+                                          @RequestParam(value = "wait_for_status", required = false) String wait_for_status) {
+        String result = clusterService._cluster_health_index(index, level, local, master_timeout, timeout, wait_for_active_shards, wait_for_events,
                 wait_for_no_initializing_shards, wait_for_no_relocating_shards, wait_for_nodes, wait_for_status);
         return Response.Ok(JSONObject.parse(result));
 

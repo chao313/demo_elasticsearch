@@ -81,7 +81,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_allocation_nodeId() {
-        String response = catService._cat_allocation_nodeId(true,"dataNode-dwserver18-4");
+        String response = catService._cat_allocation_nodeId(true, "dataNode-dwserver18-4");
         log.info("response:{}", response);
     }
 
@@ -189,7 +189,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_nodes() {
-        String response = catService._cat_nodes(true,"ip,heap.percent,ram.percent,file_desc.percent,node.role,master,name,id,pid,port,http_address,version,build,jdk,disk.total,disk.used,disk.avail,disk.used_percent,heap.current,ram.current,ram.max,file_desc.current,file_desc.max,cpu,load_1m,load_5m,load_15m,uptime,completion.size,fielddata.evictions,query_cache.memory_size,query_cache.evictions,request_cache.memory_size,request_cache.evictions,request_cache.hit_count,request_cache.miss_count,flush.total,flush.total_time,get.current,get.time,get.total,get.exists_time,get.exists_total,get.missing_time,get.missing_total,indexing.delete_current,indexing.delete_time,indexing.delete_total,indexing.index_current,indexing.index_time,indexing,index_total,indexing.index_failed,merges.current,merges.current_docs,merges.current_size,merges.total,merges.total_docs,merges.total_size,merges.total_time,refresh.total,refresh.time,script.compilations,script.cache_evictions,search.fetch_current,search.fetch_time,search.fetch_total,search.open_contexts,search.query_current,search.query_time,search.query_total,search.scroll_current,search.scroll_time,search.scroll_total,segments.count,segments.memory,segments.index_writer_memory,segments.version_map_memory,segments.fixed_bitset_memory");
+        String response = catService._cat_nodes(true, "ip,heap.percent,ram.percent,file_desc.percent,node.role,master,name,id,pid,port,http_address,version,build,jdk,disk.total,disk.used,disk.avail,disk.used_percent,heap.current,ram.current,ram.max,file_desc.current,file_desc.max,cpu,load_1m,load_5m,load_15m,uptime,completion.size,fielddata.evictions,query_cache.memory_size,query_cache.evictions,request_cache.memory_size,request_cache.evictions,request_cache.hit_count,request_cache.miss_count,flush.total,flush.total_time,get.current,get.time,get.total,get.exists_time,get.exists_total,get.missing_time,get.missing_total,indexing.delete_current,indexing.delete_time,indexing.delete_total,indexing.index_current,indexing.index_time,indexing,index_total,indexing.index_failed,merges.current,merges.current_docs,merges.current_size,merges.total,merges.total_docs,merges.total_size,merges.total_time,refresh.total,refresh.time,script.compilations,script.cache_evictions,search.fetch_current,search.fetch_time,search.fetch_total,search.open_contexts,search.query_current,search.query_time,search.query_total,search.scroll_current,search.scroll_time,search.scroll_total,segments.count,segments.memory,segments.index_writer_memory,segments.version_map_memory,segments.fixed_bitset_memory");
         log.info("response:{}", response);
     }
 
@@ -219,6 +219,7 @@ public class CatServiceTest {
     }
 
     /**
+     *
      */
     @Test
     public void _cat_recovery() {
@@ -258,7 +259,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_shards() {
-        String response = catService._cat_shards(true);
+        String response = catService._cat_shards(true, "index,shard,prirep,state,docs,store,ip,id,node,completion.size,fielddata.memory_size,fielddata.evictions,flush.total,flush.total_time,get.current,get.time,get.total,get.exists_time,get.exists_total,get.missing_time,get.missing_total,indexing.delete_current,indexing.delete_time,indexing.delete_total,indexing.index_current,indexing.index_time,indexing.index_total,indexing.index_failed,merges.current,merges.current_docs,merges.current_size,merges.total,merges.total_docs,merges.total_size,merges.total_time,query_cache.memory_size,query_cache.evictions,recoverysource.type,refresh.total,refresh.time,search.fetch_current,search.fetch_time,search.fetch_total,search.open_contexts,search.query_current,search.query_time,search.query_total,search.scroll_current,search.scroll_time,search.scroll_total,segments.count,segments.memory,segments.index_writer_memory,segments.version_map_memory,segments.fixed_bitset_memory,seq_no.global_checkpoint,seq_no.local_checkpoint,seq_no.max,suggest.current,suggest.time,suggest.total,sync_id,unassigned.at,unassigned.details,unassigned.for,unassigned.reason");
         log.info("response:{}", response);
     }
 
@@ -273,7 +274,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_shards_index() {
-        String response = catService._cat_shards_index(true, "tb_object_0088_v2");
+        String response = catService._cat_shards_index(true, "tb_object_0088_v2", "");
         log.info("response:{}", response);
     }
 
