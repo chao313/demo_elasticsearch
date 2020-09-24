@@ -6,6 +6,7 @@ import demo.elastic.search.config.FeignServiceConfig;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +37,13 @@ public interface XPackService {
     );
 
     /**
+     *
+     */
+    @ApiOperation(value = "更新证书")
+    @RequestMapping(value = "/_xpack/license", method = RequestMethod.POST, headers = {"content-type=application/json"})
+    String _xpack_license(@RequestBody String body);
+
+    /**
      * 该API提供有关当前已启用哪些功能以及在当前许可下可用的信息以及一些使用情况统计信息
      */
     @ApiOperation(value = "提供有关已安装的X-Pack功能的常规信息")
@@ -43,5 +51,5 @@ public interface XPackService {
     String _xpack_usage(
             @ApiParam(value = "（可选，时间单位）指定等待连接到主节点的时间段。如果在超时到期之前未收到任何响应，则请求将失败并返回错误。默认为30s")
             @RequestParam(value = "master_timeout", required = false, defaultValue = "30s") String masterTimeout
-            );
+    );
 }

@@ -5,12 +5,10 @@ import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.FeignServiceConfig;
 import demo.elastic.search.feign.XPackService;
 import demo.elastic.search.framework.Response;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -39,6 +37,16 @@ public class XPackController {
             @RequestParam(value = "human") Boolean human
     ) {
         String result = xPackService._xpack(categories, human);
+        return Response.Ok(JSONObject.parseObject(result));
+    }
+
+    /**
+     * 更新证书
+     */
+    @ApiOperation(value = "6.x的更新迷")
+    @RequestMapping(value = "/_xpack/license", method = RequestMethod.POST)
+    public Response _xpack(@RequestBody String body) {
+        String result = xPackService._xpack_license(body);
         return Response.Ok(JSONObject.parseObject(result));
     }
 

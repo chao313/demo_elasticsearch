@@ -4,6 +4,7 @@ import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.FeignServiceConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -25,6 +26,25 @@ public interface MappingService {
     String get(@PathVariable(value = "index") String index,
                @PathVariable(value = "fieldName") String fieldName
     );
+
+    /**
+     * 添加新的字段
+     * <pre>
+     *  "properties": {
+     *     "name": {
+     *       "properties": {
+     *         "last": {
+     *           "type": "text"
+     *         }
+     *       }
+     *     }
+     *   }
+     * </pre>
+     */
+    @RequestMapping(value = "/{index}/_mapping", method = RequestMethod.PUT, headers = {"content-type=application/json"})
+    String put(@PathVariable(value = "index") String index,
+               @RequestBody String body);
+
 
 //    /**
 //     *

@@ -163,6 +163,22 @@ public class ClusterController {
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/cluster-nodes-usage.html"></a>
      */
     @ApiOperation(value = "返回有关功能用法的信息")
+    @RequestMapping(value = "/_nodes/usage", method = RequestMethod.GET)
+    public Response _nodes_usage() {
+        String result = clusterService._nodes_usage();
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "返回有关功能用法的信息")
+    @RequestMapping(value = "/_nodes/usage/{metric}", method = RequestMethod.GET)
+    public Response _nodes_usage(
+            @ApiParam(required = false, value = "（可选，字符串）将返回的信息限制为特定的指标。以逗号分隔的以下选项列表<br>1._all返回所有统计信息<br>2.rest_actions 返回REST操作类名，其中包括该操作在节点上被调用的次数", example = "_all,rest_actions")
+            @RequestParam(value = "metric", required = false) String metric) {
+        String result = clusterService._nodes_usage(metric);
+        return Response.Ok(JSONObject.parse(result));
+    }
+
+    @ApiOperation(value = "返回有关功能用法的信息")
     @RequestMapping(value = "/_nodes/{node_id}/usage/{metric}", method = RequestMethod.GET)
     public Response _nodes_usage(
             @ApiParam(required = false, value = "（可选，字符串）用于限制返回信息的节点ID或名称的逗号分隔列表")
@@ -243,9 +259,9 @@ public class ClusterController {
      */
     @RequestMapping(value = "/_nodes/{node_id}/{metric}", method = RequestMethod.GET)
     public Response _nodes(
-            @ApiParam(value = "（可选，字符串）将返回的信息限制为特定的指标。以逗号分隔的以下选项列表", allowableValues = "http,ingest,jvm,os,plugins,process,settings,thread_pool,transport")
+            @ApiParam(value = "（可选，字符串）将返回的信息限制为特定的指标。以逗号分隔的以下选项列表")
             @RequestParam(value = "node_id", required = false) String node_id,
-            @ApiParam(value = "（可选，字符串）用于限制返回信息的节点ID或名称的逗号分隔列表")
+            @ApiParam(value = "（可选，字符串）用于限制返回信息的节点ID或名称的逗号分隔列表", allowableValues = "_all,http,ingest,jvm,os,plugins,process,settings,thread_pool,transport")
             @RequestParam(value = "metric", required = false) String metric) {
         String result = clusterService._nodes(node_id, metric);
         return Response.Ok(JSONObject.parse(result));

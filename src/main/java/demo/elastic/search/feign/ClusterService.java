@@ -206,6 +206,7 @@ public interface ClusterService {
             @ApiParam(value = "（可选，时间单位）指定等待响应的时间段。如果在超时到期之前未收到任何响应，则请求将失败并返回错误。默认为30s")
             @RequestParam(value = "timeout", required = false, defaultValue = "30s") String timeout);
 
+
     /**
      * 功能:返回有关功能用法的信息
      * <p>
@@ -213,6 +214,14 @@ public interface ClusterService {
      *
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/cluster-nodes-usage.html"></a>
      */
+    @RequestMapping(value = "/_nodes/usage", method = RequestMethod.GET)
+    String _nodes_usage();
+
+    @RequestMapping(value = "/_nodes/usage/{metric}", method = RequestMethod.GET)
+    String _nodes_usage(
+            @ApiParam(required = false, value = "（可选，字符串）将返回的信息限制为特定的指标。以逗号分隔的以下选项列表<br>1._all返回所有统计信息<br>2.rest_actions 返回REST操作类名，其中包括该操作在节点上被调用的次数", example = "_all,rest_actions")
+            @PathVariable(value = "metric") String metric);
+
     @RequestMapping(value = "/_nodes/{node_id}/usage/{metric}", method = RequestMethod.GET)
     String _nodes_usage(
             @ApiParam(required = false, value = "（可选，字符串）用于限制返回信息的节点ID或名称的逗号分隔列表")

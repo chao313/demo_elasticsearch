@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.feign.MappingService;
 import demo.elastic.search.framework.Response;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -35,7 +32,23 @@ public class MappingController {
     public Response get(
             @PathVariable(value = "index") String index,
             @PathVariable(value = "fieldName") String fieldName) {
-        String s = mappingService.get(index,fieldName);
+        String s = mappingService.get(index, fieldName);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "添加新的字段", notes = "\"properties\": {<br>" +
+            "   \"name\": {<br>" +
+            "     \"properties\": {<br>" +
+            "       \"last\": {<br>" +
+            "         \"type\": \"text\"<br>" +
+            "       }<br>" +
+            "     }<br>" +
+            "   }<br>" +
+            " }")
+    @PutMapping(value = "/{index}/_mapping")
+    public Response put(@PathVariable(value = "index") String index,
+                        @RequestBody String body) {
+        String s = mappingService.put(index, body);
         return Response.Ok(JSONObject.parse(s));
     }
 

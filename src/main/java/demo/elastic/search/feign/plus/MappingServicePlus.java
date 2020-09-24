@@ -31,6 +31,11 @@ public class MappingServicePlus implements MappingService {
         return mappingService.get(index, fieldName);
     }
 
+    @Override
+    public String put(String index, String body) {
+        return mappingService.put(index, body);
+    }
+
     /**
      * 获取index的field的names
      * 7 的版本:
