@@ -28,6 +28,7 @@ public interface MappingService {
     );
 
     /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.9/indices-put-mapping.html"></a>
      * 添加新的字段
      * <pre>
      *  "properties": {
@@ -45,20 +46,23 @@ public interface MappingService {
     String put(@PathVariable(value = "index") String index,
                @RequestBody String body);
 
-
-//    /**
-//     *
-//     */
-//    @RequestMapping(value = "/{index}", method = RequestMethod.PUT, headers = {"content-type=application/json"})
-//    String create(@PathVariable(value = "index") String index,
-//                  @RequestBody String body);
-//
-//
-//    /**
-//     * 删除一个 script
-//     */
-//    @RequestMapping(value = "/_scripts/{id}", method = RequestMethod.DELETE)
-//    String del(@PathVariable(value = "id") String id);
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/reference/2.3/indices-put-mapping.html
+     * 添加新的字段
+     * <pre>
+     *  {
+     *    "properties": {
+     *      "email": {
+     *        "type": "string"
+     *      }
+     *    }
+     *  }
+     * </pre>
+     */
+    @RequestMapping(value = "/{index}/_mapping/{type}", method = RequestMethod.PUT, headers = {"content-type=application/json"})
+    String put(@PathVariable(value = "index") String index,
+               @PathVariable(value = "type") String type,
+               @RequestBody String body);
 
 
 }

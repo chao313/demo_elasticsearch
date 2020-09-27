@@ -36,19 +36,36 @@ public class MappingController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "添加新的字段", notes = "\"properties\": {<br>" +
-            "   \"name\": {<br>" +
-            "     \"properties\": {<br>" +
-            "       \"last\": {<br>" +
-            "         \"type\": \"text\"<br>" +
-            "       }<br>" +
-            "     }<br>" +
-            "   }<br>" +
-            " }")
+    @ApiOperation(value = "添加新的字段 v6", notes = "" +
+            "{" +
+            "<br>" +
+            "  \"properties\": {<br>" +
+            "    \"email\": {<br>" +
+            "      \"type\": \"string\"<br>" +
+            "    }<br>" +
+            "  }<br>" +
+            "}")
     @PutMapping(value = "/{index}/_mapping")
     public Response put(@PathVariable(value = "index") String index,
                         @RequestBody String body) {
         String s = mappingService.put(index, body);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "添加新的字段 v2.3", notes = "" +
+            "{" +
+            "<br>" +
+            "  \"properties\": {<br>" +
+            "    \"email\": {<br>" +
+            "      \"type\": \"string\"<br>" +
+            "    }<br>" +
+            "  }<br>" +
+            "}")
+    @PutMapping(value = "/{index}/_mapping/{type}")
+    public Response put(@PathVariable(value = "index") String index,
+                        @PathVariable(value = "type") String type,
+                        @RequestBody String body) {
+        String s = mappingService.put(index, type, body);
         return Response.Ok(JSONObject.parse(s));
     }
 

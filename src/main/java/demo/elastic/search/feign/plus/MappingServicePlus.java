@@ -6,6 +6,7 @@ import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.feign.MappingService;
 import demo.elastic.search.util.JSONUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -34,6 +35,11 @@ public class MappingServicePlus implements MappingService {
     @Override
     public String put(String index, String body) {
         return mappingService.put(index, body);
+    }
+
+    @Override
+    public String put(String index, String type, String body) {
+        return mappingService.put(index, type, body);
     }
 
     /**

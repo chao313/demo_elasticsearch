@@ -174,4 +174,13 @@ public interface DocumentService {
      */
     @RequestMapping(value = "_reindex", method = RequestMethod.POST, headers = {"content-type=application/json"})
     String _reindex(@RequestBody ReIndexRequest body);
+
+    /**
+     *
+     * Multi get
+     * @param body
+     * @return
+     */
+//    @RequestMapping(value = "_reindex", method = RequestMethod.POST, headers = {"content-type=application/json"})
+//    String _reindex(@RequestBody ReIndexRequest body);
 }
