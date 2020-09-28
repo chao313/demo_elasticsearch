@@ -1,5 +1,6 @@
 server:
   port: 9000
-  context-path: /
+  servlet:
+    context-path: /demo_elasticsearch
 spring:
   name: demo-elasticsearch

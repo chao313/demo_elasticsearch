@@ -27,7 +27,7 @@ public class ResourceService {
     @Value(value = "#{systemProperties['os.name']}")
     private String system;
 
-    @Value("${server.context-path}")
+    @Value("${server.servlet.context-path}")
     private String contextPath;//项目的
 
     @Value("${server.port}")
