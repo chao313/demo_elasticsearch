@@ -1,7 +1,7 @@
 package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
-import demo.elastic.search.config.FeignServiceConfig;
+import demo.elastic.search.config.feign.FeignServiceConfig;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -322,7 +322,6 @@ public interface CatService {
 
     /**
      * <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-shards.html'></a>
-     *
      */
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @RequestMapping(value = "/_cat/shards", method = RequestMethod.GET)

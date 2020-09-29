@@ -1,7 +1,7 @@
 package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
-import demo.elastic.search.config.FeignServiceConfig;
+import demo.elastic.search.config.feign.FeignServiceConfig;
 import demo.elastic.search.po.request.index.doc.reindex.ReIndexRequest;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;

@@ -1,13 +1,10 @@
 package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
-import demo.elastic.search.config.FeignServiceConfig;
-import io.swagger.annotations.ApiParam;
+import demo.elastic.search.config.feign.FeignServiceConfig;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 集群API

@@ -1,7 +1,7 @@
 package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
-import demo.elastic.search.config.FeignServiceConfig;
+import demo.elastic.search.config.feign.FeignServiceConfig;
 import demo.elastic.search.po.request.QueryBaseRequest;
 import demo.elastic.search.po.request.dsl.compound.BoolRequest;
 import demo.elastic.search.po.request.dsl.full.*;

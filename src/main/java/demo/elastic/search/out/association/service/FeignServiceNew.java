@@ -1,7 +1,7 @@
 package demo.elastic.search.out.association.service;
 
 
-import demo.elastic.search.config.FeignServiceConfig;
+import demo.elastic.search.config.feign.FeignServiceConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

@@ -1,4 +1,4 @@
-package demo.elastic.search.config;
+package demo.elastic.search.config.feign;
 
 import feign.Logger;
 import feign.Response;

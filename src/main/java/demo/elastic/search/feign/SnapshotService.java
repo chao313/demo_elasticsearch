@@ -2,7 +2,7 @@ package demo.elastic.search.feign;
 
 
 import demo.elastic.search.config.Bootstrap;
-import demo.elastic.search.config.FeignServiceConfig;
+import demo.elastic.search.config.feign.FeignServiceConfig;
 import demo.elastic.search.po.request.snapshot.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

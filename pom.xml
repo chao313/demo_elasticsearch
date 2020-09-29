@@ -74,6 +74,28 @@
             <version>2.2.2.RELEASE</version>
         </dependency>
 
+        <!--        &lt;!&ndash;feign rest风格&ndash;&gt;-->
+        <!--        &lt;!&ndash; https://mvnrepository.com/artifact/com.netflix.feign/feign-gson &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>com.netflix.feign</groupId>-->
+        <!--            <artifactId>feign-jaxrs</artifactId>-->
+        <!--            <version>8.18.0</version>-->
+        <!--        </dependency>-->
+
+        <!-- Feign对JAXRS的支持 -->
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-jaxrs</artifactId>
+            <version>9.5.0</version>
+        </dependency>
+        <!-- JAXRS -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+
         <!--StringUtils-->
         <dependency>
             <groupId>org.apache.commons</groupId>

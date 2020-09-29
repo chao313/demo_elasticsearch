@@ -1,13 +1,10 @@
 package demo.elastic.search.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import demo.elastic.search.config.Bootstrap;
-import demo.elastic.search.config.FeignServiceConfig;
 import demo.elastic.search.feign.XPackService;
 import demo.elastic.search.framework.Response;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
