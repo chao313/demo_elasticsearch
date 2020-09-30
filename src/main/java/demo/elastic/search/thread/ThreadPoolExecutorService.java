@@ -1,4 +1,4 @@
-package demo.elastic.search.service;
+package demo.elastic.search.thread;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -8,6 +8,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 本地线程池
+ */
 @Slf4j
 @Component
 public class ThreadPoolExecutorService {

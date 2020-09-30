@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.feign.MappingService;
 import demo.elastic.search.util.JSONUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,30 +18,11 @@ import java.util.List;
  * Mapping Service的加强版
  */
 @Service
-public class MappingServicePlus implements MappingService {
+public class MappingServicePlus {
 
-    @Resource
+    @Autowired
     private MappingService mappingService;
 
-    @Override
-    public String get(String index) {
-        return mappingService.get(index);
-    }
-
-    @Override
-    public String get(String index, String fieldName) {
-        return mappingService.get(index, fieldName);
-    }
-
-    @Override
-    public String put(String index, String body) {
-        return mappingService.put(index, body);
-    }
-
-    @Override
-    public String put(String index, String type, String body) {
-        return mappingService.put(index, type, body);
-    }
 
     /**
      * 获取index的field的names

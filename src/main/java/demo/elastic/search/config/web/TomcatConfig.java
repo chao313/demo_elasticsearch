@@ -1,4 +1,4 @@
-package demo.elastic.search.config;
+package demo.elastic.search.config.web;
 
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;

@@ -3,6 +3,8 @@ package demo.elastic.search.framework.aspect;
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.thread.ThreadLocalFeign;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -40,7 +42,7 @@ public class ExecutionAspect {
 //        logger.info("第一步【执行Around：拦截切面的类型】joinPoint.getKind() - > {}", joinPoint.getKind());//method-execution || exception-handler
 //        logger.info("第一步【执行Around：拦截连接点方法所在类文件中的位置】joinPoint.getSourceLocation() - > {}", joinPoint.getSourceLocation());//org.springframework.aop.aspectj.MethodInvocationProceedingJoinPoint$SourceLocationImpl@6742526e
 //        logger.info("第一步【执行Around：拦截AOP的当前执行对象】joinPoint.getThis() - > {}", joinPoint.getThis());//demo.spring.boot.demospringboot.controller.pub.FrameworkController@25c6ab3
-
+        ThreadLocalFeign.init();
         Response response = new Response<>();
         try {
             Object result = joinPoint.proceed(); //继续下一个方法的调用 ：就是调用拦截的函数，得到拦截函数执行的结果
