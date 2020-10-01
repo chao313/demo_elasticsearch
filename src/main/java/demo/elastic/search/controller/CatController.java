@@ -1,6 +1,5 @@
 package demo.elastic.search.controller;
 
-import demo.elastic.search.config.AwareUtil;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.CatService;
@@ -11,8 +10,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-
 
 /**
  * 用于 ElasticSearch es使用
@@ -21,7 +18,6 @@ import javax.annotation.Resource;
 @RestController
 public class CatController {
 
-    @Resource
     private CatService catService;
 
     /**
@@ -29,56 +25,63 @@ public class CatController {
      *
      * @return
      */
+    @ApiOperation(value = "列出Cat的全部接口", notes = "列出CAT的全部接口")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @ApiOperation(value = "列出Cat的全部接口", notes = "列出CAT的全部接口")
     @GetMapping(value = "/_cat")
     public String cat() {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
         return catService._cat();
     }
 
+
+    @ApiOperation(value = "列出当前配置的index的alias,包括filter和router的信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @ApiOperation(value = "列出当前配置的index的alias,包括filter和router的信息")
     @GetMapping(value = "/_cat/aliases")
     public String _cat_aliases(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
         return catService._cat_aliases(v);
     }
 
+
+    @ApiOperation(value = "列出分配给每个数据节点的分片数量及其磁盘空间的快照")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @ApiOperation(value = "列出分配给每个数据节点的分片数量及其磁盘空间的快照")
     @GetMapping(value = "/_cat/allocation")
     public String _cat_allocation(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
         return catService._cat_allocation(v);
     }
 
+
+    @ApiOperation(value = "列出指定数据节点的分片数量及其磁盘空间的快照 (e.g. dataNode-dwserver18-4)")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @ApiOperation(value = "列出指定数据节点的分片数量及其磁盘空间的快照 (e.g. dataNode-dwserver18-4)")
     @GetMapping(value = "/_cat/allocation/{node_id}")
     public String _cat_allocation_nodeId(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
                                          @ApiParam(value = "节点Id") @PathVariable(value = "node_id") String node_id) {
@@ -86,26 +89,14 @@ public class CatController {
         return catService._cat_allocation_nodeId(v, node_id);
     }
 
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
-                    dataType = "string",
-                    paramType = "header")
-    })
-    @ApiOperation(value = "提供对单个索引或集群中所有索引的文档计数的快速访问")
-    @GetMapping(value = "/_cat/count")
-    public String _cat_count(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
-        CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_count(v);
-    }
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "提供对单个索引或集群中所有索引的文档计数的快速访问")
     @GetMapping(value = "/_cat/count/{index}")
@@ -118,9 +109,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "列出集群中每个数据节点上的字段数据 当前 使用的堆内存量")
     @GetMapping(value = "/_cat/fielddata")
@@ -132,9 +124,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "列出集群中每个数据节点上的字段数据 当前 使用的堆内存量")
     @GetMapping(value = "/_cat/fielddata/{field}")
@@ -147,9 +140,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回集群的运行状况")
     @GetMapping(value = "/_cat/health")
@@ -161,9 +155,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "列出index")
     @GetMapping(value = "/_cat/indices")
@@ -175,9 +170,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "列出index(指定)")
     @GetMapping(value = "/_cat/indices/{index}")
@@ -190,9 +186,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回master节点的信息，包括ID绑定IP地址和名称")
     @GetMapping(value = "/_cat/master")
@@ -204,9 +201,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回有关自定义节点属性的信息")
     @GetMapping(value = "/_cat/nodeattrs")
@@ -218,9 +216,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回有关群集节点的信息")
     @GetMapping(value = "/_cat/nodes")
@@ -230,13 +229,13 @@ public class CatController {
         return catService._cat_nodes(v, h);
     }
 
-
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回正在挂起的task")
     @GetMapping(value = "/_cat/pending_tasks")
@@ -248,9 +247,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回一个群集的每个节点上运行的插件的列表")
     @GetMapping(value = "/_cat/plugins")
@@ -262,9 +262,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回有关正在进行的和已完成的碎片恢复的信息")
     @GetMapping(value = "/_cat/recovery")
@@ -276,9 +277,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回有关正在进行的和已完成的碎片恢复的信息")
     @GetMapping(value = "/_cat/recovery/{index}")
@@ -291,9 +293,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回快照仓库")
     @GetMapping(value = "/_cat/repositories")
@@ -305,9 +308,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @GetMapping(value = "/_cat/shards")
@@ -320,9 +324,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @GetMapping(value = "/_cat/shards/{index}")
@@ -336,9 +341,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回index中的低级关于Lucene段的信息碎片")
     @GetMapping(value = "/_cat/segments")
@@ -350,9 +356,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回index中的低级关于Lucene段的信息碎片")
     @GetMapping(value = "/_cat/segments/{index}")
@@ -365,9 +372,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回信息有关快照存储在一个或多个存储库")
     @GetMapping(value = "/_cat/snapshots/{repository}")
@@ -380,9 +388,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回有关在群集中当前正在执行的任务的信息")
     @RequestMapping(value = "/_cat/tasks", method = RequestMethod.GET)
@@ -395,9 +404,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回群集中的index template的信息")
     @GetMapping(value = "/_cat/templates")
@@ -409,9 +419,10 @@ public class CatController {
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @ApiOperation(value = "返回群集中的index template的信息")
     @GetMapping(value = "/_cat/templates/{template_name}")
@@ -421,12 +432,29 @@ public class CatController {
         return catService._cat_templates(v, template_name);
     }
 
+    @ApiOperation(value = "提供对单个索引或集群中所有索引的文档计数的快速访问")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
-                    value = "ES地址 http://39.107.236.187:7013/ http://10.202.16.9:9200/",
+                    value = Bootstrap.EXAMPLE,
                     dataType = "string",
-                    paramType = "header")
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @GetMapping(value = "/_cat/count")
+    public String _cat_count(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
+        CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
+        return catService._cat_count(v);
+    }
+
+
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @GetMapping(value = "/_cat/thread_pool")
     public String _cat_thread_pool(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {

@@ -17,6 +17,7 @@ package demo.elastic.search.config.feign;
 
 import feign.Contract;
 import feign.MethodMetadata;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import javax.ws.rs.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import static feign.Util.checkState;
@@ -171,6 +173,19 @@ public final class JAXRSContract extends Contract.BaseContract {
         RequestMethod[] method = requestMapping.method();
         checkState(method.length == 1, "requestMapping.method() was too many on type %s", name);
         data.template().method(method[0].name());
+
+        /**
+         * 解析Mapping的请求头数据
+         */
+        String[] headers = requestMapping.headers();
+        Arrays.stream(headers).forEach(header -> {
+            if (StringUtils.isNotBlank(header)) {
+                int i = header.indexOf("=");
+                String key = header.substring(0, i);
+                String value = header.substring(i + 1);
+                data.template().header(key, value);
+            }
+        });
     }
 
     @Override

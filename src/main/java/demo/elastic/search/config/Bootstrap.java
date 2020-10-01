@@ -7,6 +7,10 @@ public enum Bootstrap {
 
     MY_WIND("http://10.202.16.136:9201", Version.SEVEN),
 
+    LOCAL_SIX_1("http://127.0.0.1:9201", Version.SIX),
+
+    LOCAL_SIX_0("http://127.0.0.1:9200", Version.SIX),
+
     DEV_WIND_ALI("http://39.107.236.187:8000", Version.TWO),
 
     DEV_WIND("http://10.202.16.9:9200", Version.TWO),
@@ -44,10 +48,14 @@ public enum Bootstrap {
 
     //    public static final String IN_USE = "http://39.107.236.187:8000";
 //    public static final String IN_USE = "http://39.107.236.187:9200";
-    public static final String IN_USE = "http://127.0.0.1:80";
+//    public static final String IN_USE = "http://127.0.0.1:80";
+    public static final String IN_USE = "http://127.0.0.1:9202";
 //    public static final String IN_USE = "http://39.107.236.187:7013";
 //    public static final String IN_USE = "http://10.202.16.9:9200";
 //    public static final String IN_USE = "http://10.202.16.136:9201";
+
+    public static final String EXAMPLE = "http://127.0.0.1:9200 http://127.0.0.1:9202 http://39.107.236.187:7013";
+    public static final String DEFAULT_VALUE = "http://127.0.0.1:9202";
 
     /**
      * 获取正在使用的ES的版本
@@ -59,7 +67,7 @@ public enum Bootstrap {
     }
 
     public enum Version {
-        TWO("2"), SEVEN("7");
+        TWO("2"), SIX("6"), SEVEN("7");
         private String version;
 
         Version(String version) {

@@ -2,10 +2,15 @@ package demo.elastic.search.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
+import demo.elastic.search.config.web.CustomInterceptConfig;
+import demo.elastic.search.feign.CCRService;
 import demo.elastic.search.feign.CatService;
 import demo.elastic.search.feign.ClusterService;
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.thread.ThreadLocalFeign;
 import feign.Feign;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +28,15 @@ public class ClusterController {
     @Resource
     private ClusterService clusterService;
 
-
     @ApiOperation(value = "提供集群中分片分配的说明")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @GetMapping(value = "/_cluster/allocation/explain")
     public Response _cluster_allocation_explain(
             @ApiParam(value = "（可选，布尔值）如果为true，则返回有关磁盘使用情况和碎片大小的信息。默认为false")
@@ -40,6 +52,7 @@ public class ClusterController {
             @ApiParam(value = "（可选，整数）指定您要解释的分片的ID")
             @RequestParam(value = "shard", required = false) Integer shard
     ) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._cluster_allocation_explain(include_disk_info, include_yes_decisions, current_node, index, primary, shard);
         return Response.Ok(JSONObject.parse(result));
     }
@@ -50,6 +63,14 @@ public class ClusterController {
      * @return
      */
     @ApiOperation(value = "获取集群范围内的设置")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @GetMapping(value = "/_cluster/settings")
     public Response _cluster_settings(
             @RequestParam(value = "flat_settings", defaultValue = "false") Boolean flat_settings,
@@ -57,6 +78,7 @@ public class ClusterController {
             @RequestParam(value = "master_timeout", defaultValue = "30s") String master_timeout,
             @RequestParam(value = "timeout", defaultValue = "30s") String timeout
     ) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._cluster_settings(flat_settings, include_defaults, master_timeout, timeout);
         return Response.Ok(JSONObject.parse(result));
     }
@@ -65,6 +87,14 @@ public class ClusterController {
      * 功能:获取集群健康状态
      */
     @ApiOperation(value = "返回集群健康状态")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @GetMapping(value = "/_cluster/health")
     public Response _cluster_health(@ApiParam(allowableValues = "cluster,indices,shards", defaultValue = "cluster")
                                     @RequestParam(value = "level") String level,
@@ -83,6 +113,7 @@ public class ClusterController {
                                     @RequestParam(value = "wait_for_nodes", required = false) String wait_for_nodes,
                                     @ApiParam(allowableValues = "green,yellow,red", defaultValue = "green")
                                     @RequestParam(value = "wait_for_status", required = false) String wait_for_status) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._cluster_health(level, local, master_timeout, timeout, wait_for_active_shards, wait_for_events,
                 wait_for_no_initializing_shards, wait_for_no_relocating_shards, wait_for_nodes, wait_for_status);
         return Response.Ok(JSONObject.parse(result));
@@ -93,6 +124,14 @@ public class ClusterController {
      * 功能:获取集群健康状态（指定索引）
      */
     @ApiOperation(value = "返回集群健康状态(指定索引)")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @GetMapping(value = "/_cluster/health/{index}")
     public Response _cluster_health_index(@RequestParam(value = "index", required = false) String index,
 
@@ -113,6 +152,7 @@ public class ClusterController {
                                           @RequestParam(value = "wait_for_nodes", required = false) String wait_for_nodes,
                                           @ApiParam(allowableValues = "green,yellow,red", defaultValue = "green")
                                           @RequestParam(value = "wait_for_status", required = false) String wait_for_status) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._cluster_health_index(index, level, local, master_timeout, timeout, wait_for_active_shards, wait_for_events,
                 wait_for_no_initializing_shards, wait_for_no_relocating_shards, wait_for_nodes, wait_for_status);
         return Response.Ok(JSONObject.parse(result));
@@ -123,12 +163,21 @@ public class ClusterController {
      * 功能:返回有关集群状态的元数据
      */
     @ApiOperation(value = "返回有关集群状态的元数据")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @GetMapping(value = "/_cluster/state/{metrics}/{index}")
     public Response _cluster_state(
             @ApiParam(allowableValues = "_all,blocks,master_node,metadata,nodes,routing_nodes,routing_table,version", defaultValue = "_all")
             @PathVariable(value = "metrics", required = false) String metrics,
             @ApiParam(required = false)
             @PathVariable(value = "index", required = false) String index) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._cluster_state(metrics, index);
         return Response.Ok(JSONObject.parse(result));
 
@@ -143,6 +192,14 @@ public class ClusterController {
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/cluster-stats.html"></a>
      */
     @ApiOperation(value = "返回集群统计信息")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @GetMapping(value = "/_cluster/stats")
     public Response _cluster_stats(
             @ApiParam(value = "（可选，布尔值）如果为true，则以平面格式返回设置。默认为 false")
@@ -151,6 +208,7 @@ public class ClusterController {
             @RequestParam(value = "master_timeout", required = false, defaultValue = "30s") String masterTimeout,
             @ApiParam(value = "（可选，时间单位）指定等待响应的时间段。如果在超时到期之前未收到任何响应，则请求将失败并返回错误。默认为30s")
             @RequestParam(value = "timeout", required = false, defaultValue = "30s") String timeout) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._cluster_stats(flatSettings, masterTimeout, timeout);
         return Response.Ok(JSONObject.parse(result));
     }
@@ -163,28 +221,55 @@ public class ClusterController {
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/cluster-nodes-usage.html"></a>
      */
     @ApiOperation(value = "返回有关功能用法的信息")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @RequestMapping(value = "/_nodes/usage", method = RequestMethod.GET)
     public Response _nodes_usage() {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._nodes_usage();
         return Response.Ok(JSONObject.parse(result));
     }
 
     @ApiOperation(value = "返回有关功能用法的信息")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @RequestMapping(value = "/_nodes/usage/{metric}", method = RequestMethod.GET)
     public Response _nodes_usage(
             @ApiParam(required = false, value = "（可选，字符串）将返回的信息限制为特定的指标。以逗号分隔的以下选项列表<br>1._all返回所有统计信息<br>2.rest_actions 返回REST操作类名，其中包括该操作在节点上被调用的次数", example = "_all,rest_actions")
             @RequestParam(value = "metric", required = false) String metric) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._nodes_usage(metric);
         return Response.Ok(JSONObject.parse(result));
     }
 
     @ApiOperation(value = "返回有关功能用法的信息")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @RequestMapping(value = "/_nodes/{node_id}/usage/{metric}", method = RequestMethod.GET)
     public Response _nodes_usage(
             @ApiParam(required = false, value = "（可选，字符串）用于限制返回信息的节点ID或名称的逗号分隔列表")
             @RequestParam(value = "node_id", required = false) String nodeId,
             @ApiParam(required = false, value = "（可选，字符串）将返回的信息限制为特定的指标。以逗号分隔的以下选项列表<br>1._all返回所有统计信息<br>2.rest_actions 返回REST操作类名，其中包括该操作在节点上被调用的次数", example = "_all,rest_actions")
             @RequestParam(value = "metric", required = false) String metric) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._nodes_usage(nodeId, metric);
         return Response.Ok(JSONObject.parse(result));
     }
@@ -196,6 +281,14 @@ public class ClusterController {
      *
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/cluster-nodes-usage.html"></a>
      */
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @RequestMapping(value = "/_nodes/{node_id}/hot_threads", method = RequestMethod.GET)
     public String _nodes_usage(
             @ApiParam(value = "（可选，字符串）用于限制返回信息的节点ID或名称的逗号分隔列表")
@@ -214,6 +307,7 @@ public class ClusterController {
             @RequestParam(value = "timeout", required = false, defaultValue = "30s") String timeout,
             @ApiParam(value = "（可选，字符串）要采样的类型。可用的选项有block，cpu，和 wait。默认为cpu", allowableValues = "block,cpu,wait")
             @RequestParam(value = "type", required = false, defaultValue = "cpu") String type) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._nodes_usage(node_id, ignore_idle_threads, interval, snapshots, threads, /*masterTimeout,*/ timeout, type);
         return result;
     }
@@ -257,12 +351,21 @@ public class ClusterController {
      * <node_id>
      * （可选，字符串）用于限制返回信息的节点ID或名称的逗号分隔列表。
      */
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @RequestMapping(value = "/_nodes/{node_id}/{metric}", method = RequestMethod.GET)
     public Response _nodes(
             @ApiParam(value = "（可选，字符串）将返回的信息限制为特定的指标。以逗号分隔的以下选项列表")
             @RequestParam(value = "node_id", required = false) String node_id,
             @ApiParam(value = "（可选，字符串）用于限制返回信息的节点ID或名称的逗号分隔列表", allowableValues = "_all,http,ingest,jvm,os,plugins,process,settings,thread_pool,transport")
             @RequestParam(value = "metric", required = false) String metric) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._nodes(node_id, metric);
         return Response.Ok(JSONObject.parse(result));
     }
@@ -300,18 +403,37 @@ public class ClusterController {
      * max_proxy_socket_connections
      * 配置代理模式时，与远程集群的最大套接字连接数。
      */
+
     @ApiOperation(value = "返回已配置的远程集群信息")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @RequestMapping(value = "/_remote/info", method = RequestMethod.GET)
-    Response _remote_info() {
+    public Response _remote_info() {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._remote_info();
         return Response.Ok(JSONObject.parse(result));
     }
 
     @ApiOperation(value = "返回有关集群中当前正在执行的任务的信息")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
     @RequestMapping(value = "/_tasks/{task_id}", method = RequestMethod.GET)
-    Response _tasks_task_id(
+    public Response _tasks_task_id(
             @ApiParam(value = "可选，字符串）要返回的任务的ID（node_id:task_number）")
             @RequestParam(value = "task_id", required = false) String task_id) {
+        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
         String result = clusterService._tasks_task_id(task_id);
         return Response.Ok(JSONObject.parse(result));
     }
