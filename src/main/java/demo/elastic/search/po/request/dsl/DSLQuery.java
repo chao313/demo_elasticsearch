@@ -1,10 +1,5 @@
 package demo.elastic.search.po.request.dsl;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import demo.elastic.search.po.request.dsl.term.RegexpRequest;
-import demo.elastic.search.po.request.dsl.term.TermRequest;
-
 //@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 //@JsonSubTypes({
 //        @JsonSubTypes.Type(value = TermRequest.TermQuery.class, name = "term"),

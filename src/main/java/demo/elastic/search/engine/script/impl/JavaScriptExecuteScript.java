@@ -11,9 +11,6 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.Map;
 
-import static java.lang.System.err;
-import static java.lang.System.gc;
-
 
 /**
  * js引擎

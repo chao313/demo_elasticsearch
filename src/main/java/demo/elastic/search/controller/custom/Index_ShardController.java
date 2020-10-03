@@ -1,8 +1,11 @@
 package demo.elastic.search.controller.custom;
 
+import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.CatService;
+import demo.elastic.search.feign.IndexService;
+import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -33,6 +36,22 @@ public class Index_ShardController {
                               @ApiParam(value = "要显示的以逗号分隔的列名称列表(index,shard,prirep...)") @RequestParam(value = "h") String h) {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
         return catService._cat_shards_index(v, index, h);
+    }
+
+    @ApiOperation(value = "返回一个或多个索引中有关副本分片的存储信息")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @RequestMapping(value = "/{index}/_shard_stores", method = RequestMethod.GET)
+    public Response _shard_stores(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index) {
+        IndexService indexService = ThreadLocalFeign.getFeignService(IndexService.class);
+        String s = indexService._shard_stores(index);
+        return Response.Ok(JSONObject.parse(s));
     }
 }
 

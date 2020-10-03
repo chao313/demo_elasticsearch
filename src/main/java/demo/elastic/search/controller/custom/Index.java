@@ -142,23 +142,6 @@ public class Index {
     }
 
 
-    @ApiOperation(value = "返回一个或多个索引中有关副本分片的存储信息")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @RequestMapping(value = "/{index}/_shard_stores", method = RequestMethod.GET)
-    public Response _shard_stores(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index) {
-        IndexService indexService = ThreadLocalFeign.getFeignService(IndexService.class);
-        String s = indexService._shard_stores(index);
-        return Response.Ok(JSONObject.parse(s));
-    }
-
-
     @ApiOperation(value = "在一个或多个索引的分片上强制合并")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(

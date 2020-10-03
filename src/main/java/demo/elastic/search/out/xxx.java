@@ -3,19 +3,16 @@ package demo.elastic.search.out;
 import demo.elastic.search.config.AwareUtil;
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.po.Body;
-import demo.elastic.search.vo.RequestList;
-import demo.elastic.search.vo.SearchTermsRequest;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.InputStream;
 import java.util.List;
 

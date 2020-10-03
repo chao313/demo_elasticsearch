@@ -9,7 +9,6 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import demo.elastic.search.po.response.buckets.BucketsRoot;
 import lombok.Data;
-import org.elasticsearch.search.aggregations.Aggregation;
 
 import java.util.Map;
 

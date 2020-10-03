@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.*;
 
 @Slf4j
 @Component

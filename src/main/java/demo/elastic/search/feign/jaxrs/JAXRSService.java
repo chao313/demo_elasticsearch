@@ -1,10 +1,9 @@
 package demo.elastic.search.feign.jaxrs;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
+import javax.ws.rs.PathParam;
 
 
 public interface JAXRSService {

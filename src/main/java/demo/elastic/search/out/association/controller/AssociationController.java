@@ -1,13 +1,11 @@
 package demo.elastic.search.out.association.controller;
 
-import com.google.common.io.LineReader;
 import demo.elastic.search.out.association.service.WindCodeService;
 import demo.elastic.search.util.DateUtil;
 import demo.elastic.search.util.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 

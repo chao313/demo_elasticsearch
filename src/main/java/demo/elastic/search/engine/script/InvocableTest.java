@@ -1,9 +1,12 @@
 package demo.elastic.search.engine.script;
 
-import javax.script.*;
-import java.io.*;
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
-import static java.lang.System.*;
+import static java.lang.System.err;
+import static java.lang.System.out;
 
 public class InvocableTest {
     public static void main(String args[]) {

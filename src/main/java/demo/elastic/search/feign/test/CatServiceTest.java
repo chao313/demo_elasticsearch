@@ -1,8 +1,6 @@
 package demo.elastic.search.feign.test;
 
 import demo.elastic.search.feign.CatService;
-import demo.elastic.search.feign.SearchService;
-import demo.elastic.search.po.request.dsl.term.ExistsRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

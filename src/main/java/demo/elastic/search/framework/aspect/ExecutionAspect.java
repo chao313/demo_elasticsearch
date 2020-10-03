@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
-import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

@@ -1,6 +1,5 @@
 package demo.elastic.search.out.kafka;
 
-import demo.elastic.search.out.kafka.vo.KafkaMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;

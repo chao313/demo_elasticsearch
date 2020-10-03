@@ -1,6 +1,5 @@
 package demo.elastic.search.feign.test;
 
-import demo.elastic.search.feign.ClusterService;
 import demo.elastic.search.feign.DocumentService;
 import demo.elastic.search.po.request.dsl.term.TermRequest;
 import demo.elastic.search.po.request.index.doc.reindex.ReIndexRequest;

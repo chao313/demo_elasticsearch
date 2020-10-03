@@ -1,4 +1,4 @@
-package demo.elastic.search.controller.origin2.origin;
+package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
@@ -12,18 +12,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-
 
 /**
- * 用于 证书 查询使用
+ * 集群XPack相关
  */
-//@RequestMapping(value = "/origin/XPackController")
-//@RestController
-public class XPackController {
+@RequestMapping(value = "/Cluster_XPackController")
+@RestController
+public class Cluster_XPackController {
 
-    @Resource
-    private XPackService xPackService;
 
     /**
      * categories
@@ -95,3 +91,19 @@ public class XPackController {
         return Response.Ok(JSONObject.parseObject(result));
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,19 +4,16 @@ import demo.elastic.search.config.AwareUtil;
 import demo.elastic.search.config.feign.JAXRSContract;
 import demo.elastic.search.config.feign.SpringDecoder;
 import demo.elastic.search.config.feign.SpringEncoder;
-import demo.elastic.search.feign.*;
 import feign.Feign;
-import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
 
-import javax.swing.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
