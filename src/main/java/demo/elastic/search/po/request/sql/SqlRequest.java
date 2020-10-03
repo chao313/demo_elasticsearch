@@ -46,7 +46,7 @@ public class SqlRequest extends ToRequestBody {
     }
 
     public static SqlRequest builderRequest(String cursor) {
-        SqlRequest request = new SqlRequest(null, null, null, cursor, null);
+        SqlRequest request = SqlRequest.builderRequest(null, null, null, cursor, null);
         return request;
     }
 
