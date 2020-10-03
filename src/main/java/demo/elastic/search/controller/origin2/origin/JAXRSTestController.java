@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.origin2.origin;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.feign.JAXRSContract;
@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 用于 测试使用
  */
-@RequestMapping(value = "/JAXRSTestController")
-@RestController
+//@RequestMapping(value = "/JAXRSTestController")
+//@RestController
 public class JAXRSTestController {
 
     @Autowired

@@ -1,11 +1,13 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
+import demo.elastic.search.feign.CatService;
 import demo.elastic.search.feign.SnapshotService;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.po.request.snapshot.*;
+import demo.elastic.search.po.request.snapshot.CreateSnapshot;
+import demo.elastic.search.po.request.snapshot.RestoreSnapshot;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -13,27 +15,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-
 
 /**
+ * 集群快照相关
  */
-@RequestMapping(value = "/SnapshotController")
+@RequestMapping(value = "/Cluster_SnapshotController")
 @RestController
-public class SnapshotController {
+public class Cluster_SnapshotController {
 
-    @Resource
-    private SnapshotService snapshotService;
-
-    @ApiOperation(value = "注册FS快照存储库", notes = "{<br>" +
-            "&nbsp;\"settings\": {<br>" +
-            "&nbsp;&nbsp;\"compress\": true,<br>" +
-            "&nbsp;&nbsp;\"location\": \"string\",<br>" +
-            "&nbsp;&nbsp;\"max_restore_bytes_per_sec\": \"40mb\",<br>" +
-            "&nbsp;&nbsp;\"readonly\": false<br>" +
-            "&nbsp;},<br>" +
-            "&nbsp;\"type\": \"fs\"<br>" +
-            "}")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -42,80 +31,12 @@ public class SnapshotController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PutMapping(value = "/FS/_snapshot/{repositoryName}")
-    public Response create_snapshot_repository(@ApiParam(value = "（必需，字符串）仓库名称") @PathVariable(value = "repositoryName") String repositoryName,
-                                               @RequestBody CreateSnapshotRepositoryFS body) {
-        SnapshotService snapshotService = ThreadLocalFeign.getFeignService(SnapshotService.class);
-        String s = snapshotService.create_snapshot_repository(repositoryName, body);
-        return Response.Ok(JSONObject.parse(s));
-    }
-
-    @ApiOperation(value = "注册Url快照存储库", notes = "")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @PutMapping(value = "/URL/_snapshot/{repositoryName}")
-    public Response create_snapshot_repository(@ApiParam(value = "（必需，字符串）仓库名称") @PathVariable(value = "repositoryName") String repositoryName,
-                                               @RequestBody CreateSnapshotRepositoryURL body) {
-        SnapshotService snapshotService = ThreadLocalFeign.getFeignService(SnapshotService.class);
-        String s = snapshotService.create_snapshot_repository(repositoryName, body);
-        return Response.Ok(JSONObject.parse(s));
-    }
-
-    @ApiOperation(value = "注册Source快照存储库", notes = "")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @PutMapping(value = "/Source/_snapshot/{repositoryName}")
-    public Response create_snapshot_repository(@ApiParam(value = "（必需，字符串）仓库名称") @PathVariable(value = "repositoryName") String repositoryName,
-                                               @RequestBody CreateSnapshotRepositorySource body) {
-        SnapshotService snapshotService = ThreadLocalFeign.getFeignService(SnapshotService.class);
-        String s = snapshotService.create_snapshot_repository(repositoryName, body);
-        return Response.Ok(JSONObject.parse(s));
-    }
-
-
-    @ApiOperation(value = "获取仓库详情", notes = "要检索有关多个存储库的信息，请指定以逗号分隔的存储库列表。*指定存储库名称时，也可以使用通配符")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @GetMapping(value = "/_snapshot/{repositoryName}")
-    public Response get_snapshot_repository(@ApiParam(value = "（必需，字符串）仓库名称") @PathVariable(value = "repositoryName") String repositoryName) {
-        SnapshotService snapshotService = ThreadLocalFeign.getFeignService(SnapshotService.class);
-        String s = snapshotService.get_snapshot_repository(repositoryName);
-        return Response.Ok(JSONObject.parse(s));
-    }
-
-
-    @ApiOperation(value = "删除仓库")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @DeleteMapping(value = "/_snapshot/{repositoryName}")
-    public Response delete_snapshot_repository(@ApiParam(value = "（必需，字符串）仓库名称") @PathVariable(value = "repositoryName") String repositoryName) {
-        SnapshotService snapshotService = ThreadLocalFeign.getFeignService(SnapshotService.class);
-        String s = snapshotService.delete_snapshot_repository(repositoryName);
-        return Response.Ok(JSONObject.parse(s));
+    @ApiOperation(value = "返回信息有关快照存储在一个或多个存储库")
+    @GetMapping(value = "/_cat/snapshots/{repository}")
+    public String _cat_snapshots(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                                 @PathVariable(value = "repository") String repository) {
+        CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
+        return catService._cat_snapshots(v, repository);
     }
 
     @ApiOperation(value = "创建快照", notes = " 默认情况下，快照会备份群集中的所有打开的索引。您可以通过在快照请求的正文中指定索引列表来更改此行为<br>快照名称可以使用日期数学表达式自动导出，类似于创建新索引时。特殊字符必须经过URI编码")

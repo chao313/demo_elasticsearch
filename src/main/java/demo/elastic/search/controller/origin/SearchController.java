@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.origin;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 /**
  * 查询使用
  */
-@RequestMapping(value = "/SearchController")
+@RequestMapping(value = "/origin/SearchController")
 @RestController
 public class SearchController {
 

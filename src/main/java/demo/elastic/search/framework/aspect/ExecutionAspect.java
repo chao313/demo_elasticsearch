@@ -25,7 +25,7 @@ public class ExecutionAspect {
     /**
      * 定义切面执行的方法
      */
-    @Pointcut("execution(public * demo.elastic.search.controller..*Controller.*(..))")
+    @Pointcut("execution(public * demo.elastic.search.controller..*..*(..))")
     private void pointCut() {
     }
 

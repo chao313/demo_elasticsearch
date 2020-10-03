@@ -6,6 +6,7 @@ import demo.elastic.search.config.feign.SpringDecoder;
 import demo.elastic.search.config.feign.SpringEncoder;
 import demo.elastic.search.feign.*;
 import feign.Feign;
+import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.formula.functions.T;
@@ -24,11 +25,6 @@ import java.util.*;
 @Slf4j
 @Component
 public class ThreadLocalFeign {
-
-    @Autowired
-    private SpringDecoder springDecoder;
-    @Autowired
-    private SpringEncoder springEncoder;
 
 
     private static ThreadLocal<String> ESHOSTThreadLocal = new ThreadLocal<>();//存放URL
@@ -91,6 +87,7 @@ public class ThreadLocalFeign {
                 .contract(new JAXRSContract())
                 .encoder(AwareUtil.applicationContext.getBean(SpringEncoder.class))
                 .decoder(AwareUtil.applicationContext.getBean(SpringDecoder.class))
+//                .errorDecoder(AwareUtil.applicationContext.getBean(ErrorDecoder.class))
                 .target(clz, url);
         return (T) bean;
     }

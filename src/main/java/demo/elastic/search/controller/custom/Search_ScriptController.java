@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
@@ -12,21 +12,13 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-
 
 /**
- * 用于 ElasticSearch script 级别的使用
+ * 检索相关(Script相关)
  */
-@RequestMapping(value = "/ScriptController")
+@RequestMapping(value = "/Search_ScriptController")
 @RestController
-public class ScriptController {
-
-    @Resource
-    private ScriptService scriptService;
-
-    @Resource
-    private SearchService searchService;
+public class Search_ScriptController {
 
     @ApiOperation(value = "创建一个Script")
     @ApiImplicitParams(value = {
@@ -106,11 +98,10 @@ public class ScriptController {
 //            @PathVariable(value = "index") String index,
             @RequestParam(defaultValue = "comstore_tb_object_0088") String indexTmp,
             @RequestBody String body) {
-        ScriptService scriptService = ThreadLocalFeign.getFeignService(ScriptService.class);
+        SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String s = searchService._search(indexTmp, body);
         return Response.Ok(JSONObject.parse(s));
     }
-
 
 }
 

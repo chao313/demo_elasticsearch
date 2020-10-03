@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
@@ -11,18 +11,13 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-
 
 /**
- * 用于 ElasticSearch mapping 级别的使用
+ * 索引 mapping相关
  */
-@RequestMapping(value = "/MappingController")
+@RequestMapping(value = "/Index_MappingController")
 @RestController
-public class MappingController {
-
-    @Resource
-    private MappingService mappingService;
+public class Index_MappingController {
 
     @ApiOperation(value = "查看指定index的全部的mapping")
     @ApiImplicitParams(value = {

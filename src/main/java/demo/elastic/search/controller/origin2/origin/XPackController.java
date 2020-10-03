@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.origin2.origin;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
@@ -18,8 +18,8 @@ import javax.annotation.Resource;
 /**
  * 用于 证书 查询使用
  */
-@RequestMapping(value = "/XPackController")
-@RestController
+//@RequestMapping(value = "/origin/XPackController")
+//@RestController
 public class XPackController {
 
     @Resource

@@ -199,10 +199,6 @@ public interface ClusterService {
      */
     @RequestMapping(value = "/_cluster/stats", method = RequestMethod.GET)
     String _cluster_stats(
-            @ApiParam(value = "（可选，布尔值）如果为true，则以平面格式返回设置。默认为 false")
-            @RequestParam(value = "flat_settings", required = false, defaultValue = "false") Boolean flatSettings,
-            @ApiParam(value = "（可选，时间单位）指定等待连接到主节点的时间段。如果在超时到期之前未收到任何响应，则请求将失败并返回错误。默认为30s")
-            @RequestParam(value = "master_timeout", required = false, defaultValue = "30s") String masterTimeout,
             @ApiParam(value = "（可选，时间单位）指定等待响应的时间段。如果在超时到期之前未收到任何响应，则请求将失败并返回错误。默认为30s")
             @RequestParam(value = "timeout", required = false, defaultValue = "30s") String timeout);
 

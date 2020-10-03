@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.origin;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 用于 ElasticSearch es使用
  */
-@RequestMapping(value = "/CatController")
+@RequestMapping(value = "/origin/CatController")
 @RestController
 public class CatController {
 

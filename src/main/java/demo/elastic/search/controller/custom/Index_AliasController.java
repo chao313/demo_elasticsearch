@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
@@ -12,18 +12,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-
 
 /**
- * 用于 ElasticSearch Document级别的使用
+ * 索引 别名相关
  */
-@RequestMapping(value = "/IndexAliasController")
+@RequestMapping(value = "/Index_AliasController")
 @RestController
-public class IndexAliasController {
-
-    @Resource
-    private IndexServiceAlias indexServiceAlias;
+public class Index_AliasController {
 
     @ApiOperation(value = "创建或更新索引别名")
     @ApiImplicitParams(value = {
@@ -65,16 +60,7 @@ public class IndexAliasController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-//    @ApiOperation(value = "判断别名是否存在")
-//    @RequestMapping(value = "/{index}/_aliases/{alias}", method = RequestMethod.GET)
-//    public Response exists_alias(
-//            @ApiParam(value = "（必需，字符串）索引名称的逗号分隔列表或通配符表达式，以添加到别名中;要将群集中的所有索引添加到别名，请使用值_all")
-//            @PathVariable(value = "index") String index,
-//            @ApiParam(value = "（必需，字符串）要创建或更新的索引别名的名称")
-//            @PathVariable(value = "alias") String alias) {
-//        String s = indexServiceAlias.exists_alias(index, alias);
-//        return Response.Ok(JSONObject.parse(s));
-//    }
+
 }
 
 

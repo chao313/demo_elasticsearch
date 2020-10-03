@@ -1,13 +1,10 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.DocumentService;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.po.request.index.doc.reindex.ReIndexRequest;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -15,18 +12,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-
 
 /**
- * 用于 ElasticSearch Document级别的使用
+ * 索引 文档相关
  */
-@RequestMapping(value = "/DocumentController")
+@RequestMapping(value = "/Index_DocumentController")
 @RestController
-public class DocumentController {
-
-    @Resource
-    private DocumentService documentService;
+public class Index_DocumentController {
 
     @ApiOperation(value = "创建一个Document")
     @ApiImplicitParams(value = {
@@ -238,55 +230,6 @@ public class DocumentController {
         String s = documentService._update(index, _id, body);
         return Response.Ok(JSONObject.parse(s));
     }
-
-
-    @ApiOperation(value = "将文档从一个索引复制到另一索引", notes = "<pre>{<br>" +
-            "&nbsp;\"conflicts\": \"\",<br>" +
-            "&nbsp;\"dest\": {<br>" +
-            "&nbsp;&nbsp;\"index\": \"\",<br>" +
-            "&nbsp;&nbsp;\"op_type\": \"\",<br>" +
-            "&nbsp;&nbsp;\"version_type\": \"\"<br>" +
-            "&nbsp;},<br>" +
-            "&nbsp;\"script\": {<br>" +
-            "&nbsp;&nbsp;\"lang\": \"\",<br>" +
-            "&nbsp;&nbsp;\"source\": \"\"<br>" +
-            "&nbsp;},<br>" +
-            "&nbsp;\"source\": {<br>" +
-            "&nbsp;&nbsp;\"_source\": [],<br>" +
-            "&nbsp;&nbsp;\"index\": \"\",<br>" +
-            "&nbsp;&nbsp;\"max_docs\": \"\",<br>" +
-            "&nbsp;&nbsp;\"query\": \"\",<br>" +
-            "&nbsp;&nbsp;\"remote\": {<br>" +
-            "&nbsp;&nbsp;&nbsp;\"connect_timeout\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"host\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"password\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"socket_timeout\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"username\": \"\"<br>" +
-            "&nbsp;&nbsp;},<br>" +
-            "&nbsp;&nbsp;\"size\":\"\",<br>" +
-            "&nbsp;&nbsp;\"slice\": {<br>" +
-            "&nbsp;&nbsp;&nbsp;\"id\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"max\": \"\"<br>" +
-            "&nbsp;&nbsp;}<br>" +
-            "&nbsp;}<br>" +
-            "}</pre>")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @PostMapping(value = "/_reindex")
-    public Response _reindex(@RequestBody ReIndexRequest reIndexRequest) throws JsonProcessingException {
-        DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
-        JsonMapper mapper = new JsonMapper();
-        String body = mapper.writeValueAsString(reIndexRequest);
-        String s = documentService._reindex(reIndexRequest);
-        return Response.Ok(JSONObject.parse(s));
-    }
-
 }
 
 

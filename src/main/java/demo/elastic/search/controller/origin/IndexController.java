@@ -1,12 +1,9 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.origin;
 
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.IndexService;
-import demo.elastic.search.feign.IndexServiceAlias;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.po.request.index.CreateIndex;
 import demo.elastic.search.thread.ThreadLocalFeign;
@@ -22,7 +19,7 @@ import javax.annotation.Resource;
 /**
  * 用于 ElasticSearch Index级别的使用
  */
-@RequestMapping(value = "/IndexController")
+@RequestMapping(value = "/origin/IndexController")
 @RestController
 public class IndexController {
 

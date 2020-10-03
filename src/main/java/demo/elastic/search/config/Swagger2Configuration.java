@@ -31,12 +31,13 @@ public class Swagger2Configuration {
     @Autowired
     private TypeResolver typeResolver;
 
+
     @Bean
-    public Docket ESApi() {
+    public Docket ESCustomApi() {
         Docket docket = new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors
-                        .basePackage("demo.elastic.search.controller"))
+                        .basePackage("demo.elastic.search.controller.custom"))
                 .paths(PathSelectors.any())
                 .build()
                 .genericModelSubstitutes(DeferredResult.class)//异步http请求
@@ -44,7 +45,38 @@ public class Swagger2Configuration {
                 .pathMapping("/")
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false)
-                .groupName("ESApi");
+                .groupName("ESCustomApi");
+
+        docket.alternateTypeRules(AlternateTypeRules.newMapRule(String.class, WildcardType.class));
+//        docket.alternateTypeRules( //自定义规则，如果遇到DeferredResult，则把泛型类转成json
+//                newRule(typeResolver.resolve(LinkedHashMap.class,typeResolver
+//                        typeResolver.resolve(JsonNode.class, WildcardType.class)),
+//                        typeResolver.resolve(WildcardType.class)));
+
+
+//        docket.alternateTypeRules(//解决返回对象为Map>时，Swagger页面报错
+//                AlternateTypeRules.newRule(
+//                        typeResolver.resolve(Map.class, String.class, typeResolver.resolve(List.class, FuzzyRequest.FuzzyParam.class)),
+//                        typeResolver.resolve(Map.class, String.class, WildcardType.class), Ordered.HIGHEST_PRECEDENCE)
+//        );
+        return docket;
+
+    }
+
+    @Bean
+    public Docket ESOriginApi() {
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors
+                        .basePackage("demo.elastic.search.controller.origin"))
+                .paths(PathSelectors.any())
+                .build()
+                .genericModelSubstitutes(DeferredResult.class)//异步http请求
+                .forCodeGeneration(true)
+                .pathMapping("/")
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false)
+                .groupName("ESOriginApi");
 
         docket.alternateTypeRules(AlternateTypeRules.newMapRule(String.class, WildcardType.class));
 //        docket.alternateTypeRules( //自定义规则，如果遇到DeferredResult，则把泛型类转成json

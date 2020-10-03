@@ -1,14 +1,11 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.origin;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
-import demo.elastic.search.feign.CCRService;
-import demo.elastic.search.feign.CatService;
 import demo.elastic.search.feign.ClusterService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
-import feign.Feign;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +18,7 @@ import javax.annotation.Resource;
 /**
  * 用于 ElasticSearch es 查询使用
  */
-@RequestMapping(value = "/ClusterController")
+@RequestMapping(value = "/origin/ClusterController")
 @RestController
 public class ClusterController {
 
@@ -190,28 +187,28 @@ public class ClusterController {
      * 以及有关构成集群的当前节点的信息（数量，角色，操作系统，jvm版本，内存使用情况，cpu和已安装的插件）
      *
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/cluster-stats.html"></a>
-     */
-    @ApiOperation(value = "返回集群统计信息")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @GetMapping(value = "/_cluster/stats")
-    public Response _cluster_stats(
-            @ApiParam(value = "（可选，布尔值）如果为true，则以平面格式返回设置。默认为 false")
-            @RequestParam(value = "flat_settings", required = false, defaultValue = "false") Boolean flatSettings,
-            @ApiParam(value = "（可选，时间单位）指定等待连接到主节点的时间段。如果在超时到期之前未收到任何响应，则请求将失败并返回错误。默认为30s")
-            @RequestParam(value = "master_timeout", required = false, defaultValue = "30s") String masterTimeout,
-            @ApiParam(value = "（可选，时间单位）指定等待响应的时间段。如果在超时到期之前未收到任何响应，则请求将失败并返回错误。默认为30s")
-            @RequestParam(value = "timeout", required = false, defaultValue = "30s") String timeout) {
-        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
-        String result = clusterService._cluster_stats(flatSettings, masterTimeout, timeout);
-        return Response.Ok(JSONObject.parse(result));
-    }
+//     */
+//    @ApiOperation(value = "返回集群统计信息")
+//    @ApiImplicitParams(value = {
+//            @ApiImplicitParam(
+//                    name = CustomInterceptConfig.HEADER_KEY,
+//                    value = Bootstrap.EXAMPLE,
+//                    dataType = "string",
+//                    paramType = "header",
+//                    defaultValue = Bootstrap.DEFAULT_VALUE)
+//    })
+//    @GetMapping(value = "/_cluster/stats")
+//    public Response _cluster_stats(
+//            @ApiParam(value = "（可选，布尔值）如果为true，则以平面格式返回设置。默认为 false")
+//            @RequestParam(value = "flat_settings", required = false, defaultValue = "false") Boolean flatSettings,
+//            @ApiParam(value = "（可选，时间单位）指定等待连接到主节点的时间段。如果在超时到期之前未收到任何响应，则请求将失败并返回错误。默认为30s")
+//            @RequestParam(value = "master_timeout", required = false, defaultValue = "30s") String masterTimeout,
+//            @ApiParam(value = "（可选，时间单位）指定等待响应的时间段。如果在超时到期之前未收到任何响应，则请求将失败并返回错误。默认为30s")
+//            @RequestParam(value = "timeout", required = false, defaultValue = "30s") String timeout) {
+//        ClusterService clusterService = ThreadLocalFeign.getFeignService(ClusterService.class);
+//        String result = clusterService._cluster_stats(flatSettings, masterTimeout, timeout);
+//        return Response.Ok(JSONObject.parse(result));
+//    }
 
     /**
      * 功能:返回有关功能用法的信息

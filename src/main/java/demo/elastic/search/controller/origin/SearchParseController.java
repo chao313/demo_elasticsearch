@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.origin;
 
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 解析查询使用
  */
-@RequestMapping(value = "/SearchParseController")
+@RequestMapping(value = "/origin/SearchParseController")
 @RestController
 @Slf4j
 public class SearchParseController {

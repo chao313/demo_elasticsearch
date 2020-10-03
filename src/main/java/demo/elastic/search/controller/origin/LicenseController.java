@@ -1,4 +1,4 @@
-package demo.elastic.search.controller;
+package demo.elastic.search.controller.origin;
 
 
 import com.alibaba.fastjson.JSONObject;
@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 /**
  * 用于 证书 查询使用
  */
-@RequestMapping(value = "/LicenseController")
+@RequestMapping(value = "/origin/LicenseController")
 @RestController
 public class LicenseController {
 
