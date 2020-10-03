@@ -1,8 +1,10 @@
 package demo.elastic.search.po.request.index;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import demo.elastic.search.po.request.analyze.AnalyzeRequest;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -71,5 +73,16 @@ public class CreateIndex {
     class Properties {
         @JsonProperty("properties")
         private Map<String, Map<String, String>> properties;
+    }
+
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/analysis-custom-analyzer.html"></a>
+     */
+    @Data
+    class Analyzer {
+        private String type;
+        private String tokenizer;
+        private List<AnalyzeRequest.Char_Filters> char_filter;
+        private List<AnalyzeRequest.Filters> filter;
     }
 }
