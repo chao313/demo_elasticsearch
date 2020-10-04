@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class Search {
 
-    @ApiOperation(value = "查询一个index的type", notes =
+    @ApiOperation(value = "查询(普通)", notes =
             "comstore_tb_object_0088<br>" +
                     "<pre>" +
                     " curl -X GET  \"http://39.107.236.187:9200/bank/_doc/_search?pretty\" -H 'Content-Type: application/json' -d'<br>" +
@@ -54,17 +53,9 @@ public class Search {
     @PostMapping(value = "/{index}/_search")
     public Response _search(
             @ApiParam(defaultValue = "tb_object_0088") @PathVariable(value = "index") String index,
-            @ApiParam(name = "scroll", value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
-            @RequestParam(value = "scroll", required = false) String scroll,
             @RequestBody String body) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result;
-        if (StringUtils.isBlank(scroll)) {
-            result = searchService._search(index, body);
-        } else {
-            result = searchService._search(index, scroll, body);
-        }
-
+        String result = searchService._search(index, body);
         return Response.Ok(JSONObject.parse(result));
     }
 }

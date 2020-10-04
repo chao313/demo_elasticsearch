@@ -150,5 +150,11 @@ public interface SearchService {
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
     String _search(@PathVariable(value = "index") String index, @RequestBody QueryBaseRequest queryBaseRequest);
 
+    /**
+     * 返回request将会执行的shard
+     */
+    @RequestMapping(value = "/{index}/_search_shards", method = RequestMethod.GET)
+    String _search_shards(@PathVariable(value = "index") String index);
+
 
 }

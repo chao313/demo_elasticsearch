@@ -10,10 +10,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -48,5 +45,25 @@ public class ScrollController {
 
         return Response.Ok(JSONObject.parse(result));
     }
+
+    @ApiOperation(value = "清除滚动查询")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @DeleteMapping(value = "/_search/scroll")
+    public Response _search(
+            @ApiParam(name = "scroll_id", value = "有效的scroll_id")
+            @RequestParam(value = "scroll_id") String scroll_id) {
+        ScrollService scrollService = ThreadLocalFeign.getFeignService(ScrollService.class);
+        String result = scrollService._search(scroll_id);
+
+        return Response.Ok(JSONObject.parse(result));
+    }
+
 
 }
