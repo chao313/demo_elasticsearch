@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RequestMapping(value = "/Search_DSL_CompoundController")
 @RestController
-public class Search_DSL_CompoundController {
+public class  Search_DSL_CompoundController {
 
     @ApiOperation(value = "bool查询")
     @ApiImplicitParams(value = {
