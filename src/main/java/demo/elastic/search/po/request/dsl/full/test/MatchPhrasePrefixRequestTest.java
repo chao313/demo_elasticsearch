@@ -1,7 +1,6 @@
 package demo.elastic.search.po.request.dsl.full.test;
 
-import demo.elastic.search.feign.FullTextService;
-import demo.elastic.search.feign.SearchService;
+import demo.elastic.search.feign.SearchFullTextService;
 import demo.elastic.search.po.request.dsl.full.MatchPhrasePrefixRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -13,13 +12,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 public class MatchPhrasePrefixRequestTest {
 
     @Autowired
-    private FullTextService fullTextService;
+    private SearchFullTextService searchFullTextService;
 
     @Test
     public void testMatchAllRequest() {
         MatchPhrasePrefixRequest request = MatchPhrasePrefixRequest.builderRequest("F2_0088", "Apple Inc.");
         log.info("请求body:{}", request.getRequestBody());
-        String response = fullTextService.match_phrase_prefix_search("comstore_tb_object_0088", request);
+        String response = searchFullTextService.match_phrase_prefix_search("comstore_tb_object_0088", request);
         log.info("response:{}", response);
     }
 }

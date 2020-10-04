@@ -34,7 +34,7 @@ public class MatchPhraseRequest extends ToRequestBody {
     @Data
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class MatchPhraseQuery implements DSLQuery {
-        private Map<String, MatchPhraseParam> match = new HashMap<>();
+        private Map<String, MatchPhraseParam> match_phrase = new HashMap<>();
     }
 
     @Data
@@ -48,7 +48,7 @@ public class MatchPhraseRequest extends ToRequestBody {
 
     public static MatchPhraseRequest builderRequest(String field, String query, String analyzer) {
         MatchPhraseRequest request = new MatchPhraseRequest();
-        request.getQuery().getMatch().put(field, new MatchPhraseParam(query, analyzer));
+        request.getQuery().getMatch_phrase().put(field, new MatchPhraseParam(query, analyzer));
         return request;
     }
 
