@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 
 
 /**
- * 检索相关(DSL语法)
+ * 检索相关(DSL 术语级查询 语法)
  */
 @RequestMapping(value = "/Search_DSLController")
 @RestController
-public class Search_DSLController {
+public class Search_DSL_TermLevelController {
     @ApiOperation(value = "DSL检索(存在)")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(

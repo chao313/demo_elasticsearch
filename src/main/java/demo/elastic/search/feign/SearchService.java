@@ -31,43 +31,6 @@ public interface SearchService {
                    @RequestParam(value = "scroll") String scroll,
                    @RequestBody String body);
 
-
-    /**
-     * 全文搜索(匹配全部的文档)
-     */
-    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_all_search(@PathVariable(value = "index") String index, @RequestBody MatchAllRequest matchAllRequest);
-
-    /**
-     * FULL 搜索
-     */
-    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_search(@PathVariable(value = "index") String index, @RequestBody MatchRequest matchRequest);
-
-    /**
-     * FULL 搜索
-     */
-    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_phrase_search(@PathVariable(value = "index") String index, @RequestBody MatchPhraseRequest matchPhraseRequest);
-
-    /**
-     * FULL 搜索(匹配全部的文档)
-     */
-    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_phrase_prefix_search(@PathVariable(value = "index") String index, @RequestBody MatchPhrasePrefixRequest matchPhrasePrefixRequest);
-
-    /**
-     * FULL bool prefix 搜索
-     */
-    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_bool_prefix_search(@PathVariable(value = "index") String index, @RequestBody MatchBoolPrefixRequest matchBoolPrefixRequest);
-
-    /**
-     * FULL multi match 搜索
-     */
-    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_multi_match_search(@PathVariable(value = "index") String index, @RequestBody MultiMatchRequest multiMatchRequest);
-
     /**
      * DSL搜索
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html"></a>
