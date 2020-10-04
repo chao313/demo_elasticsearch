@@ -106,8 +106,8 @@ public class CustomController {
 
     @ApiOperation(value = "accounts.json 数据批量插入")
     @PostMapping(value = "/{index}/_bulk")
-    public Response _bulk_accounts(
-            @PathVariable(value = "index") String index) throws IOException {
+    public Response _bulk_accounts(@ApiParam(defaultValue = "index_bulk", value = "指定导入的index")
+                                   @PathVariable(value = "index") String index) throws IOException {
         File file = AwareUtil.resourceLoader.getResource("classpath:data/accounts.json").getFile();
         String body = FileUtils.readFileToString(file, "UTF-8");
         String s = documentService._bulk(index, body);
