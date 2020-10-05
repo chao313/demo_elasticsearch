@@ -18,7 +18,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @AllArgsConstructor
 @NoArgsConstructor
-public class LuceneRequest extends ToRequestBody {
+public class LuceneQueryStringRequest extends ToRequestBody {
 
     private LuceneQuery query = new LuceneQuery();
 
@@ -26,7 +26,7 @@ public class LuceneRequest extends ToRequestBody {
     @Data
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static class LuceneQuery {
-        private LuceneRequest.LuceneParam query_string = new LuceneRequest.LuceneParam();
+        private LuceneQueryStringRequest.LuceneParam query_string = new LuceneQueryStringRequest.LuceneParam();
     }
 
     /**
@@ -51,26 +51,26 @@ public class LuceneRequest extends ToRequestBody {
     /**
      * 构建 request 请求(这里默认解析通配)
      */
-    private static LuceneRequest builderRequest(String query, List<String> fields, Integer minimum_should_match, AnalyzeRequest.Analyzer analyzer) {
-        LuceneRequest luceneRequest = new LuceneRequest();
+    private static LuceneQueryStringRequest builderRequest(String query, List<String> fields, Integer minimum_should_match, AnalyzeRequest.Analyzer analyzer) {
+        LuceneQueryStringRequest luceneQueryStringRequest = new LuceneQueryStringRequest();
         LuceneParam luceneParam = new LuceneParam(query, fields, minimum_should_match, analyzer, null, null, null, null, true);
-        luceneRequest.getQuery().setQuery_string(luceneParam);
-        return luceneRequest;
+        luceneQueryStringRequest.getQuery().setQuery_string(luceneParam);
+        return luceneQueryStringRequest;
     }
 
-    public static LuceneRequest builderRequest(String query, List<String> fields, Integer minimum_should_match) {
-        LuceneRequest request = LuceneRequest.builderRequest(query, fields, minimum_should_match, null);
+    public static LuceneQueryStringRequest builderRequest(String query, List<String> fields, Integer minimum_should_match) {
+        LuceneQueryStringRequest request = LuceneQueryStringRequest.builderRequest(query, fields, minimum_should_match, null);
         return request;
     }
 
 
-    public static LuceneRequest builderRequest(String query, List<String> fields) {
-        LuceneRequest request = LuceneRequest.builderRequest(query, fields, null, null);
+    public static LuceneQueryStringRequest builderRequest(String query, List<String> fields) {
+        LuceneQueryStringRequest request = LuceneQueryStringRequest.builderRequest(query, fields, null, null);
         return request;
     }
 
-    public static LuceneRequest builderRequest(String query) {
-        LuceneRequest request = LuceneRequest.builderRequest(query, null, null, null);
+    public static LuceneQueryStringRequest builderRequest(String query) {
+        LuceneQueryStringRequest request = LuceneQueryStringRequest.builderRequest(query, null, null, null);
         return request;
     }
 
