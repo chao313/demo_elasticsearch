@@ -2,7 +2,7 @@ package demo.elastic.search.po.request.aggs.base;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
-import demo.elastic.search.po.Parse;
+import demo.elastic.search.out.remove.compound.Parse;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

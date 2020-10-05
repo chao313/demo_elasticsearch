@@ -3,7 +3,7 @@ package demo.elastic.search.controller.origin;
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
-import demo.elastic.search.po.Body;
+import demo.elastic.search.out.remove.compound.Body;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;

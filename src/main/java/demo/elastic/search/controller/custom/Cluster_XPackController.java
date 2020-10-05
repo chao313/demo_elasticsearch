@@ -3,6 +3,7 @@ package demo.elastic.search.controller.custom;
 import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
+import demo.elastic.search.feign.CCRService;
 import demo.elastic.search.feign.XPackService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
@@ -11,6 +12,8 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 
 /**
@@ -89,6 +92,25 @@ public class Cluster_XPackController {
         XPackService xPackService = ThreadLocalFeign.getFeignService(XPackService.class);
         String result = xPackService._xpack_usage(masterTimeout);
         return Response.Ok(JSONObject.parseObject(result));
+    }
+
+    @Resource
+    private CCRService ccrService;
+
+    @ApiOperation(value = "获取跨集群复制统计信息")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @RequestMapping(value = "/_ccr/stats", method = RequestMethod.GET)
+    public Response _ccr_stats() {
+        CCRService ccrService = ThreadLocalFeign.getFeignService(CCRService.class);
+        String result = ccrService._ccr_stats();
+        return Response.Ok(JSONObject.parse(result));
     }
 }
 
