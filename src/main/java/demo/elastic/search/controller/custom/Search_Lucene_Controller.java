@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RequestMapping(value = "/Search_LuceneController")
 @RestController
-public class Search_LuceneController {
+public class Search_Lucene_Controller {
 
     @ApiOperation(value = "lucene语法检索")
     @ApiImplicitParams(value = {
