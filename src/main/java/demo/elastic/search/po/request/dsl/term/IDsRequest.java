@@ -3,6 +3,7 @@ package demo.elastic.search.po.request.dsl.term;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
+import demo.elastic.search.po.request.dsl.DSLRequest;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class IDsRequest extends ToRequestBody {
+public class IDsRequest extends ToRequestBody implements DSLRequest {
 
     private IDsQuery query = new IDsQuery();
 

@@ -3,6 +3,7 @@ package demo.elastic.search.po.request.dsl.full;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
+import demo.elastic.search.po.request.dsl.DSLRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class MultiMatchRequest extends ToRequestBody {
+public class MultiMatchRequest extends ToRequestBody implements DSLRequest {
 
     private MultiMatchQuery query = new MultiMatchQuery();
 

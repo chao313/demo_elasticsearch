@@ -3,6 +3,7 @@ package demo.elastic.search.po.request.dsl.term;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
+import demo.elastic.search.po.request.dsl.DSLRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,7 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class RangeRequest extends ToRequestBody {
+public class RangeRequest extends ToRequestBody implements DSLRequest {
 
     private RangeQuery query = new RangeQuery();
 

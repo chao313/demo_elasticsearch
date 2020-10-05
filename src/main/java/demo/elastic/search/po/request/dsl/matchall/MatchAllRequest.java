@@ -3,12 +3,13 @@ package demo.elastic.search.po.request.dsl.matchall;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
+import demo.elastic.search.po.request.dsl.DSLRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class MatchAllRequest extends ToRequestBody {
+public class MatchAllRequest extends ToRequestBody implements DSLRequest {
 
     private MatchAllQuery query = new MatchAllQuery();
 
