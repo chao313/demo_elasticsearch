@@ -5,8 +5,8 @@ import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.po.request.dsl.compound.BoolRequest;
-import demo.elastic.search.po.request.dsl.term.*;
+import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.dsl.compound.BoolQuery;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RequestMapping(value = "/Search_DSL_CompoundController")
 @RestController
-public class  Search_DSL_CompoundController {
+public class Search_DSL_CompoundController {
 
     @ApiOperation(value = "bool查询")
     @ApiImplicitParams(value = {
@@ -31,12 +31,11 @@ public class  Search_DSL_CompoundController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/bool/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody BoolRequest boolRequest) {
+    public Response _search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<BoolQuery> boolRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result = searchService.DSL_bool_search(index, boolRequest);
+        String result = searchService.DSL_search_bool(index, boolRequest);
         return Response.Ok(JSONObject.parse(result));
     }
-
 
 }
 

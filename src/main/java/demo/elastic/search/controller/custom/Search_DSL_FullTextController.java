@@ -5,6 +5,7 @@ import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.SearchFullTextService;
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.po.request.SearchSourceBuilder;
 import demo.elastic.search.po.request.dsl.full.*;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
@@ -49,7 +50,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_bool_prefix_search", method = RequestMethod.POST)
     public Response match_bool_prefix_search(@PathVariable(value = "index") String index,
-                                             @RequestBody MatchBoolPrefixRequest matchBoolPrefixRequest) {
+                                             @RequestBody SearchSourceBuilder<MatchBoolPrefixQuery> matchBoolPrefixRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_bool_prefix_search(index, matchBoolPrefixRequest);
         return Response.Ok(JSONObject.parse(result));

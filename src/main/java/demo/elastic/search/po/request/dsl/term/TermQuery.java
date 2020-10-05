@@ -3,7 +3,6 @@ package demo.elastic.search.po.request.dsl.term;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
-import demo.elastic.search.po.request.dsl.DSLRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,14 +27,9 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class TermRequest extends ToRequestBody implements DSLRequest {
+public class TermQuery extends ToRequestBody implements DSLQuery {
 
-    private TermQuery query = new TermQuery();
-
-    @Data
-    public static class TermQuery extends ToRequestBody implements DSLQuery {
-        private Map<String, TermParam> term = new HashMap<>();
-    }
+    private Map<String, TermParam> term = new HashMap<>();
 
     @Data
     @AllArgsConstructor
@@ -48,22 +42,14 @@ public class TermRequest extends ToRequestBody implements DSLRequest {
         String boost;
     }
 
-    public static TermRequest builderRequest(String key, String value, String boost) {
-        TermRequest termRequest = new TermRequest();
-        termRequest.getQuery().getTerm().put(key, new TermParam(value, boost));
-        return termRequest;
-    }
-
-    public static TermRequest builderRequest(String key, String value) {
-        return builderRequest(key, value, "1.0");
-    }
-
     public static TermQuery builderQuery(String key, String value, String boost) {
-        return builderRequest(key, value, boost).getQuery();
+        TermQuery query = new TermQuery();
+        query.getTerm().put(key, new TermParam(value, boost));
+        return query;
     }
 
     public static TermQuery builderQuery(String key, String value) {
-        return builderRequest(key, value, "1.0").getQuery();
+        return builderQuery(key, value, "1.0");
     }
 
 

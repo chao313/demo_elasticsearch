@@ -3,7 +3,6 @@ package demo.elastic.search.po.request.dsl.term;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
-import demo.elastic.search.po.request.dsl.DSLRequest;
 import lombok.Data;
 
 import java.util.HashMap;
@@ -25,25 +24,17 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class TermsRequest extends ToRequestBody implements DSLRequest {
+public class TermsQuery extends ToRequestBody implements DSLQuery {
 
-    private TermsQuery query = new TermsQuery();
-
-    @Data
-    public static class TermsQuery implements DSLQuery {
-        private Map<String, List<String>> terms = new HashMap<>();
-    }
+    private Map<String, List<String>> terms = new HashMap<>();
 
     /**
      * 构建 request 请求
      */
-    public static TermsRequest builderRequest(String key, List<String> values) {
-        TermsRequest request = new TermsRequest();
-        request.getQuery().getTerms().put(key, values);
-        return request;
+    public static TermsQuery builderQuery(String key, List<String> values) {
+        TermsQuery query = new TermsQuery();
+        query.getTerms().put(key, values);
+        return query;
     }
 
-    public static TermsQuery builderQuery(String key, List<String> values) {
-        return builderRequest(key, values).getQuery();
-    }
 }

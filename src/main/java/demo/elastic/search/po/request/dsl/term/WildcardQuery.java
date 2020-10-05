@@ -3,7 +3,6 @@ package demo.elastic.search.po.request.dsl.term;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
-import demo.elastic.search.po.request.dsl.DSLRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,15 +31,9 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class WildcardRequest extends ToRequestBody implements DSLRequest {
+public class WildcardQuery extends ToRequestBody implements DSLQuery {
 
-
-    private WildcardQuery query = new WildcardQuery();
-
-    @Data
-    public static class WildcardQuery implements DSLQuery {
-        private Map<String, WildcardParam> wildcard = new HashMap<>();
-    }
+    private Map<String, WildcardParam> wildcard = new HashMap<>();
 
     @Data
     @AllArgsConstructor
@@ -56,24 +49,15 @@ public class WildcardRequest extends ToRequestBody implements DSLRequest {
     }
 
 
-    public static WildcardRequest builderRequest(String key, String value, Double boost, String rewrite) {
-        WildcardRequest request = new WildcardRequest();
-        request.getQuery().getWildcard().put(key, new WildcardParam(value, boost, rewrite));
-        return request;
-    }
-
-    public static WildcardRequest builderRequest(String key, String value) {
-        return builderRequest(key, value, 1.0, "constant_score");
+    public static WildcardQuery builderQuery(String key, String value, Double boost, String rewrite) {
+        WildcardQuery query = new WildcardQuery();
+        query.getWildcard().put(key, new WildcardParam(value, boost, rewrite));
+        return query;
     }
 
     public static WildcardQuery builderQuery(String key, String value) {
-        return builderRequest(key, value, 1.0, "constant_score").getQuery();
+        return builderQuery(key, value, 1.0, "constant_score");
     }
 
-
-    public static WildcardQuery builderQuery(String key, String value, Double boost, String rewrite) {
-
-        return builderRequest(key, value, boost, rewrite).getQuery();
-    }
 
 }

@@ -5,7 +5,8 @@ import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.po.request.dsl.compound.BoolRequest;
+import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.dsl.compound.BoolQuery;
 import demo.elastic.search.po.request.dsl.term.*;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
@@ -30,10 +31,10 @@ public class Search_DSL_TermLevelController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/exists/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody ExistsRequest existsRequest) {
+    public Response _search_exists(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<ExistsQuery> existsRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result;
-        result = searchService.DSL_search(index, existsRequest);
+        result = searchService.DSL_search_exists(index, existsRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
@@ -47,10 +48,10 @@ public class Search_DSL_TermLevelController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/fuzzy/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody FuzzyRequest fuzzyRequest) {
+    public Response _search_fuzzy(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<FuzzyQuery> fuzzyRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result;
-        result = searchService.DSL_search(index, fuzzyRequest);
+        result = searchService.DSL_search_fuzzy(index, fuzzyRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
@@ -64,9 +65,9 @@ public class Search_DSL_TermLevelController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/ids/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody IDsRequest iDsRequest) {
+    public Response _search_ids(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<IDsQuery> iDsRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result = searchService.DSL_search(index, iDsRequest);
+        String result = searchService.DSL_search_ids(index, iDsRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
@@ -80,9 +81,9 @@ public class Search_DSL_TermLevelController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/prefix/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody PrefixRequest prefixRequest) {
+    public Response _search_prefix(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<PrefixQuery> prefixRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result = searchService.DSL_search(index, prefixRequest);
+        String result = searchService.DSL_search_prefix(index, prefixRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
@@ -96,9 +97,9 @@ public class Search_DSL_TermLevelController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/range/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody RangeRequest rangeRequest) {
+    public Response _search_range(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<RangeQuery> rangeRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result = searchService.DSL_search(index, rangeRequest);
+        String result = searchService.DSL_search_range(index, rangeRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
@@ -112,9 +113,9 @@ public class Search_DSL_TermLevelController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/regexp/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody RegexpRequest regexpRequest) {
+    public Response _search_regexp(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<RegexpQuery> regexpRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result = searchService.DSL_search(index, regexpRequest);
+        String result = searchService.DSL_search_regexp(index, regexpRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
@@ -128,13 +129,13 @@ public class Search_DSL_TermLevelController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/term/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody TermRequest termRequest) {
+    public Response _search_term(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<TermQuery> termRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result = searchService.DSL_search(index, termRequest);
+        String result = searchService.DSL_search_term(index, termRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
-    @ApiOperation(value = "DSL检索(term)")
+    @ApiOperation(value = "DSL检索(terms)")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -144,9 +145,9 @@ public class Search_DSL_TermLevelController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/terms/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody TermsRequest termsRequest) {
+    public Response _search_terms(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<TermsQuery> termsRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result = searchService.DSL_search(index, termsRequest);
+        String result = searchService.DSL_search_terms(index, termsRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
@@ -160,27 +161,12 @@ public class Search_DSL_TermLevelController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @PostMapping(value = "/DSL/wildcard/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody WildcardRequest wildcardRequest) {
+    public Response _search_wildcard(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<WildcardQuery> wildcardRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result = searchService.DSL_search(index, wildcardRequest);
+        String result = searchService.DSL_search_wildcard(index, wildcardRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
-    @ApiOperation(value = "bool查询")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @PostMapping(value = "/DSL/bool/{index}/_search")
-    public Response _search(@PathVariable(value = "index") String index, @RequestBody BoolRequest boolRequest) {
-        SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
-        String result = searchService.DSL_bool_search(index, boolRequest);
-        return Response.Ok(JSONObject.parse(result));
-    }
 
 
 }

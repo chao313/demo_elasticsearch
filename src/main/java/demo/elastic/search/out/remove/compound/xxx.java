@@ -1,4 +1,4 @@
-package demo.elastic.search.out;
+package demo.elastic.search.out.remove.compound;
 
 import demo.elastic.search.config.AwareUtil;
 import demo.elastic.search.framework.Code;

@@ -1,7 +1,7 @@
 
 package demo.elastic.search.po.request;
 
-import demo.elastic.search.po.request.dsl.compound.BoolRequest;
+import demo.elastic.search.po.request.dsl.compound.BoolQuery;
 import demo.elastic.search.po.request.dsl.full.*;
 import demo.elastic.search.po.request.dsl.matchall.MatchAllRequest;
 import demo.elastic.search.po.request.dsl.term.*;
@@ -41,69 +41,64 @@ public final class QueryBuilders {
         return MatchPhrasePrefixRequest.builderRequest(field, query);
     }
 
-    public static MatchBoolPrefixRequest matchBoolPhrasePrefixQuery(String field, String query) {
-        return MatchBoolPrefixRequest.builderRequest(field, query);
+    public static MatchBoolPrefixQuery matchBoolPrefixQuery(String field, String query) {
+        return MatchBoolPrefixQuery.builderQuery(field, query);
+    }
+
+    public static IDsQuery idsQuery(List<String> values) {
+        return IDsQuery.builderQuery(values);
     }
 
 
-    public static IDsRequest idsQuery(List<String> values) {
-        return IDsRequest.builderRequest(values);
+    public static TermQuery termQuery(String name, String value) {
+        return TermQuery.builderQuery(name, value);
     }
 
-
-    public static TermRequest termQuery(String name, String value) {
-        return TermRequest.builderRequest(name, value);
+    public static FuzzyQuery fuzzyQuery(String key, String value) {
+        return FuzzyQuery.builderQuery(key, value, "AUTO", 50, 0, true, "constant_score");
     }
 
-    public static FuzzyRequest fuzzyQuery(String key, String value, String fuzziness, Integer max_expansions, Integer prefixLength, Boolean transpositions, String rewrite) {
-        return fuzzyQuery(key, value, fuzziness, 50, 0, true, "constant_score");
+    public static FuzzyQuery fuzzyQuery(String key, String value, String fuzziness) {
+        return FuzzyQuery.builderQuery(key, value, fuzziness, 50, 0, true, "constant_score");
     }
 
-    public static FuzzyRequest fuzzyQuery(String key, String value) {
-        return fuzzyQuery(key, value, "AUTO", 50, 0, true, "constant_score");
+    public static PrefixQuery prefixQuery(String name, String prefix) {
+        return PrefixQuery.builderQuery(name, prefix);
     }
 
-    public static FuzzyRequest fuzzyQuery(String key, String value, String fuzziness) {
-        return fuzzyQuery(key, value, fuzziness, 50, 0, true, "constant_score");
+    public static RangeQuery rangeQuery(String key, String gte, String gt, String lte, String lt, Double boost) {
+        return RangeQuery.builderQuery(key, gte, gt, lte, lt, boost);
     }
 
-    public static PrefixRequest prefixQuery(String name, String prefix) {
-        return PrefixRequest.builderRequest(name, prefix);
+    public static RangeQuery rangeQuery(String key, String gte, String gt, String lte, String lt) {
+        return RangeQuery.builderQuery(key, gte, gt, lte, lt, 1.0);
     }
 
-    public static RangeRequest rangeQuery(String key, String gte, String gt, String lte, String lt, Double boost) {
-        return RangeRequest.builderRequest(key, gte, gt, lte, lt, boost);
-    }
-
-    public static RangeRequest rangeQuery(String key, String gte, String gt, String lte, String lt) {
-        return RangeRequest.builderRequest(key, gte, gt, lte, lt, 1.0);
-    }
-
-    public static RangeRequest rangeQuery(String key, String gte, String lte) {
+    public static RangeQuery rangeQuery(String key, String gte, String lte) {
         return rangeQuery(key, gte, null, lte, null, 1.0);
     }
 
-    public static RangeRequest rangeGteQuery(String key, String gte) {
+    public static RangeQuery rangeGteQuery(String key, String gte) {
         return rangeQuery(key, gte, null, null, null, 1.0);
     }
 
-    public static RangeRequest rangeLteQuery(String key, String lte) {
+    public static RangeQuery rangeLteQuery(String key, String lte) {
         return rangeQuery(key, null, null, lte, null, 1.0);
     }
 
-    public static WildcardRequest wildcardQuery(String name, String query) {
-        return WildcardRequest.builderRequest(name, query);
+    public static WildcardQuery wildcardQuery(String name, String query) {
+        return WildcardQuery.builderQuery(name, query);
     }
 
-    public static TermsRequest termsQuery(String name, List<String> values) {
-        return TermsRequest.builderRequest(name, values);
+    public static TermsQuery termsQuery(String name, List<String> values) {
+        return TermsQuery.builderQuery(name, values);
     }
 
     /**
      * 正则
      */
-    public static RegexpRequest regexpQuery(String name, String regexp) {
-        return RegexpRequest.builderRequest(name, regexp);
+    public static RegexpQuery regexpQuery(String name, String regexp) {
+        return RegexpQuery.builderQuery(name, regexp);
     }
 
 
@@ -115,15 +110,15 @@ public final class QueryBuilders {
         return LuceneSimpleQueryStringRequest.builderRequest(queryString);
     }
 
-    public static ExistsRequest existsQuery(String name) {
-        return ExistsRequest.builderRequest(name);
+    public static ExistsQuery existsQuery(String name) {
+        return ExistsQuery.builderQuery(name);
     }
 
     /**
      * A Query that matches documents matching boolean combinations of other queries.
      */
-    public static BoolRequest boolQuery() {
-        return new BoolRequest();
+    public static BoolQuery boolQuery() {
+        return new BoolQuery();
     }
 
 //    public static BoostingQueryBuilder boostingQuery(QueryBuilder positiveQuery, QueryBuilder negativeQuery) {

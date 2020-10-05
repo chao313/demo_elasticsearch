@@ -1,10 +1,8 @@
 package demo.elastic.search.po.request.dsl.term;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonTypeName;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
-import demo.elastic.search.po.request.dsl.DSLRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,16 +29,9 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class RegexpRequest extends ToRequestBody implements DSLRequest {
+public class RegexpQuery extends ToRequestBody implements DSLQuery {
 
-    private RegexpQuery query = new RegexpQuery();
-
-    @Data
-    @JsonTypeName("regexp")
-    public static class RegexpQuery implements DSLQuery {
-        private Map<String, RegexpParam> regexp = new HashMap<>();
-    }
-
+    private Map<String, RegexpParam> regexp = new HashMap<>();
 
     @Data
     @NoArgsConstructor
@@ -57,22 +48,15 @@ public class RegexpRequest extends ToRequestBody implements DSLRequest {
         String rewrite;
     }
 
-    public static RegexpRequest builderRequest(String key, String value, String flags, Integer max_determinized_states, String rewrite) {
-        RegexpRequest request = new RegexpRequest();
-        request.getQuery().getRegexp().put(key, new RegexpParam(value, flags, max_determinized_states, rewrite));
-        return request;
-    }
-
-    public static RegexpRequest builderRequest(String key, String value) {
-        return builderRequest(key, value, "ALL", 10000, "constant_score");
-    }
-
     public static RegexpQuery builderQuery(String key, String value, String flags, Integer max_determinized_states, String rewrite) {
-        return builderRequest(key, value, flags, max_determinized_states, rewrite).getQuery();
+        RegexpQuery query = new RegexpQuery();
+        query.getRegexp().put(key, new RegexpParam(value, flags, max_determinized_states, rewrite));
+        return query;
     }
 
     public static RegexpQuery builderQuery(String key, String value) {
-        return builderRequest(key, value, "ALL", 10000, "constant_score").getQuery();
+        return builderQuery(key, value, "ALL", 10000, "constant_score");
     }
+
 
 }

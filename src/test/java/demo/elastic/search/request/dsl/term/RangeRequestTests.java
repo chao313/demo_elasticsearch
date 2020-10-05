@@ -1,17 +1,20 @@
 package demo.elastic.search.request.dsl.term;
 
 import demo.elastic.search.feign.SearchService;
-import demo.elastic.search.po.request.dsl.term.RangeRequest;
+import demo.elastic.search.po.request.QueryBuilders;
+import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.dsl.term.RangeQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import javax.annotation.Resource;
 
 @SpringBootTest
 @Slf4j
 public class RangeRequestTests {
 
-    @Autowired
+    @Resource
     private SearchService searchService;
 
     /**
@@ -19,9 +22,10 @@ public class RangeRequestTests {
      */
     @Test
     public void testRangeRequestInt() {
-        RangeRequest request = RangeRequest.builderRequest("F1_0088", "1026902501", "1026902501");
+        SearchSourceBuilder<RangeQuery> request = new SearchSourceBuilder<>();
+        request.from(0).size(1).query(QueryBuilders.rangeQuery("age", "34", "34"));
         log.info("请求body:{}", request.getRequestBody());
-        String response = searchService.DSL_search("tb_object_0088", request);
+        String response = searchService.DSL_search_range("index_bulk", request);
         log.info("response:{}", response);
     }
 
@@ -30,9 +34,10 @@ public class RangeRequestTests {
      */
     @Test
     public void testRangeRequestStr() {
-        RangeRequest request = RangeRequest.builderRequest("F2_0088", "北京字节跳动网络技术有限公司", "北京字节跳动网络技术有限公司");
+        SearchSourceBuilder<RangeQuery> request = new SearchSourceBuilder<>();
+        request.from(0).size(1).query(QueryBuilders.rangeQuery("employer", "Fitcore", "Mixers"));
         log.info("请求body:{}", request.getRequestBody());
-        String response = searchService.DSL_search("tb_object_0088", request);
+        String response = searchService.DSL_search_range("index_bulk", request);
         log.info("response:{}", response);
     }
 
@@ -41,9 +46,10 @@ public class RangeRequestTests {
      */
     @Test
     public void testRangeRequestGteStr() {
-        RangeRequest request = RangeRequest.builderGteRequest("F2_0088", "北京字节跳动网络技术有限公司");
+        SearchSourceBuilder<RangeQuery> request = new SearchSourceBuilder<>();
+        request.from(0).size(1).query(QueryBuilders.rangeGteQuery("employer", "Fitcore"));
         log.info("请求body:{}", request.getRequestBody());
-        String response = searchService.DSL_search("tb_object_0088", request);
+        String response = searchService.DSL_search_range("index_bulk", request);
         log.info("response:{}", response);
     }
 }

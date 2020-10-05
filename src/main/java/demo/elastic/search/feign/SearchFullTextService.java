@@ -2,13 +2,13 @@ package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.feign.FeignServiceConfig;
-import demo.elastic.search.po.request.QueryBaseRequest;
-import demo.elastic.search.po.request.dsl.compound.BoolRequest;
+import demo.elastic.search.po.request.SearchSourceBuilder;
 import demo.elastic.search.po.request.dsl.full.*;
-import demo.elastic.search.po.request.dsl.matchall.MatchAllRequest;
-import demo.elastic.search.po.request.dsl.term.*;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 /**
@@ -63,7 +63,7 @@ public interface SearchFullTextService {
      * </pre>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_bool_prefix_search(@PathVariable(value = "index") String index, @RequestBody MatchBoolPrefixRequest matchBoolPrefixRequest);
+    String match_bool_prefix_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchBoolPrefixQuery> matchBoolPrefixRequest);
 
 
     /**

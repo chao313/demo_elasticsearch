@@ -3,7 +3,6 @@ package demo.elastic.search.po.request.dsl.compound;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
-import demo.elastic.search.po.request.dsl.DSLRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,15 +12,9 @@ import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class BoolRequest extends ToRequestBody implements DSLRequest {
+public class BoolQuery extends ToRequestBody implements DSLQuery {
 
-    private BoolQuery query = new BoolQuery();
-
-
-    @Data
-    public static class BoolQuery implements DSLQuery {
-        private WrapQuery bool = new WrapQuery();
-    }
+    private WrapQuery bool = new WrapQuery();
 
     @Data
     @NoArgsConstructor
@@ -44,21 +37,6 @@ public class BoolRequest extends ToRequestBody implements DSLRequest {
         private String minimum_should_match;
     }
 
-    /**
-     * 构建 request 请求
-     */
-    public static BoolRequest builderRequest(List<DSLQuery> must, List<DSLQuery> must_not, List<DSLQuery> should, List<DSLQuery> filter) {
-        BoolRequest request = new BoolRequest();
-        request.getQuery().getBool().setMust(must);
-        request.getQuery().getBool().setMust_not(must_not);
-        request.getQuery().getBool().setShould(should);
-        request.getQuery().getBool().setFilter(filter);
-        return request;
-    }
-
-    public static BoolQuery builderQuery(List<DSLQuery> must, List<DSLQuery> must_not, List<DSLQuery> should, List<DSLQuery> filter) {
-        return builderRequest(must, must_not, should, filter).getQuery();
-    }
 
     public static BoolQuery builderQuery() {
         return new BoolQuery();
@@ -67,33 +45,33 @@ public class BoolRequest extends ToRequestBody implements DSLRequest {
     /**
      * No {@code null} value allowed.
      */
-    public BoolRequest must(DSLQuery dslQuery) {
+    public BoolQuery must(DSLQuery dslQuery) {
         if (dslQuery == null) {
             throw new IllegalArgumentException("inner bool query clause cannot be null");
         }
-        this.getQuery().getBool().getMust().add(dslQuery);
+        this.getBool().getMust().add(dslQuery);
         return this;
     }
 
     /**
      * No {@code null} value allowed.
      */
-    public BoolRequest must_not(DSLQuery dslQuery) {
+    public BoolQuery must_not(DSLQuery dslQuery) {
         if (dslQuery == null) {
             throw new IllegalArgumentException("inner bool query clause cannot be null");
         }
-        this.getQuery().getBool().getMust_not().add(dslQuery);
+        this.getBool().getMust_not().add(dslQuery);
         return this;
     }
 
     /**
      * No {@code null} value allowed.
      */
-    public BoolRequest filter(DSLQuery dslQuery) {
+    public BoolQuery filter(DSLQuery dslQuery) {
         if (dslQuery == null) {
             throw new IllegalArgumentException("inner bool query clause cannot be null");
         }
-        this.getQuery().getBool().getFilter().add(dslQuery);
+        this.getBool().getFilter().add(dslQuery);
         return this;
     }
 
@@ -101,27 +79,27 @@ public class BoolRequest extends ToRequestBody implements DSLRequest {
     /**
      * No {@code null} value allowed.
      */
-    public BoolRequest should(DSLQuery dslQuery) {
+    public BoolQuery should(DSLQuery dslQuery) {
         if (dslQuery == null) {
             throw new IllegalArgumentException("inner bool query clause cannot be null");
         }
-        this.getQuery().getBool().getShould().add(dslQuery);
+        this.getBool().getShould().add(dslQuery);
         return this;
     }
 
     /**
      * 设置should至少匹配
      */
-    public BoolRequest minimumShouldMatch(String minimumShouldMatch) {
-        this.getQuery().getBool().minimum_should_match = minimumShouldMatch;
+    public BoolQuery minimumShouldMatch(String minimumShouldMatch) {
+        this.getBool().minimum_should_match = minimumShouldMatch;
         return this;
     }
 
     /**
      * 设置should至少匹配
      */
-    public BoolRequest minimumShouldMatch(Integer minimumShouldMatch) {
-        this.getQuery().getBool().minimum_should_match = String.valueOf(minimumShouldMatch);
+    public BoolQuery minimumShouldMatch(Integer minimumShouldMatch) {
+        this.getBool().minimum_should_match = String.valueOf(minimumShouldMatch);
         return this;
     }
 

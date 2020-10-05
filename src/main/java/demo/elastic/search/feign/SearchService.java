@@ -3,9 +3,8 @@ package demo.elastic.search.feign;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.feign.FeignServiceConfig;
 import demo.elastic.search.po.request.QueryBaseRequest;
-import demo.elastic.search.po.request.dsl.compound.BoolRequest;
-import demo.elastic.search.po.request.dsl.full.*;
-import demo.elastic.search.po.request.dsl.matchall.MatchAllRequest;
+import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.dsl.compound.BoolQuery;
 import demo.elastic.search.po.request.dsl.term.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +35,7 @@ public interface SearchService {
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-exists-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_search(@PathVariable(value = "index") String index, @RequestBody ExistsRequest existsRequest);
+    String DSL_search_exists(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<ExistsQuery> existsRequest);
 
 
     /**
@@ -44,7 +43,7 @@ public interface SearchService {
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_search(@PathVariable(value = "index") String index, @RequestBody FuzzyRequest fuzzyRequest);
+    String DSL_search_fuzzy(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<FuzzyQuery> fuzzyRequest);
 
 
     /**
@@ -52,14 +51,14 @@ public interface SearchService {
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-ids-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_search(@PathVariable(value = "index") String index, @RequestBody IDsRequest iDsRequest);
+    String DSL_search_ids(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<IDsQuery> iDsRequest);
 
     /**
      * DSL搜索
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-prefix-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_search(@PathVariable(value = "index") String index, @RequestBody PrefixRequest prefixRequest);
+    String DSL_search_prefix(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<PrefixQuery> prefixRequest);
 
 
     /**
@@ -67,28 +66,28 @@ public interface SearchService {
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-range-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_search(@PathVariable(value = "index") String index, @RequestBody RangeRequest rangeRequest);
+    String DSL_search_range(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<RangeQuery> rangeRequest);
 
     /**
      * DSL搜索
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-regexp-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_search(@PathVariable(value = "index") String index, @RequestBody RegexpRequest regexpRequest);
+    String DSL_search_regexp(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<RegexpQuery> regexpRequest);
 
     /**
      * DSL搜索
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-term-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_search(@PathVariable(value = "index") String index, @RequestBody TermRequest termRequest);
+    String DSL_search_term(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<TermQuery> termRequest);
 
     /**
      * DSL搜索
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-terms-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_search(@PathVariable(value = "index") String index, @RequestBody TermsRequest termsRequest);
+    String DSL_search_terms(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<TermsQuery> termsRequest);
 
     /**
      * DSL搜索
@@ -98,20 +97,27 @@ public interface SearchService {
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-wildcard-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_search(@PathVariable(value = "index") String index, @RequestBody WildcardRequest wildcardRequest);
+    String DSL_search_wildcard(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<WildcardQuery> wildcardRequest);
 
     /**
      * Bool搜索
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-bool-query.html"></a>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String DSL_bool_search(@PathVariable(value = "index") String index, @RequestBody BoolRequest boolRequest);
+    String DSL_search_bool(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<BoolQuery> boolRequest);
 
     /**
      * 整体搜索
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
     String _search(@PathVariable(value = "index") String index, @RequestBody QueryBaseRequest queryBaseRequest);
+
+    /**
+     * 整体搜索
+     */
+    @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
+    String _search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder searchSourceBuilder);
+
 
     /**
      * 返回request将会执行的shard
