@@ -1,6 +1,7 @@
 package demo.elastic.search.po.request.dsl.compound.test;
 
 import demo.elastic.search.feign.SearchService;
+import demo.elastic.search.po.request.QueryBuilders;
 import demo.elastic.search.po.request.dsl.compound.BoolRequest;
 import demo.elastic.search.po.request.dsl.term.*;
 import lombok.extern.slf4j.Slf4j;
@@ -88,4 +89,97 @@ public class BoolRequestTest {
         String response = searchService.DSL_bool_search("tb_object_0088", request);
         log.info("response:{}", response);
     }
+
+    /**
+     * 测试 must
+     */
+    @Test
+    public void testQueryBuilderBoolMusts() {
+        BoolRequest boolRequest = QueryBuilders.boolQuery()
+                .must(QueryBuilders.existsQuery("age").getQuery())
+                .must(QueryBuilders.termQuery("age", "35").getQuery());
+
+        log.info("请求body:{}", boolRequest.getRequestBody());
+        String response = searchService.DSL_bool_search("index_bulk", boolRequest);
+        log.info("response:{}", response);
+    }
+
+    /**
+     * 测试 filter
+     */
+    @Test
+    public void testQueryBuilderBoolFilter() {
+        BoolRequest boolRequest = QueryBuilders.boolQuery()
+                .filter(QueryBuilders.existsQuery("age").getQuery())
+                .filter(QueryBuilders.termQuery("age", "35").getQuery());
+
+        log.info("请求body:{}", boolRequest.getRequestBody());
+        String response = searchService.DSL_bool_search("index_bulk", boolRequest);
+        log.info("response:{}", response);
+    }
+
+    /**
+     * 测试 must_not
+     */
+    @Test
+    public void testQueryBuilderBoolMustNot() {
+        BoolRequest boolRequest = QueryBuilders.boolQuery()
+                .must_not(QueryBuilders.termQuery("age", "35").getQuery())
+                .must_not(QueryBuilders.termQuery("age", "36").getQuery())
+                .must_not(QueryBuilders.termQuery("age", "33").getQuery())
+                .must_not(QueryBuilders.termQuery("gender", "f").getQuery());//索引中是小写
+
+        log.info("请求body:{}", boolRequest.getRequestBody());
+        String response = searchService.DSL_bool_search("index_bulk", boolRequest);
+        log.info("response:{}", response);
+    }
+
+    /**
+     * 测试 should
+     */
+    @Test
+    public void testQueryBuilderBoolShould() {
+        BoolRequest boolRequest = QueryBuilders.boolQuery()
+                .should(QueryBuilders.termQuery("age", "1").getQuery())
+                .should(QueryBuilders.termQuery("age", "2").getQuery());
+
+        log.info("请求body:{}", boolRequest.getRequestBody());
+        String response = searchService.DSL_bool_search("index_bulk", boolRequest);
+        log.info("response:{}", response);
+    }
+
+    /**
+     * 测试 should + minimumShouldMatch
+     */
+    @Test
+    public void testQueryBuilderBoolMustAndShould() {
+        BoolRequest boolRequest = QueryBuilders.boolQuery()
+                .should(QueryBuilders.termQuery("age", "1").getQuery())
+                .should(QueryBuilders.termQuery("age", "2").getQuery())
+                .must(QueryBuilders.termQuery("gender", "m").getQuery())
+                .minimumShouldMatch(1);
+
+        log.info("请求body:{}", boolRequest.getRequestBody());
+        String response = searchService.DSL_bool_search("index_bulk", boolRequest);
+        log.info("response:{}", response);
+    }
+
+    /**
+     * 测试 should + minimumShouldMatch(复杂)
+     */
+    @Test
+    public void testQueryBuilderBoolMustAndShouldMore() {
+        BoolRequest.BoolQuery boolRequest1 = QueryBuilders.boolQuery()
+                .must(QueryBuilders.termQuery("age", "1").getQuery()).getQuery();
+        BoolRequest.BoolQuery boolRequest2 = QueryBuilders.boolQuery()
+                .must(QueryBuilders.termQuery("age", "2").getQuery()).getQuery();
+
+        BoolRequest boolRequest = QueryBuilders.boolQuery().should(boolRequest1).should(boolRequest2).minimumShouldMatch(1);
+
+        log.info("请求body:{}", boolRequest.getRequestBody());
+        String response = searchService.DSL_bool_search("index_bulk", boolRequest);
+        log.info("response:{}", response);
+    }
+
+
 }
