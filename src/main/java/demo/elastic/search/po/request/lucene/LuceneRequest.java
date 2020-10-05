@@ -45,14 +45,15 @@ public class LuceneRequest extends ToRequestBody {
         String default_field;//默认字段，如果没有指定字段的默认字段，默认是* -> 全部
         Boolean auto_generate_synonyms_phrase_query;
         String type;
+        Boolean analyze_wildcard = true;
     }
 
     /**
-     * 构建 request 请求
+     * 构建 request 请求(这里默认解析通配)
      */
     private static LuceneRequest builderRequest(String query, List<String> fields, Integer minimum_should_match, AnalyzeRequest.Analyzer analyzer) {
         LuceneRequest luceneRequest = new LuceneRequest();
-        LuceneParam luceneParam = new LuceneParam(query, fields, minimum_should_match, analyzer, null, null, null, null);
+        LuceneParam luceneParam = new LuceneParam(query, fields, minimum_should_match, analyzer, null, null, null, null, true);
         luceneRequest.getQuery().setQuery_string(luceneParam);
         return luceneRequest;
     }
