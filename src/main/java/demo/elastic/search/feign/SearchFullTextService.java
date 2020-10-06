@@ -3,6 +3,7 @@ package demo.elastic.search.feign;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.feign.FeignServiceConfig;
 import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.full.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +34,7 @@ public interface SearchFullTextService {
      * </pre>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchQuery> matchRequest);
+    String match_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchQuery, VoidAggs> matchRequest);
 
 
     /**
@@ -63,7 +64,7 @@ public interface SearchFullTextService {
      * </pre>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_bool_prefix_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchBoolPrefixQuery> matchBoolPrefixRequest);
+    String match_bool_prefix_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchBoolPrefixQuery, VoidAggs> matchBoolPrefixRequest);
 
 
     /**
@@ -80,7 +81,7 @@ public interface SearchFullTextService {
      * </pre>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_phrase_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchPhraseQuery> matchPhraseRequest);
+    String match_phrase_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchPhraseQuery, VoidAggs> matchPhraseRequest);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.9/query-dsl-match-query-phrase-prefix.html"></a>
@@ -101,7 +102,7 @@ public interface SearchFullTextService {
      * </pre>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_phrase_prefix_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchPhrasePrefixQuery> matchPhrasePrefixRequest);
+    String match_phrase_prefix_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchPhrasePrefixQuery, VoidAggs> matchPhrasePrefixRequest);
 
 
     /**
@@ -120,7 +121,7 @@ public interface SearchFullTextService {
      * 多字段查询
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_multi_match_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MultiMatchQuery> multiMatchRequest);
+    String match_multi_match_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MultiMatchQuery, VoidAggs> multiMatchRequest);
 
 
 }

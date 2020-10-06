@@ -2,11 +2,6 @@ package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.feign.FeignServiceConfig;
-import demo.elastic.search.po.request.QueryBaseRequest;
-import demo.elastic.search.po.request.dsl.compound.BoolRequest;
-import demo.elastic.search.po.request.dsl.full.*;
-import demo.elastic.search.po.request.dsl.matchall.MatchAllRequest;
-import demo.elastic.search.po.request.dsl.term.*;
 import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;

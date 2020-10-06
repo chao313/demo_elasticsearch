@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.SQLService;
-import demo.elastic.search.feign.ScrollService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.po.request.sql.SqlRequest;
 import demo.elastic.search.thread.ThreadLocalFeign;

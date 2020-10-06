@@ -1,7 +1,6 @@
 package demo.elastic.search.po.request.analyze;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import demo.elastic.search.po.request.ToRequestBody;
 import lombok.AllArgsConstructor;
 import lombok.Data;

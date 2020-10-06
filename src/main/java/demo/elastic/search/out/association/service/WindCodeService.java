@@ -44,10 +44,10 @@ public class WindCodeService {
      * comStatus	企业在业状态
      */
     public Set<String> getWindCodeByCompanyNameNew(String companyName,
-                                                    String tableName,
-                                                    String fieldName,
-                                                    String source,
-                                                    String filter) {
+                                                   String tableName,
+                                                   String fieldName,
+                                                   String source,
+                                                   String filter) {
         String res = feignServiceNew.getWindCodeByCompanyNameOrCrawlNew(companyName, tableName, fieldName, source, filter);
         JSONObject josn = JSON.parseObject(res);
         Set<String> result = new HashSet<>();

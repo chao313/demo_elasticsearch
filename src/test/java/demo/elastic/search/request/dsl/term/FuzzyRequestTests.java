@@ -3,6 +3,7 @@ package demo.elastic.search.request.dsl.term;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.po.request.QueryBuilders;
 import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.term.FuzzyQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ public class FuzzyRequestTests {
      */
     @Test
     public void testCommFuzzyRequest() {
-        SearchSourceBuilder<FuzzyQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<FuzzyQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0)
                 .size(1)
                 .query(QueryBuilders.fuzzyQuery("city", "danta"));
@@ -33,7 +34,7 @@ public class FuzzyRequestTests {
 
     @Test
     public void testFuzzyRequest() {
-        SearchSourceBuilder<FuzzyQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<FuzzyQuery,VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(QueryBuilders.fuzzyQuery("city", "danta", "10"));
         log.info("请求body:{}", request.getRequestBody());
         String response = searchService.DSL_search_fuzzy("tb_object_0088", request);

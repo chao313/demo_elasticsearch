@@ -16,7 +16,6 @@ public class ESUtil {
     public final static String TB_OBJECT_6070 = "tb_object_6070";
 
 
-
     public static void main(String[] args) {
         RestHighLevelClient client = new RestHighLevelClient(
                 RestClient.builder(

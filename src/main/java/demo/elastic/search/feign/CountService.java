@@ -2,9 +2,11 @@ package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.feign.FeignServiceConfig;
-import io.swagger.annotations.ApiParam;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 /**
@@ -19,6 +21,6 @@ public interface CountService {
      */
     @RequestMapping(value = "/{index}/_count", method = RequestMethod.POST, headers = {"content-type=application/json"})
     String _count(@PathVariable(value = "index") String index,
-                    @RequestBody String body);
+                  @RequestBody String body);
 
 }

@@ -3,6 +3,7 @@ package demo.elastic.search.request.dsl.full;
 import demo.elastic.search.feign.SearchFullTextService;
 import demo.elastic.search.po.request.QueryBuilders;
 import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.full.MultiMatchQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ public class MultiMatchRequestTest {
      */
     @Test
     public void testMatchAllRequest() {
-        SearchSourceBuilder<MultiMatchQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<MultiMatchQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(2).query(QueryBuilders.multiMatchQuery(Arrays.asList("name.firstname", "name.lastname"), "chao"));
         log.info("请求body:{}", request.getRequestBody());
         String response = searchFullTextService.match_multi_match_search("index_bulk", request);

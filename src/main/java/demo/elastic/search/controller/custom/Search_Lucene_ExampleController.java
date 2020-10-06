@@ -7,6 +7,7 @@ import demo.elastic.search.feign.SearchLuceneService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.po.request.QueryBuilders;
 import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.lucene.LuceneQueryStringQuery;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
@@ -38,7 +39,7 @@ public class Search_Lucene_ExampleController {
                                                      @ApiParam(defaultValue = "city:Bendon", value = "请求体")
                                                      @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -59,7 +60,7 @@ public class Search_Lucene_ExampleController {
                                                          @ApiParam(defaultValue = "account\\ number:1", value = "请求体")
                                                          @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -80,7 +81,7 @@ public class Search_Lucene_ExampleController {
                                                          @ApiParam(defaultValue = "name.\\*:(Hattie OR Ayala)", value = "请求体")
                                                          @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -101,7 +102,7 @@ public class Search_Lucene_ExampleController {
                                                    @ApiParam(defaultValue = "_exists_:age", value = "请求体")
                                                    @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -122,7 +123,7 @@ public class Search_Lucene_ExampleController {
                                                    @ApiParam(defaultValue = "city:(Brogan OR Dante)", value = "请求体")
                                                    @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -143,7 +144,7 @@ public class Search_Lucene_ExampleController {
                                                  @ApiParam(defaultValue = "name.firstname:\"hai chao\"", value = "请求体")
                                                  @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -164,7 +165,7 @@ public class Search_Lucene_ExampleController {
                                              @ApiParam(defaultValue = "city:Dant?", value = "请求体")
                                              @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -185,7 +186,7 @@ public class Search_Lucene_ExampleController {
                                            @ApiParam(defaultValue = "city:/dant.*/", value = "请求体,这里索引都存储了小写")
                                            @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -208,7 +209,7 @@ public class Search_Lucene_ExampleController {
                                               @ApiParam(defaultValue = "city:danta~1", value = "请求体")
                                               @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -239,7 +240,7 @@ public class Search_Lucene_ExampleController {
                                           @ApiParam(defaultValue = "age:[1 TO 50]", value = "请求体")
                                           @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -263,7 +264,7 @@ public class Search_Lucene_ExampleController {
                                              @ApiParam(defaultValue = "age:35^4", value = "请求体")
                                              @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -307,7 +308,7 @@ public class Search_Lucene_ExampleController {
                                          @ApiParam(defaultValue = "+age:35 -state:NH -gender:M +employer:Zaj", value = "请求体")
                                          @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
@@ -331,7 +332,7 @@ public class Search_Lucene_ExampleController {
                                           @ApiParam(defaultValue = "( age:35 OR age:40 ) AND state:MO", value = "请求体")
                                           @RequestParam String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<LuceneQueryStringQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.query(QueryBuilders.queryStringQuery(query_String));
         String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));

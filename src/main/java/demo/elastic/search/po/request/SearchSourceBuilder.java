@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public final class SearchSourceBuilder<T extends Query> extends ToRequestBody {
+public final class SearchSourceBuilder<T extends Query, K extends Aggs> extends ToRequestBody {
 
 
 //    public static SearchSourceBuilder getInstance() {
@@ -19,6 +19,8 @@ public final class SearchSourceBuilder<T extends Query> extends ToRequestBody {
 //    }
 
     private T query;
+
+    private K aggs;
 
     @ApiModelProperty(example = "0")
     private Integer from = -1;
@@ -29,12 +31,12 @@ public final class SearchSourceBuilder<T extends Query> extends ToRequestBody {
     private List<String> _source;
 
 
-    public SearchSourceBuilder<T> query(T query) {
+    public SearchSourceBuilder<T, K> query(T query) {
         this.query = query;
         return this;
     }
 
-    public SearchSourceBuilder<T> from(Integer from) {
+    public SearchSourceBuilder<T, K> from(Integer from) {
         if (from < 0) {
             throw new IllegalArgumentException("[from] parameter cannot be negative");
         }
@@ -42,7 +44,7 @@ public final class SearchSourceBuilder<T extends Query> extends ToRequestBody {
         return this;
     }
 
-    public SearchSourceBuilder<T> size(Integer size) {
+    public SearchSourceBuilder<T, K> size(Integer size) {
         if (size < 0) {
             throw new IllegalArgumentException("[size] parameter cannot be negative, found [" + size + "]");
         }
@@ -51,7 +53,7 @@ public final class SearchSourceBuilder<T extends Query> extends ToRequestBody {
     }
 
 
-    public SearchSourceBuilder<T> source(List<String> sources) {
+    public SearchSourceBuilder<T, K> source(List<String> sources) {
         this._source = sources;
         return this;
     }

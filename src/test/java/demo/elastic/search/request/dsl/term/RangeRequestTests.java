@@ -3,6 +3,7 @@ package demo.elastic.search.request.dsl.term;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.po.request.QueryBuilders;
 import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.term.RangeQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ public class RangeRequestTests {
      */
     @Test
     public void testRangeRequestInt() {
-        SearchSourceBuilder<RangeQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<RangeQuery,VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(QueryBuilders.rangeQuery("age", "34", "34"));
         log.info("请求body:{}", request.getRequestBody());
         String response = searchService.DSL_search_range("index_bulk", request);
@@ -34,7 +35,7 @@ public class RangeRequestTests {
      */
     @Test
     public void testRangeRequestStr() {
-        SearchSourceBuilder<RangeQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<RangeQuery,VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(QueryBuilders.rangeQuery("employer", "Fitcore", "Mixers"));
         log.info("请求body:{}", request.getRequestBody());
         String response = searchService.DSL_search_range("index_bulk", request);
@@ -46,7 +47,7 @@ public class RangeRequestTests {
      */
     @Test
     public void testRangeRequestGteStr() {
-        SearchSourceBuilder<RangeQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<RangeQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(QueryBuilders.rangeGteQuery("employer", "Fitcore"));
         log.info("请求body:{}", request.getRequestBody());
         String response = searchService.DSL_search_range("index_bulk", request);

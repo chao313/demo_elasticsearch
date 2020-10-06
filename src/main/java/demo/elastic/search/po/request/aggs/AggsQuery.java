@@ -2,6 +2,7 @@ package demo.elastic.search.po.request.aggs;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import demo.elastic.search.po.request.Aggs;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class AggsQuery {
+public class AggsQuery implements Aggs {
 
     private Map<String, AggsMiddle> aggs = new HashMap<>();
 

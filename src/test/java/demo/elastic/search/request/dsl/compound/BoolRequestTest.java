@@ -3,6 +3,7 @@ package demo.elastic.search.request.dsl.compound;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.po.request.QueryBuilders;
 import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.compound.BoolQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -99,7 +100,7 @@ public class BoolRequestTest {
                 .must(QueryBuilders.existsQuery("age"))
                 .must(QueryBuilders.termQuery("age", "35"));
 
-        SearchSourceBuilder<BoolQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<BoolQuery,VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(boolQuery);
 
         log.info("请求body:{}", request.getRequestBody());
@@ -117,7 +118,7 @@ public class BoolRequestTest {
                 .filter(QueryBuilders.existsQuery("age"))
                 .filter(QueryBuilders.termQuery("age", "35"));
 
-        SearchSourceBuilder<BoolQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<BoolQuery,VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(boolQuery);
 
 
@@ -139,7 +140,7 @@ public class BoolRequestTest {
                 .must_not(QueryBuilders.termQuery("age", "33"))
                 .must_not(QueryBuilders.termQuery("gender", "f"));//索引中是小写
 
-        SearchSourceBuilder<BoolQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<BoolQuery, VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(boolQuery);
 
         log.info("请求body:{}", request.getRequestBody());
@@ -156,7 +157,7 @@ public class BoolRequestTest {
                 .should(QueryBuilders.termQuery("age", "1"))
                 .should(QueryBuilders.termQuery("age", "2"));
 
-        SearchSourceBuilder<BoolQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<BoolQuery,VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(boolQuery);
 
         log.info("请求body:{}", request.getRequestBody());
@@ -175,7 +176,7 @@ public class BoolRequestTest {
                 .must(QueryBuilders.termQuery("gender", "m"))
                 .minimumShouldMatch(1);
 
-        SearchSourceBuilder<BoolQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<BoolQuery,VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(boolQuery);
 
         log.info("请求body:{}", request.getRequestBody());
@@ -195,7 +196,7 @@ public class BoolRequestTest {
 
         BoolQuery boolQuery = QueryBuilders.boolQuery().should(boolRequest1).should(boolRequest2).minimumShouldMatch(1);
 
-        SearchSourceBuilder<BoolQuery> request = new SearchSourceBuilder<>();
+        SearchSourceBuilder<BoolQuery,VoidAggs> request = new SearchSourceBuilder<>();
         request.from(0).size(1).query(boolQuery);
 
         log.info("请求body:{}", request.getRequestBody());

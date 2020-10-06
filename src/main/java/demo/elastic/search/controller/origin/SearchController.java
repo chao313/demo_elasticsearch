@@ -97,7 +97,7 @@
 //                    defaultValue = Bootstrap.DEFAULT_VALUE)
 //    })
 //    @PostMapping(value = "/DSL/exists/{index}/_search")
-//    public Response _search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<ExistsQuery> existsRequest) {
+//    public Response _search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<ExistsQuery,VoidAggs> existsRequest) {
 //        SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
 //        String result;
 //        result = searchService._search(index, existsRequest);

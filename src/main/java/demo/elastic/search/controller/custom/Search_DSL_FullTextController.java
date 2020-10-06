@@ -6,6 +6,7 @@ import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.SearchFullTextService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.full.*;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
@@ -32,7 +33,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_search", method = RequestMethod.POST)
     public Response match_search(@PathVariable(value = "index") String index,
-                                 @RequestBody SearchSourceBuilder<MatchQuery> matchRequest) {
+                                 @RequestBody SearchSourceBuilder<MatchQuery, VoidAggs> matchRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_search(index, matchRequest);
         return Response.Ok(JSONObject.parse(result));
@@ -50,7 +51,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_bool_prefix_search", method = RequestMethod.POST)
     public Response match_bool_prefix_search(@PathVariable(value = "index") String index,
-                                             @RequestBody SearchSourceBuilder<MatchBoolPrefixQuery> matchBoolPrefixRequest) {
+                                             @RequestBody SearchSourceBuilder<MatchBoolPrefixQuery, VoidAggs> matchBoolPrefixRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_bool_prefix_search(index, matchBoolPrefixRequest);
         return Response.Ok(JSONObject.parse(result));
@@ -67,7 +68,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_phrase_search", method = RequestMethod.POST)
     public Response match_phrase_search(@PathVariable(value = "index") String index,
-                                        @RequestBody SearchSourceBuilder<MatchPhraseQuery> matchPhraseRequest) {
+                                        @RequestBody SearchSourceBuilder<MatchPhraseQuery, VoidAggs> matchPhraseRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_phrase_search(index, matchPhraseRequest);
         return Response.Ok(JSONObject.parse(result));
@@ -87,7 +88,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_phrase_prefix_search", method = RequestMethod.POST)
     public Response match_phrase_prefix_search(@PathVariable(value = "index") String index,
-                                               @RequestBody SearchSourceBuilder<MatchPhrasePrefixQuery> matchPhrasePrefixRequest) {
+                                               @RequestBody SearchSourceBuilder<MatchPhrasePrefixQuery, VoidAggs> matchPhrasePrefixRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_phrase_prefix_search(index, matchPhrasePrefixRequest);
         return Response.Ok(JSONObject.parse(result));
@@ -108,7 +109,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_multi_match_search", method = RequestMethod.POST)
     public Response match_multi_match_search(@PathVariable(value = "index") String index,
-                                             @RequestBody SearchSourceBuilder<MultiMatchQuery> multiMatchRequest) {
+                                             @RequestBody SearchSourceBuilder<MultiMatchQuery, VoidAggs> multiMatchRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_multi_match_search(index, multiMatchRequest);
         return Response.Ok(JSONObject.parse(result));

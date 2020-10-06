@@ -1,4 +1,3 @@
-
 package demo.elastic.search.po.request;
 
 import demo.elastic.search.po.request.dsl.compound.BoolQuery;

@@ -3,6 +3,7 @@ package demo.elastic.search.request;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.po.request.QueryBuilders;
 import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.term.TermQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ public class SearchSourceBuilderTest {
      */
     @Test
     public void Test() {
-        SearchSourceBuilder<TermQuery> searchSourceBuilder = new SearchSourceBuilder<>();
+        SearchSourceBuilder<TermQuery, VoidAggs> searchSourceBuilder = new SearchSourceBuilder<>();
         searchSourceBuilder.from(0)
                 .size(1)
                 .source(Arrays.asList("age", "address"))

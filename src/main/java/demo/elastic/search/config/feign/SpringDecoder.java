@@ -43,71 +43,70 @@ import static demo.elastic.search.config.feign.FeignUtils.getHttpHeaders;
 @Component
 public class SpringDecoder implements Decoder {
 
-	private ObjectFactory<HttpMessageConverters> messageConverters;
+    private ObjectFactory<HttpMessageConverters> messageConverters;
 
-	public SpringDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
-		this.messageConverters = messageConverters;
-	}
+    public SpringDecoder(ObjectFactory<HttpMessageConverters> messageConverters) {
+        this.messageConverters = messageConverters;
+    }
 
-	@Override
-	public Object decode(final Response response, Type type)
-			throws IOException, FeignException {
-		if (type instanceof Class || type instanceof ParameterizedType
-				|| type instanceof WildcardType) {
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			HttpMessageConverterExtractor<?> extractor = new HttpMessageConverterExtractor(
-					type, this.messageConverters.getObject().getConverters());
+    @Override
+    public Object decode(final Response response, Type type)
+            throws IOException, FeignException {
+        if (type instanceof Class || type instanceof ParameterizedType
+                || type instanceof WildcardType) {
+            @SuppressWarnings({"unchecked", "rawtypes"})
+            HttpMessageConverterExtractor<?> extractor = new HttpMessageConverterExtractor(
+                    type, this.messageConverters.getObject().getConverters());
 
-			return extractor.extractData(new FeignResponseAdapter(response));
-		}
-		throw new DecodeException(response.status(),
-				"type is not an instance of Class or ParameterizedType: " + type,
-				response.request());
-	}
+            return extractor.extractData(new FeignResponseAdapter(response));
+        }
+        throw new DecodeException(response.status(),
+                "type is not an instance of Class or ParameterizedType: " + type,
+                response.request());
+    }
 
-	private final class FeignResponseAdapter implements ClientHttpResponse {
+    private final class FeignResponseAdapter implements ClientHttpResponse {
 
-		private final Response response;
+        private final Response response;
 
-		private FeignResponseAdapter(Response response) {
-			this.response = response;
-		}
+        private FeignResponseAdapter(Response response) {
+            this.response = response;
+        }
 
-		@Override
-		public HttpStatus getStatusCode() throws IOException {
-			return HttpStatus.valueOf(this.response.status());
-		}
+        @Override
+        public HttpStatus getStatusCode() throws IOException {
+            return HttpStatus.valueOf(this.response.status());
+        }
 
-		@Override
-		public int getRawStatusCode() throws IOException {
-			return this.response.status();
-		}
+        @Override
+        public int getRawStatusCode() throws IOException {
+            return this.response.status();
+        }
 
-		@Override
-		public String getStatusText() throws IOException {
-			return this.response.reason();
-		}
+        @Override
+        public String getStatusText() throws IOException {
+            return this.response.reason();
+        }
 
-		@Override
-		public void close() {
-			try {
-				this.response.body().close();
-			}
-			catch (IOException ex) {
-				// Ignore exception on close...
-			}
-		}
+        @Override
+        public void close() {
+            try {
+                this.response.body().close();
+            } catch (IOException ex) {
+                // Ignore exception on close...
+            }
+        }
 
-		@Override
-		public InputStream getBody() throws IOException {
-			return this.response.body().asInputStream();
-		}
+        @Override
+        public InputStream getBody() throws IOException {
+            return this.response.body().asInputStream();
+        }
 
-		@Override
-		public HttpHeaders getHeaders() {
-			return getHttpHeaders(this.response.headers());
-		}
+        @Override
+        public HttpHeaders getHeaders() {
+            return getHttpHeaders(this.response.headers());
+        }
 
-	}
+    }
 
 }

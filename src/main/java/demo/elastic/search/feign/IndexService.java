@@ -181,7 +181,6 @@ public interface IndexService {
      * 同步 flush index
      * <p>
      * Sync-flush已弃用，并将在8.0中删除。请改用冲洗。刷新与在Elasticsearch 7.6或更高版本上的同步刷新具有相同的效果
-     *
      */
     @RequestMapping(value = "/{index}/_flush/synced", method = RequestMethod.GET)
     String _flush_synced(@ApiParam(value = "索引名称(要操作所有索引，请使用_all)") @PathVariable(value = "index") String index);

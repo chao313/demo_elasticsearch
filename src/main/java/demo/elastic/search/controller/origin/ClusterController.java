@@ -187,7 +187,7 @@ public class ClusterController {
      * 以及有关构成集群的当前节点的信息（数量，角色，操作系统，jvm版本，内存使用情况，cpu和已安装的插件）
      *
      * @see <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/cluster-stats.html"></a>
-//     */
+    //     */
 //    @ApiOperation(value = "返回集群统计信息")
 //    @ApiImplicitParams(value = {
 //            @ApiImplicitParam(
