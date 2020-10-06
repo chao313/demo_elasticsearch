@@ -6,7 +6,6 @@ import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.po.request.SearchSourceBuilder;
-import demo.elastic.search.po.request.dsl.compound.BoolQuery;
 import demo.elastic.search.po.request.dsl.term.*;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
@@ -30,7 +29,7 @@ public class Search_DSL_TermLevelController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PostMapping(value = "/DSL/exists/{index}/_search")
+    @PostMapping(value = "/DSL/{index}/_search/exists")
     public Response _search_exists(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<ExistsQuery> existsRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result;
@@ -47,7 +46,7 @@ public class Search_DSL_TermLevelController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PostMapping(value = "/DSL/fuzzy/{index}/_search")
+    @PostMapping(value = "/DSL/{index}/_search/fuzzy")
     public Response _search_fuzzy(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<FuzzyQuery> fuzzyRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result;
@@ -64,7 +63,7 @@ public class Search_DSL_TermLevelController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PostMapping(value = "/DSL/ids/{index}/_search")
+    @PostMapping(value = "/DSL/{index}/_search/ids")
     public Response _search_ids(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<IDsQuery> iDsRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService.DSL_search_ids(index, iDsRequest);
@@ -80,7 +79,7 @@ public class Search_DSL_TermLevelController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PostMapping(value = "/DSL/prefix/{index}/_search")
+    @PostMapping(value = "/DSL/{index}/_search/prefix")
     public Response _search_prefix(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<PrefixQuery> prefixRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService.DSL_search_prefix(index, prefixRequest);
@@ -96,7 +95,7 @@ public class Search_DSL_TermLevelController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PostMapping(value = "/DSL/range/{index}/_search")
+    @PostMapping(value = "/DSL/{index}/_search/range")
     public Response _search_range(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<RangeQuery> rangeRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService.DSL_search_range(index, rangeRequest);
@@ -112,7 +111,7 @@ public class Search_DSL_TermLevelController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PostMapping(value = "/DSL/regexp/{index}/_search")
+    @PostMapping(value = "/DSL/{index}/_search/regexp")
     public Response _search_regexp(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<RegexpQuery> regexpRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService.DSL_search_regexp(index, regexpRequest);
@@ -128,7 +127,7 @@ public class Search_DSL_TermLevelController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PostMapping(value = "/DSL/term/{index}/_search")
+    @PostMapping(value = "/DSL/{index}/_search/term")
     public Response _search_term(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<TermQuery> termRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService.DSL_search_term(index, termRequest);
@@ -144,7 +143,7 @@ public class Search_DSL_TermLevelController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PostMapping(value = "/DSL/terms/{index}/_search")
+    @PostMapping(value = "/DSL/{index}/_search/terms")
     public Response _search_terms(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<TermsQuery> termsRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService.DSL_search_terms(index, termsRequest);
@@ -160,13 +159,12 @@ public class Search_DSL_TermLevelController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @PostMapping(value = "/DSL/wildcard/{index}/_search")
+    @PostMapping(value = "/DSL/{index}/_search/wildcard")
     public Response _search_wildcard(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<WildcardQuery> wildcardRequest) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService.DSL_search_wildcard(index, wildcardRequest);
         return Response.Ok(JSONObject.parse(result));
     }
-
 
 
 }
