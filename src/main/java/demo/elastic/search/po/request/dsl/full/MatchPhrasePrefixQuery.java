@@ -3,7 +3,6 @@ package demo.elastic.search.po.request.dsl.full;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
-import demo.elastic.search.po.request.dsl.DSLRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,15 +26,9 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class MatchPhrasePrefixRequest extends ToRequestBody implements DSLRequest {
+public class MatchPhrasePrefixQuery extends ToRequestBody implements DSLQuery {
 
-    private MatchPhrasePrefixQuery query = new MatchPhrasePrefixQuery();
-
-    @Data
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class MatchPhrasePrefixQuery implements DSLQuery {
-        private Map<String, MatchPhrasePrefixParam> match_phrase_prefix = new HashMap<>();
-    }
+    private Map<String, MatchPhrasePrefixParam> match_phrase_prefix = new HashMap<>();
 
     @Data
     @NoArgsConstructor
@@ -48,21 +41,14 @@ public class MatchPhrasePrefixRequest extends ToRequestBody implements DSLReques
         private Integer slop;//（可选，整数）匹配令牌之间允许的最大位置数。默认为0。转置字词的斜率为2
     }
 
-    public static MatchPhrasePrefixRequest builderRequest(String field, String query, String analyzer, Integer max_expansions, Integer slop) {
-        MatchPhrasePrefixRequest request = new MatchPhrasePrefixRequest();
-        request.getQuery().getMatch_phrase_prefix().put(field, new MatchPhrasePrefixParam(query, analyzer, max_expansions, slop));
+    public static MatchPhrasePrefixQuery builderQuery(String field, String query, String analyzer, Integer max_expansions, Integer slop) {
+        MatchPhrasePrefixQuery request = new MatchPhrasePrefixQuery();
+        request.getMatch_phrase_prefix().put(field, new MatchPhrasePrefixParam(query, analyzer, max_expansions, slop));
         return request;
     }
 
-    public static MatchPhrasePrefixRequest builderRequest(String field, String query) {
-        return builderRequest(field, query, null, 50, 0);
-    }
-
-    public static MatchPhrasePrefixQuery builderQuery(String field, String query, String analyzer, Integer max_expansions, Integer slop) {
-        return builderRequest(field, query, analyzer, max_expansions, slop).getQuery();
-    }
-
     public static MatchPhrasePrefixQuery builderQuery(String field, String query) {
-        return builderRequest(field, query).getQuery();
+        return builderQuery(field, query, null, 50, 0);
     }
+
 }

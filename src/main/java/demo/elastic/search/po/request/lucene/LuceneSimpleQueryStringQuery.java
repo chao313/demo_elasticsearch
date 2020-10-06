@@ -3,7 +3,7 @@ package demo.elastic.search.po.request.lucene;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.analyze.AnalyzeRequest;
-import demo.elastic.search.po.request.dsl.DSLRequest;
+import demo.elastic.search.po.request.dsl.DSLQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,16 +19,9 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @AllArgsConstructor
 @NoArgsConstructor
-public class LuceneSimpleQueryStringRequest extends ToRequestBody implements DSLRequest {
+public class LuceneSimpleQueryStringQuery extends ToRequestBody implements DSLQuery {
 
-    private LuceneQuery query = new LuceneQuery();
-
-
-    @Data
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class LuceneQuery {
-        private LuceneSimpleQueryStringRequest.LuceneParam simple_query_string = new LuceneSimpleQueryStringRequest.LuceneParam();
-    }
+    private LuceneParam simple_query_string = new LuceneParam();
 
     /**
      * 还有许多其他的，这里只是部分
@@ -52,26 +45,26 @@ public class LuceneSimpleQueryStringRequest extends ToRequestBody implements DSL
     /**
      * 构建 request 请求(这里默认解析通配)
      */
-    private static LuceneSimpleQueryStringRequest builderRequest(String query, List<String> fields, Integer minimum_should_match, AnalyzeRequest.Analyzer analyzer) {
-        LuceneSimpleQueryStringRequest luceneQueryStringRequest = new LuceneSimpleQueryStringRequest();
+    private static LuceneSimpleQueryStringQuery builderQuery(String query, List<String> fields, Integer minimum_should_match, AnalyzeRequest.Analyzer analyzer) {
+        LuceneSimpleQueryStringQuery luceneQueryStringRequest = new LuceneSimpleQueryStringQuery();
         LuceneParam luceneParam = new LuceneParam(query, fields, minimum_should_match, analyzer, null, null, null, null, true);
-        luceneQueryStringRequest.getQuery().setSimple_query_string(luceneParam);
+        luceneQueryStringRequest.setSimple_query_string(luceneParam);
         return luceneQueryStringRequest;
     }
 
-    public static LuceneSimpleQueryStringRequest builderRequest(String query, List<String> fields, Integer minimum_should_match) {
-        LuceneSimpleQueryStringRequest request = LuceneSimpleQueryStringRequest.builderRequest(query, fields, minimum_should_match, null);
+    public static LuceneSimpleQueryStringQuery builderQuery(String query, List<String> fields, Integer minimum_should_match) {
+        LuceneSimpleQueryStringQuery request = LuceneSimpleQueryStringQuery.builderQuery(query, fields, minimum_should_match, null);
         return request;
     }
 
 
-    public static LuceneSimpleQueryStringRequest builderRequest(String query, List<String> fields) {
-        LuceneSimpleQueryStringRequest request = LuceneSimpleQueryStringRequest.builderRequest(query, fields, null, null);
+    public static LuceneSimpleQueryStringQuery builderQuery(String query, List<String> fields) {
+        LuceneSimpleQueryStringQuery request = LuceneSimpleQueryStringQuery.builderQuery(query, fields, null, null);
         return request;
     }
 
-    public static LuceneSimpleQueryStringRequest builderRequest(String query) {
-        LuceneSimpleQueryStringRequest request = LuceneSimpleQueryStringRequest.builderRequest(query, null, null, null);
+    public static LuceneSimpleQueryStringQuery builderQuery(String query) {
+        LuceneSimpleQueryStringQuery request = LuceneSimpleQueryStringQuery.builderQuery(query, null, null, null);
         return request;
     }
 

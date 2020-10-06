@@ -5,8 +5,10 @@ import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.SearchLuceneService;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.po.request.lucene.LuceneQueryStringRequest;
-import demo.elastic.search.po.request.lucene.LuceneSimpleQueryStringRequest;
+import demo.elastic.search.po.request.QueryBuilders;
+import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.lucene.LuceneQueryStringQuery;
+import demo.elastic.search.po.request.lucene.LuceneSimpleQueryStringQuery;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -33,9 +35,9 @@ public class Search_Lucene_Controller {
     })
     @PostMapping(value = "/{index}/_search")
     public Response _search(@PathVariable(value = "index") String index,
-                            @RequestBody LuceneQueryStringRequest luceneQueryStringRequest) {
+                            @RequestBody SearchSourceBuilder<LuceneQueryStringQuery> luceneQueryStringRequest) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        String result = searchLuceneService._search(index, luceneQueryStringRequest);
+        String result = searchLuceneService._search_query_String(index, luceneQueryStringRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 
@@ -53,8 +55,9 @@ public class Search_Lucene_Controller {
                                          @PathVariable(value = "index") String index,
                                          @RequestBody String query_String) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        LuceneQueryStringRequest luceneQueryStringRequest = LuceneQueryStringRequest.builderRequest(query_String);
-        String result = searchLuceneService._search(index, luceneQueryStringRequest);
+        SearchSourceBuilder<LuceneQueryStringQuery> request = new SearchSourceBuilder<>();
+        request.query(QueryBuilders.queryStringQuery(query_String));
+        String result = searchLuceneService._search_query_String(index, request);
         return Response.Ok(JSONObject.parse(result));
     }
 
@@ -70,10 +73,9 @@ public class Search_Lucene_Controller {
     @PostMapping(value = "/{index}/_search/simple_query_String")
     public Response _search_simple_query_String(@ApiParam(defaultValue = "index_bulk", value = "指定检索的index")
                                                 @PathVariable(value = "index") String index,
-                                                @RequestBody String simple_query_String) {
+                                                @RequestBody SearchSourceBuilder<LuceneSimpleQueryStringQuery> luceneSimpleQueryStringRequest) {
         SearchLuceneService searchLuceneService = ThreadLocalFeign.getFeignService(SearchLuceneService.class);
-        LuceneSimpleQueryStringRequest luceneSimpleQueryStringRequest = LuceneSimpleQueryStringRequest.builderRequest(simple_query_String);
-        String result = searchLuceneService._search(index, luceneSimpleQueryStringRequest);
+        String result = searchLuceneService._search_simple_query_String(index, luceneSimpleQueryStringRequest);
         return Response.Ok(JSONObject.parse(result));
     }
 }

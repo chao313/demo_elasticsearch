@@ -41,9 +41,9 @@ public class MatchBoolPrefixQuery extends ToRequestBody implements DSLQuery {
     }
 
     public static MatchBoolPrefixQuery builderQuery(String field, String query, String analyzer) {
-        MatchBoolPrefixQuery matchBoolPrefixQuery = new MatchBoolPrefixQuery();
-        matchBoolPrefixQuery.getMatch_bool_prefix().put(field, new MatchBoolPrefixParam(query, analyzer));
-        return matchBoolPrefixQuery;
+        MatchBoolPrefixQuery request = new MatchBoolPrefixQuery();
+        request.getMatch_bool_prefix().put(field, new MatchBoolPrefixParam(query, analyzer));
+        return request;
     }
 
     public static MatchBoolPrefixQuery builderQuery(String field, String query) {

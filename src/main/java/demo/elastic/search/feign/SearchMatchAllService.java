@@ -2,8 +2,8 @@ package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.feign.FeignServiceConfig;
-import demo.elastic.search.po.request.dsl.full.*;
-import demo.elastic.search.po.request.dsl.matchall.MatchAllRequest;
+import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.dsl.matchall.MatchAllQuery;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +21,7 @@ public interface SearchMatchAllService {
      * 全文搜索(匹配全部的文档)
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_all_search(@PathVariable(value = "index") String index, @RequestBody MatchAllRequest matchAllRequest);
+    String match_all_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchAllQuery> matchAllRequest);
 
 
 }

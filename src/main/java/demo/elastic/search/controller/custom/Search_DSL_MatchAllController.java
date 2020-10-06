@@ -5,7 +5,8 @@ import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.SearchMatchAllService;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.po.request.dsl.matchall.MatchAllRequest;
+import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.dsl.matchall.MatchAllQuery;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -31,7 +32,7 @@ public class Search_DSL_MatchAllController {
     })
     @PostMapping(value = "/{index}/_search")
     public Response _search(@PathVariable(value = "index") String index,
-                            @RequestBody MatchAllRequest matchAllRequest) {
+                            @RequestBody SearchSourceBuilder<MatchAllQuery> matchAllRequest) {
         SearchMatchAllService searchMatchAllService = ThreadLocalFeign.getFeignService(SearchMatchAllService.class);
         String result = searchMatchAllService.match_all_search(index, matchAllRequest);
         return Response.Ok(JSONObject.parse(result));

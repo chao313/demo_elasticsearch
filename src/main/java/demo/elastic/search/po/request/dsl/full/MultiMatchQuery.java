@@ -3,7 +3,6 @@ package demo.elastic.search.po.request.dsl.full;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
-import demo.elastic.search.po.request.dsl.DSLRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,15 +27,9 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class MultiMatchRequest extends ToRequestBody implements DSLRequest {
+public class MultiMatchQuery extends ToRequestBody implements DSLQuery {
 
-    private MultiMatchQuery query = new MultiMatchQuery();
-
-    @Data
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class MultiMatchQuery implements DSLQuery {
-        private MultiMatchParam multi_match = new MultiMatchParam();
-    }
+    private MultiMatchParam multi_match = new MultiMatchParam();
 
     @Data
     @NoArgsConstructor
@@ -53,22 +46,14 @@ public class MultiMatchRequest extends ToRequestBody implements DSLRequest {
         private Double tie_breaker;//修改词条的默认行为
     }
 
-    public static MultiMatchRequest builderRequest(List<String> fields, String query, MultiMatchType type, Double tie_breaker) {
-        MultiMatchRequest request = new MultiMatchRequest();
-        request.getQuery().setMulti_match(new MultiMatchParam(query, type, fields, tie_breaker));
+    public static MultiMatchQuery builderQuery(List<String> fields, String query, MultiMatchType type, Double tie_breaker) {
+        MultiMatchQuery request = new MultiMatchQuery();
+        request.setMulti_match(new MultiMatchParam(query, type, fields, tie_breaker));
         return request;
     }
 
-    public static MultiMatchRequest builderRequest(List<String> fields, String query) {
-        return builderRequest(fields, query, MultiMatchType.best_fields, null);
-    }
-
-    public static MultiMatchQuery builderQuery(List<String> fields, String query, MultiMatchType type, Double tie_breaker) {
-        return builderRequest(fields, query, type, tie_breaker).getQuery();
-    }
-
     public static MultiMatchQuery builderQuery(List<String> fields, String query) {
-        return builderRequest(fields, query).getQuery();
+        return builderQuery(fields, query, MultiMatchType.best_fields, null);
     }
 
     public enum MultiMatchType {

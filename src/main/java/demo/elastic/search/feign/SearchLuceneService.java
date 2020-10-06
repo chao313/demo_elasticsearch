@@ -2,8 +2,9 @@ package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.feign.FeignServiceConfig;
-import demo.elastic.search.po.request.lucene.LuceneQueryStringRequest;
-import demo.elastic.search.po.request.lucene.LuceneSimpleQueryStringRequest;
+import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.lucene.LuceneQueryStringQuery;
+import demo.elastic.search.po.request.lucene.LuceneSimpleQueryStringQuery;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,11 +21,11 @@ public interface SearchLuceneService {
 
 
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String _search(@PathVariable(value = "index") String index, @RequestBody LuceneQueryStringRequest luceneQueryStringRequest);
+    String _search_query_String(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<LuceneQueryStringQuery> luceneQueryStringRequest);
 
 
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String _search(@PathVariable(value = "index") String index, @RequestBody LuceneSimpleQueryStringRequest simpleQueryStringRequest);
+    String _search_simple_query_String(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<LuceneSimpleQueryStringQuery> simpleQueryStringRequest);
 
 
 }

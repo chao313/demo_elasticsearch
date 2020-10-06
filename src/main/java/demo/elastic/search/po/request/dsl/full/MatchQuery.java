@@ -3,7 +3,6 @@ package demo.elastic.search.po.request.dsl.full;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.dsl.DSLQuery;
-import demo.elastic.search.po.request.dsl.DSLRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,15 +27,9 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class MatchRequest extends ToRequestBody implements DSLRequest {
+public class MatchQuery extends ToRequestBody implements DSLQuery {
 
-    private MatchQuery query = new MatchQuery();
-
-    @Data
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class MatchQuery implements DSLQuery {
-        private Map<String, MatchParam> match = new HashMap<>();
-    }
+    private Map<String, MatchParam> match = new HashMap<>();
 
     @Data
     @NoArgsConstructor
@@ -56,21 +49,14 @@ public class MatchRequest extends ToRequestBody implements DSLRequest {
         private String minimum_should_match;//（可选，字符串）要返回的文档必须匹配的最小子句数
     }
 
-    public static MatchRequest builderRequest(String field, String query, String analyzer, Boolean auto_generate_synonyms_phrase_query, String fuzziness, Integer max_expansions, Integer prefix_length, Boolean fuzzy_transpositions, String fuzzy_rewrite, Boolean lenient, String operator, String minimum_should_match) {
-        MatchRequest request = new MatchRequest();
-        request.getQuery().getMatch().put(field, new MatchParam(query, analyzer, auto_generate_synonyms_phrase_query, fuzziness, max_expansions, prefix_length, fuzzy_transpositions, fuzzy_rewrite, lenient, operator, minimum_should_match));
+    public static MatchQuery builderQuery(String field, String query, String analyzer, Boolean auto_generate_synonyms_phrase_query, String fuzziness, Integer max_expansions, Integer prefix_length, Boolean fuzzy_transpositions, String fuzzy_rewrite, Boolean lenient, String operator, String minimum_should_match) {
+        MatchQuery request = new MatchQuery();
+        request.getMatch().put(field, new MatchParam(query, analyzer, auto_generate_synonyms_phrase_query, fuzziness, max_expansions, prefix_length, fuzzy_transpositions, fuzzy_rewrite, lenient, operator, minimum_should_match));
         return request;
     }
 
-    public static MatchRequest builderRequest(String field, String query) {
-        return builderRequest(field, query, null, true, null, 50, 0, true, null, true, "OR", null);
-    }
-
-    public static MatchQuery builderQuery(String field, String query, String analyzer, Boolean auto_generate_synonyms_phrase_query, String fuzziness, Integer max_expansions, Integer prefix_length, Boolean fuzzy_transpositions, String fuzzy_rewrite, Boolean lenient, String operator, String minimum_should_match) {
-        return builderRequest(field, query, analyzer, auto_generate_synonyms_phrase_query, fuzziness, max_expansions, prefix_length, fuzzy_transpositions, fuzzy_rewrite, lenient, operator, minimum_should_match).getQuery();
-    }
-
     public static MatchQuery builderQuery(String field, String query) {
-        return builderRequest(field, query).getQuery();
+        return builderQuery(field, query, null, true, null, 50, 0, true, null, true, "OR", null);
     }
+
 }

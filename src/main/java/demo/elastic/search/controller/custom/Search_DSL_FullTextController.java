@@ -32,7 +32,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_search", method = RequestMethod.POST)
     public Response match_search(@PathVariable(value = "index") String index,
-                                 @RequestBody MatchRequest matchRequest) {
+                                 @RequestBody SearchSourceBuilder<MatchQuery> matchRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_search(index, matchRequest);
         return Response.Ok(JSONObject.parse(result));
@@ -67,7 +67,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_phrase_search", method = RequestMethod.POST)
     public Response match_phrase_search(@PathVariable(value = "index") String index,
-                                        @RequestBody MatchPhraseRequest matchPhraseRequest) {
+                                        @RequestBody SearchSourceBuilder<MatchPhraseQuery> matchPhraseRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_phrase_search(index, matchPhraseRequest);
         return Response.Ok(JSONObject.parse(result));
@@ -87,7 +87,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_phrase_prefix_search", method = RequestMethod.POST)
     public Response match_phrase_prefix_search(@PathVariable(value = "index") String index,
-                                               @RequestBody MatchPhrasePrefixRequest matchPhrasePrefixRequest) {
+                                               @RequestBody SearchSourceBuilder<MatchPhrasePrefixQuery> matchPhrasePrefixRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_phrase_prefix_search(index, matchPhrasePrefixRequest);
         return Response.Ok(JSONObject.parse(result));
@@ -108,7 +108,7 @@ public class Search_DSL_FullTextController {
     })
     @RequestMapping(value = "/{index}/_search/match_multi_match_search", method = RequestMethod.POST)
     public Response match_multi_match_search(@PathVariable(value = "index") String index,
-                                             @RequestBody MultiMatchRequest multiMatchRequest) {
+                                             @RequestBody SearchSourceBuilder<MultiMatchQuery> multiMatchRequest) {
         SearchFullTextService searchFullTextService = ThreadLocalFeign.getFeignService(SearchFullTextService.class);
         String result = searchFullTextService.match_multi_match_search(index, multiMatchRequest);
         return Response.Ok(JSONObject.parse(result));

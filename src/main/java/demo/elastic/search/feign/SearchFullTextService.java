@@ -33,7 +33,7 @@ public interface SearchFullTextService {
      * </pre>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_search(@PathVariable(value = "index") String index, @RequestBody MatchRequest matchRequest);
+    String match_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchQuery> matchRequest);
 
 
     /**
@@ -80,7 +80,7 @@ public interface SearchFullTextService {
      * </pre>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_phrase_search(@PathVariable(value = "index") String index, @RequestBody MatchPhraseRequest matchPhraseRequest);
+    String match_phrase_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchPhraseQuery> matchPhraseRequest);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.9/query-dsl-match-query-phrase-prefix.html"></a>
@@ -101,7 +101,7 @@ public interface SearchFullTextService {
      * </pre>
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_phrase_prefix_search(@PathVariable(value = "index") String index, @RequestBody MatchPhrasePrefixRequest matchPhrasePrefixRequest);
+    String match_phrase_prefix_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MatchPhrasePrefixQuery> matchPhrasePrefixRequest);
 
 
     /**
@@ -120,7 +120,7 @@ public interface SearchFullTextService {
      * 多字段查询
      */
     @RequestMapping(value = "/{index}/_search", method = RequestMethod.POST, headers = {"content-type=application/json"})
-    String match_multi_match_search(@PathVariable(value = "index") String index, @RequestBody MultiMatchRequest multiMatchRequest);
+    String match_multi_match_search(@PathVariable(value = "index") String index, @RequestBody SearchSourceBuilder<MultiMatchQuery> multiMatchRequest);
 
 
 }

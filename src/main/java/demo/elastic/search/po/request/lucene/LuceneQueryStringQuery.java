@@ -3,7 +3,7 @@ package demo.elastic.search.po.request.lucene;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.analyze.AnalyzeRequest;
-import demo.elastic.search.po.request.dsl.DSLRequest;
+import demo.elastic.search.po.request.dsl.DSLQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,16 +19,10 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @AllArgsConstructor
 @NoArgsConstructor
-public class LuceneQueryStringRequest extends ToRequestBody implements DSLRequest {
-
-    private LuceneQuery query = new LuceneQuery();
+public class LuceneQueryStringQuery extends ToRequestBody implements DSLQuery {
 
 
-    @Data
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class LuceneQuery {
-        private LuceneQueryStringRequest.LuceneParam query_string = new LuceneQueryStringRequest.LuceneParam();
-    }
+    private LuceneParam query_string = new LuceneParam();
 
     /**
      * 还有许多其他的，这里只是部分
@@ -52,26 +46,26 @@ public class LuceneQueryStringRequest extends ToRequestBody implements DSLReques
     /**
      * 构建 request 请求(这里默认解析通配)
      */
-    private static LuceneQueryStringRequest builderRequest(String query, List<String> fields, Integer minimum_should_match, AnalyzeRequest.Analyzer analyzer) {
-        LuceneQueryStringRequest luceneQueryStringRequest = new LuceneQueryStringRequest();
+    private static LuceneQueryStringQuery builderQuery(String query, List<String> fields, Integer minimum_should_match, AnalyzeRequest.Analyzer analyzer) {
+        LuceneQueryStringQuery luceneQueryStringQuery = new LuceneQueryStringQuery();
         LuceneParam luceneParam = new LuceneParam(query, fields, minimum_should_match, analyzer, null, null, null, null, true);
-        luceneQueryStringRequest.getQuery().setQuery_string(luceneParam);
-        return luceneQueryStringRequest;
+        luceneQueryStringQuery.setQuery_string(luceneParam);
+        return luceneQueryStringQuery;
     }
 
-    public static LuceneQueryStringRequest builderRequest(String query, List<String> fields, Integer minimum_should_match) {
-        LuceneQueryStringRequest request = LuceneQueryStringRequest.builderRequest(query, fields, minimum_should_match, null);
+    public static LuceneQueryStringQuery builderQuery(String query, List<String> fields, Integer minimum_should_match) {
+        LuceneQueryStringQuery request = LuceneQueryStringQuery.builderQuery(query, fields, minimum_should_match, null);
         return request;
     }
 
 
-    public static LuceneQueryStringRequest builderRequest(String query, List<String> fields) {
-        LuceneQueryStringRequest request = LuceneQueryStringRequest.builderRequest(query, fields, null, null);
+    public static LuceneQueryStringQuery builderQuery(String query, List<String> fields) {
+        LuceneQueryStringQuery request = LuceneQueryStringQuery.builderQuery(query, fields, null, null);
         return request;
     }
 
-    public static LuceneQueryStringRequest builderRequest(String query) {
-        LuceneQueryStringRequest request = LuceneQueryStringRequest.builderRequest(query, null, null, null);
+    public static LuceneQueryStringQuery builderQuery(String query) {
+        LuceneQueryStringQuery request = LuceneQueryStringQuery.builderQuery(query, null, null, null);
         return request;
     }
 

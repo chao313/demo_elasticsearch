@@ -3,10 +3,10 @@ package demo.elastic.search.po.request;
 
 import demo.elastic.search.po.request.dsl.compound.BoolQuery;
 import demo.elastic.search.po.request.dsl.full.*;
-import demo.elastic.search.po.request.dsl.matchall.MatchAllRequest;
+import demo.elastic.search.po.request.dsl.matchall.MatchAllQuery;
 import demo.elastic.search.po.request.dsl.term.*;
-import demo.elastic.search.po.request.lucene.LuceneQueryStringRequest;
-import demo.elastic.search.po.request.lucene.LuceneSimpleQueryStringRequest;
+import demo.elastic.search.po.request.lucene.LuceneQueryStringQuery;
+import demo.elastic.search.po.request.lucene.LuceneSimpleQueryStringQuery;
 
 import java.util.List;
 
@@ -21,24 +21,24 @@ public final class QueryBuilders {
     /**
      * A query that matches on all documents.
      */
-    public static MatchAllRequest matchAllQuery() {
-        return MatchAllRequest.builderRequest();
+    public static MatchAllQuery matchAllQuery() {
+        return MatchAllQuery.builderQuery();
     }
 
-    public static MatchRequest matchQuery(String field, String query) {
-        return MatchRequest.builderRequest(field, query);
+    public static MatchQuery matchQuery(String field, String query) {
+        return MatchQuery.builderQuery(field, query);
     }
 
-    public static MultiMatchRequest multiMatchQuery(List<String> fields, String query) {
-        return MultiMatchRequest.builderRequest(fields, query);
+    public static MultiMatchQuery multiMatchQuery(List<String> fields, String query) {
+        return MultiMatchQuery.builderQuery(fields, query);
     }
 
-    public static MatchPhraseRequest matchPhraseQuery(String field, String query) {
-        return MatchPhraseRequest.builderRequest(field, query);
+    public static MatchPhraseQuery matchPhraseQuery(String field, String query) {
+        return MatchPhraseQuery.builderQuery(field, query);
     }
 
-    public static MatchPhrasePrefixRequest matchPhrasePrefixQuery(String field, String query) {
-        return MatchPhrasePrefixRequest.builderRequest(field, query);
+    public static MatchPhrasePrefixQuery matchPhrasePrefixQuery(String field, String query) {
+        return MatchPhrasePrefixQuery.builderQuery(field, query);
     }
 
     public static MatchBoolPrefixQuery matchBoolPrefixQuery(String field, String query) {
@@ -102,12 +102,12 @@ public final class QueryBuilders {
     }
 
 
-    public static LuceneQueryStringRequest queryStringQuery(String queryString) {
-        return LuceneQueryStringRequest.builderRequest(queryString);
+    public static LuceneQueryStringQuery queryStringQuery(String queryString) {
+        return LuceneQueryStringQuery.builderQuery(queryString);
     }
 
-    public static LuceneSimpleQueryStringRequest simpleQueryStringQuery(String queryString) {
-        return LuceneSimpleQueryStringRequest.builderRequest(queryString);
+    public static LuceneSimpleQueryStringQuery simpleQueryStringQuery(String queryString) {
+        return LuceneSimpleQueryStringQuery.builderQuery(queryString);
     }
 
     public static ExistsQuery existsQuery(String name) {
