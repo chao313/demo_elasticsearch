@@ -1,7 +1,6 @@
 package demo.elastic.search.po.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import demo.elastic.search.po.request.dsl.DSLQuery;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,7 +11,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public final class SearchSourceBuilder<T extends DSLQuery> extends ToRequestBody {
+public final class SearchSourceBuilder<T extends Query> extends ToRequestBody {
 
 
 //    public static SearchSourceBuilder getInstance() {

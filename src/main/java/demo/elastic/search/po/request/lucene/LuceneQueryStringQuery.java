@@ -1,9 +1,9 @@
 package demo.elastic.search.po.request.lucene;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import demo.elastic.search.po.request.Query;
 import demo.elastic.search.po.request.ToRequestBody;
 import demo.elastic.search.po.request.analyze.AnalyzeRequest;
-import demo.elastic.search.po.request.dsl.DSLQuery;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 @AllArgsConstructor
 @NoArgsConstructor
-public class LuceneQueryStringQuery extends ToRequestBody implements DSLQuery {
+public class LuceneQueryStringQuery extends ToRequestBody implements Query {
 
 
     private LuceneParam query_string = new LuceneParam();

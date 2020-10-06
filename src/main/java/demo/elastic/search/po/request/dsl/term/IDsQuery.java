@@ -2,7 +2,7 @@ package demo.elastic.search.po.request.dsl.term;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.ToRequestBody;
-import demo.elastic.search.po.request.dsl.DSLQuery;
+import demo.elastic.search.po.request.Query;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class IDsQuery extends ToRequestBody implements DSLQuery {
+public class IDsQuery extends ToRequestBody implements Query {
 
     private IDsParam ids = new IDsParam();
 

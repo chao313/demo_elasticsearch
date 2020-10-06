@@ -4,7 +4,7 @@
 //import demo.elastic.search.feign.plus.SearchServicePlus;
 //import demo.elastic.search.out.db.mysql.service.DBService;
 //import demo.elastic.search.po.request.QueryBaseRequest;
-//import demo.elastic.search.po.request.dsl.DSLQuery;
+//import demo.elastic.search.po.request.Query;
 //import demo.elastic.search.po.request.dsl.compound.BoolRequest;
 //import demo.elastic.search.po.request.dsl.term.TermRequest;
 //import demo.elastic.search.thread.ThreadPoolExecutorService;
@@ -54,7 +54,7 @@
 //            log.info("{}", listInExcel);
 //            TermRequest.TermQuery F2_6254TermRequest = TermRequest.builderQuery("F2_6254", "公司简称");
 //            TermRequest.TermQuery F3_6254TermRequest = TermRequest.builderQuery("F3_6254", F1_6254InExcel);
-//            List<DSLQuery> must = Arrays.asList(F2_6254TermRequest, F3_6254TermRequest);
+//            List<Query> must = Arrays.asList(F2_6254TermRequest, F3_6254TermRequest);
 //            BoolRequest.BoolQuery boolQuery = BoolRequest.builderQuery(must, null, null, null);
 //
 //            String requestBody = QueryBaseRequest.builderRequest(0, 1000, boolQuery).getRequestBody();

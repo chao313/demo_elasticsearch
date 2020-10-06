@@ -1,7 +1,6 @@
 package demo.elastic.search.po.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import demo.elastic.search.po.request.dsl.DSLQuery;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,9 +14,9 @@ public class QueryBaseRequest extends ToRequestBody {
     @ApiModelProperty(example = "10")
     private Integer size;
 
-    private DSLQuery query;
+    private Query query;
 
-    public static QueryBaseRequest builderRequest(Integer from, Integer size, DSLQuery query) {
+    public static QueryBaseRequest builderRequest(Integer from, Integer size, Query query) {
         QueryBaseRequest request = new QueryBaseRequest();
         request.setFrom(from);
         request.setSize(size);
@@ -25,7 +24,7 @@ public class QueryBaseRequest extends ToRequestBody {
         return request;
     }
 
-    public static QueryBaseRequest builderRequest(DSLQuery query) {
+    public static QueryBaseRequest builderRequest(Query query) {
         return builderRequest(0, 10, query);
     }
 
