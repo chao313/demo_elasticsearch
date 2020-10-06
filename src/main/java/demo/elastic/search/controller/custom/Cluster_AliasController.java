@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * 集群别名相关
  */
-@RequestMapping(value = "/Cluster_IndexController")
+@RequestMapping(value = "/Cluster_AliasController")
 @RestController
 public class Cluster_AliasController {
 
