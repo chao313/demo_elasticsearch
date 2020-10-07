@@ -53,15 +53,15 @@ public class Index_MappingController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "添加新的字段 v6", notes = "" +
-            "{" +
-            "<br>" +
-            "  \"properties\": {<br>" +
-            "    \"email\": {<br>" +
-            "      \"type\": \"string\"<br>" +
-            "    }<br>" +
-            "  }<br>" +
-            "}")
+    @ApiOperation(value = "添加新的字段 v6", notes = "```\n" +
+            "{\n" +
+            "    \"properties\":{\n" +
+            "        \"email\":{\n" +
+            "            \"type\":\"string\"\n" +
+            "        }\n" +
+            "    }\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -78,15 +78,15 @@ public class Index_MappingController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "添加新的字段 v2.3", notes = "" +
-            "{" +
-            "<br>" +
-            "  \"properties\": {<br>" +
-            "    \"email\": {<br>" +
-            "      \"type\": \"string\"<br>" +
-            "    }<br>" +
-            "  }<br>" +
-            "}")
+    @ApiOperation(value = "添加新的字段 v2.3", notes = "```\n" +
+            "{\n" +
+            "    \"properties\":{\n" +
+            "        \"email\":{\n" +
+            "            \"type\":\"string\"\n" +
+            "        }\n" +
+            "    }\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

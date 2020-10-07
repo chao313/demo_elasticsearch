@@ -70,21 +70,21 @@ public class Search_ScriptController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "查询一个index的type", notes =
-            "<pre>" + "{<br>" +
-                    "&nbsp;\"script_fields\": {<br>" +
-                    "&nbsp;&nbsp;\"my_doubled_field\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;\"script\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"id\": \"MyScriptsId\",<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"params\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"multiplier\": 20<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;}<br>" +
-                    "}"
-                    +
-                    "</pre>")
+    @ApiOperation(value = "查询一个index的type", notes = "```" +
+            "\n" +
+            "{\n" +
+            " \"script_fields\": {\n" +
+            "  \"my_doubled_field\": {\n" +
+            "    \"script\": {\n" +
+            "      \"id\": \"MyScriptsId\",\n" +
+            "      \"params\": {\n" +
+            "        \"multiplier\": 20\n" +
+            "      }\n" +
+            "    }\n" +
+            "   }\n" +
+            " }\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

@@ -78,36 +78,39 @@ public class Index_NewIndexController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "将文档从一个索引复制到另一索引", notes = "<pre>{<br>" +
-            "&nbsp;\"conflicts\": \"\",<br>" +
-            "&nbsp;\"dest\": {<br>" +
-            "&nbsp;&nbsp;\"index\": \"\",<br>" +
-            "&nbsp;&nbsp;\"op_type\": \"\",<br>" +
-            "&nbsp;&nbsp;\"version_type\": \"\"<br>" +
-            "&nbsp;},<br>" +
-            "&nbsp;\"script\": {<br>" +
-            "&nbsp;&nbsp;\"lang\": \"\",<br>" +
-            "&nbsp;&nbsp;\"source\": \"\"<br>" +
-            "&nbsp;},<br>" +
-            "&nbsp;\"source\": {<br>" +
-            "&nbsp;&nbsp;\"_source\": [],<br>" +
-            "&nbsp;&nbsp;\"index\": \"\",<br>" +
-            "&nbsp;&nbsp;\"max_docs\": \"\",<br>" +
-            "&nbsp;&nbsp;\"query\": \"\",<br>" +
-            "&nbsp;&nbsp;\"remote\": {<br>" +
-            "&nbsp;&nbsp;&nbsp;\"connect_timeout\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"host\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"password\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"socket_timeout\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"username\": \"\"<br>" +
-            "&nbsp;&nbsp;},<br>" +
-            "&nbsp;&nbsp;\"size\":\"\",<br>" +
-            "&nbsp;&nbsp;\"slice\": {<br>" +
-            "&nbsp;&nbsp;&nbsp;\"id\": \"\",<br>" +
-            "&nbsp;&nbsp;&nbsp;\"max\": \"\"<br>" +
-            "&nbsp;&nbsp;}<br>" +
-            "&nbsp;}<br>" +
-            "}</pre>")
+    @ApiOperation(value = "将文档从一个索引复制到另一索引", notes = "```" +
+            "\n" +
+            "{\n" +
+            "    \"conflicts\":\"\",\n" +
+            "    \"dest\":{\n" +
+            "        \"index\":\"\",\n" +
+            "        \"op_type\":\"\",\n" +
+            "        \"version_type\":\"\"\n" +
+            "    },\n" +
+            "    \"script\":{\n" +
+            "        \"lang\":\"\",\n" +
+            "        \"source\":\"\"\n" +
+            "    },\n" +
+            "    \"source\":{\n" +
+            "        \"_source\":[],\n" +
+            "        \"index\":\"\",\n" +
+            "        \"max_docs\":\"\",\n" +
+            "        \"query\":\"\",\n" +
+            "        \"remote\":{\n" +
+            "            \"connect_timeout\":\"\",\n" +
+            "            \"host\":\"\",\n" +
+            "            \"password\":\"\",\n" +
+            "            \"socket_timeout\":\"\",\n" +
+            "            \"username\":\"\"\n" +
+            "        },\n" +
+            "        \"size\":\"\",\n" +
+            "        \"slice\":{\n" +
+            "            \"id\":\"\",\n" +
+            "            \"max\":\"\"\n" +
+            "        }\n" +
+            "    }\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

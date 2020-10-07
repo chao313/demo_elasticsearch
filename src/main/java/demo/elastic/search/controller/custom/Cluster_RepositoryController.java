@@ -40,15 +40,17 @@ public class Cluster_RepositoryController {
     }
 
 
-    @ApiOperation(value = "注册FS快照存储库", notes = "{<br>" +
-            "&nbsp;\"settings\": {<br>" +
-            "&nbsp;&nbsp;\"compress\": true,<br>" +
-            "&nbsp;&nbsp;\"location\": \"string\",<br>" +
-            "&nbsp;&nbsp;\"max_restore_bytes_per_sec\": \"40mb\",<br>" +
-            "&nbsp;&nbsp;\"readonly\": false<br>" +
-            "&nbsp;},<br>" +
-            "&nbsp;\"type\": \"fs\"<br>" +
-            "}")
+    @ApiOperation(value = "注册FS快照存储库", notes = "```\n" +
+            "{\n" +
+            "    \"settings\":{\n" +
+            "        \"compress\":true,\n" +
+            "        \"location\":\"string\",\n" +
+            "        \"max_restore_bytes_per_sec\":\"40mb\",\n" +
+            "        \"readonly\":false\n" +
+            "    },\n" +
+            "    \"type\":\"fs\"\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

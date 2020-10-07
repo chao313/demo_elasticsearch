@@ -86,7 +86,18 @@ public class DocumentController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "批量操作", notes = "(提供执行多种方式index，create，delete，和update在一个请求的动作) 注意最后一行要单独换行")
+    @ApiOperation(value = "批量操作", notes = "(提供执行多种方式index，create，delete，和update在一个请求的动作) 注意最后一行要单独换行"
+            + "\n"
+            + "```"
+            + "\n"
+            + "{ \"index\" : { \"_index\" : \"test\", \"_id\" : \"1\" } }\n" +
+            "{ \"field1\" : \"value1\" }\n" +
+            "{ \"delete\" : { \"_index\" : \"test\", \"_id\" : \"2\" } }\n" +
+            "{ \"create\" : { \"_index\" : \"test\", \"_id\" : \"3\" } }\n" +
+            "{ \"field1\" : \"value3\" }\n" +
+            "{ \"update\" : {\"_id\" : \"1\", \"_index\" : \"test\"} }\n" +
+            "{ \"doc\" : {\"field2\" : \"value2\"} }"
+            + "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -98,13 +109,6 @@ public class DocumentController {
     @PostMapping(value = "/{index}/_bulk")
     public Response _bulk(
             @ApiParam(value = "（必需，字符串）包含文档的索引的名称") @PathVariable(value = "index") String index,
-            @ApiParam(value = "{ \"index\" : { \"_index\" : \"test\", \"_id\" : \"1\" } }<br>" +
-                    "{ \"field1\" : \"value1\" }<br>" +
-                    "{ \"delete\" : { \"_index\" : \"test\", \"_id\" : \"2\" } }<br>" +
-                    "{ \"create\" : { \"_index\" : \"test\", \"_id\" : \"3\" } }<br>" +
-                    "{ \"field1\" : \"value3\" }<br>" +
-                    "{ \"update\" : {\"_id\" : \"1\", \"_index\" : \"test\"} }<br>" +
-                    "{ \"doc\" : {\"field2\" : \"value2\"} }")
             @RequestBody String body) {
         DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
         String s = documentService._bulk(index, body);

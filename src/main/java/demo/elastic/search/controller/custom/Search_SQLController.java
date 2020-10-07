@@ -23,12 +23,12 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class Search_SQLController {
 
-    @ApiOperation(value = "使用SQL查询", notes = "" +
-            "{<br>" +
-            "  \"fetch_size\": 10,<br>" +
-            "  \"query\": \"SELECT * FROM index44\"<br>" +
+    @ApiOperation(value = "使用SQL查询", notes = "```\n" +
+            "{\n" +
+            "    \"fetch_size\":10,\n" +
+            "    \"query\":\"SELECT * FROM index_bulk\"\n" +
             "}" +
-            "")
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -51,11 +51,11 @@ public class Search_SQLController {
         }
     }
 
-    @ApiOperation(value = "使用SQL查询", notes = "" +
-            "{<br>" +
-            "  \"cursor\": \"...\"<br>" +
+    @ApiOperation(value = "使用SQL查询", notes = "```\n" +
+            "{\n" +
+            "    \"cursor\":\"...\"\n" +
             "}" +
-            "")
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -78,11 +78,11 @@ public class Search_SQLController {
         }
     }
 
-    @ApiOperation(value = "使用SQL查询", notes = "" +
-            "{<br>" +
-            "  \"cursor\": \"...\"<br>" +
+    @ApiOperation(value = "使用SQL查询()光标查询", notes = "```\n" +
+            "{\n" +
+            "    \"cursor\":\"...\"\n" +
             "}" +
-            "")
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

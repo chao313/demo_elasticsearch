@@ -20,28 +20,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class Search {
 
-    @ApiOperation(value = "查询(普通)", notes =
-            "comstore_tb_object_0088<br>" +
-                    "<pre>" +
-                    " curl -X GET  \"http://39.107.236.187:9200/bank/_doc/_search?pretty\" -H 'Content-Type: application/json' -d'<br>" +
-                    " {<br>" +
-                    " &nbsp;\"from\": 0,<br>" +
-                    " &nbsp;\"size\": 1,<br>" +
-                    " &nbsp;\"query\": {<br>" +
-                    " &nbsp;&nbsp;\"bool\": {<br>" +
-                    " &nbsp;&nbsp;&nbsp;\"must\":[<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"exists\": {\"field\": \"age\"}},<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"exists\": {\"field\": \"address\"}},<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"term\": {\"age\": {<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp &nbsp;\"boost\": 0,<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp &nbsp;\"value\": 32<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp }}<br>" +
-                    " &nbsp;&nbsp;&nbsp; }<br>" +
-                    " &nbsp;&nbsp;&nbsp;]<br>" +
-                    " &nbsp;&nbsp;}<br>" +
-                    " &nbsp;}<br>" +
-                    "}'<br>" +
-                    "</pre>")
+    @ApiOperation(value = "查询(普通)", notes = "```\n" +
+            "{\n" +
+            " \"from\": 0,\n" +
+            " \"size\": 1,\n" +
+            " \"query\": {\n" +
+            "  \"bool\": {\n" +
+            "   \"must\":[\n" +
+            "    {\"exists\": {\"field\": \"age\"}},\n" +
+            "    {\"exists\": {\"field\": \"address\"}},\n" +
+            "    {\"term\": {\"age\": {\n" +
+            "       \"boost\": 0,\n" +
+            "       \"value\": 32\n" +
+            "      }}\n" +
+            "    }\n" +
+            "   ]\n" +
+            "  }\n" +
+            " }\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

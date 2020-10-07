@@ -21,26 +21,30 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class Index_CRUDController {
 
-    @ApiOperation(value = "创建index", notes = "" +
-            "{<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;\"settings\" : {<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;    \"number_of_shards\" : 1<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;},<br>" +
-            "&nbsp;&nbsp;&nbsp; \"mappings\" : {<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"properties\" : {<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;    \"field1\" : { \"type\" : \"text\" }<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-            "&nbsp;&nbsp;&nbsp; },<br>" +
-            "&nbsp;&nbsp;&nbsp;\"aliases\" : {<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"alias_1\" : {},<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"alias_2\" : {<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"filter\" : {<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"term\" : {\"user\" : \"kimchy\" }<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>" +
-            "&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-            "&nbsp;&nbsp;&nbsp; }<br>" +
-            "&nbsp; }")
+    @ApiOperation(value = "创建index", notes = "```\n" +
+            "{\n" +
+            "    \"settings\":{\n" +
+            "        \"number_of_shards\":1\n" +
+            "    },\n" +
+            "    \"mappings\":{\n" +
+            "        \"properties\":{\n" +
+            "            \"field1\":{\n" +
+            "                \"type\":\"text\"\n" +
+            "            }\n" +
+            "        }\n" +
+            "    },\n" +
+            "    \"aliases\":{\n" +
+            "        \"alias_1\":{},\n" +
+            "        \"alias_2\":{\n" +
+            "            \"filter\":{\n" +
+            "                \"term\":{\n" +
+            "                    \"user\":\"kimchy\"\n" +
+            "                }\n" +
+            "            }\n" +
+            "        }\n" +
+            "    }\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

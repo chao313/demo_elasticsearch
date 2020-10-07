@@ -633,40 +633,41 @@ public class CustomController {
     }
 
 
-    @ApiOperation(value = "查询agg到excel，目前只支持aggTerms", produces = "application/octet-stream", notes =
-            "comstore_tb_object_0088<br>" +
-                    "{<br>" +
-                    "&nbsp;&nbsp;\"size\": 10,<br>" +
-                    "&nbsp;&nbsp;\"query\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;\"bool\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"filter\": [],<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"must_not\": [],<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"should\": [],<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"must\": [<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \"terms\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   \"F26_0088\": [<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     \"1223792949\",<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     \"1359299210\"<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   ],<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   \"boost\": \"1.0\"<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;},<br>" +
-                    "&nbsp;&nbsp;\"from\": 0,<br>" +
-                    "&nbsp;&nbsp;\"aggs\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;\"F6_0088\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"terms\": {<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"field\": \"F6_0088\",<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"size\": 100000,<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"show_term_doc_count_error\": false,<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\"min_doc_count\": 1<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;}<br>" +
-                    "&nbsp;&nbsp;}<br>" +
-                    "}")
+    @ApiOperation(value = "查询agg到excel，目前只支持aggTerms", produces = "application/octet-stream", notes = "```" +
+            "\n"
+            + "{\n" +
+            "  \"size\": 10,\n" +
+            "  \"query\": {\n" +
+            "    \"bool\": {\n" +
+            "      \"filter\": [],\n" +
+            "      \"must_not\": [],\n" +
+            "      \"should\": [],\n" +
+            "      \"must\": [\n" +
+            "        {\n" +
+            "          \"terms\": {\n" +
+            "          \"F26_0088\": [\n" +
+            "          \"1223792949\",\n" +
+            "          \"1359299210\"\n" +
+            "          ],\n" +
+            "          \"boost\": \"1.0\"\n" +
+            "          }\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  },\n" +
+            "  \"from\": 0,\n" +
+            "  \"aggs\": {\n" +
+            "    \"F6_0088\": {\n" +
+            "      \"terms\": {\n" +
+            "        \"field\": \"F6_0088\",\n" +
+            "        \"size\": 100000,\n" +
+            "        \"show_term_doc_count_error\": false,\n" +
+            "        \"min_doc_count\": 1\n" +
+            "      }\n" +
+            "    }\n" +
+            "  }\n" +
+            "}" +
+            "```")
     @PostMapping(value = "/{index}/_searchOneAggToExcel")
     public Object _search(
             @ApiParam(defaultValue = "tb_object_0088")

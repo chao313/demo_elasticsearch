@@ -20,27 +20,24 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class Search_CountController {
 
-    @ApiOperation(value = "只查询匹配到的数量", notes =
-            "" +
-                    "<pre>" +
-                    " {<br>" +
-                    " &nbsp;\"from\": 0,<br>" +
-                    " &nbsp;\"size\": 1,<br>" +
-                    " &nbsp;\"query\": {<br>" +
-                    " &nbsp;&nbsp;\"bool\": {<br>" +
-                    " &nbsp;&nbsp;&nbsp;\"must\":[<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"exists\": {\"field\": \"age\"}},<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"exists\": {\"field\": \"address\"}},<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"term\": {\"age\": {<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp &nbsp;\"boost\": 0,<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp &nbsp;\"value\": 32<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp }}<br>" +
-                    " &nbsp;&nbsp;&nbsp; }<br>" +
-                    " &nbsp;&nbsp;&nbsp;]<br>" +
-                    " &nbsp;&nbsp;}<br>" +
-                    " &nbsp;}<br>" +
-                    "}'<br>" +
-                    "</pre>")
+    @ApiOperation(value = "只查询匹配到的数量", notes = "```" +
+            "\n" +
+            "{\n" +
+            " \"query\": {\n" +
+            "  \"bool\": {\n" +
+            "   \"must\":[\n" +
+            "    {\"exists\": {\"field\": \"age\"}},\n" +
+            "    {\"exists\": {\"field\": \"address\"}},\n" +
+            "    {\"term\": {\"age\": {\n" +
+            "       \"boost\": 0,\n" +
+            "       \"value\": 32\n" +
+            "      }}\n" +
+            "    }\n" +
+            "   ]\n" +
+            "  }\n" +
+            " }\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

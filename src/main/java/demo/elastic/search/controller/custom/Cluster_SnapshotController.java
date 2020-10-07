@@ -58,14 +58,17 @@ public class Cluster_SnapshotController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "还原快照", notes = "默认情况下，将还原快照中的所有索引，但不还原群集状态 。使用indices参数仅还原特定索引" + "<br>{<br>" +
-            "&nbsp;\"indices\": \"index_1,index_2\",<br>" +
-            "&nbsp;\"ignore_unavailable\": true,<br>" +
-            "&nbsp;\"include_global_state\": false,<br>" +
-            "&nbsp;\"rename_pattern\": \"index(.+)\",<br>" +
-            "&nbsp;\"rename_replacement\": \"restored_index$1\",<br>" +
-            "&nbsp;\"include_aliases\": false<br>" +
-            "}")
+    @ApiOperation(value = "还原快照", notes = "默认情况下，将还原快照中的所有索引，但不还原群集状态 。使用indices参数仅还原特定索引\n" +
+            "```\n" +
+            "{\n" +
+            "    \"indices\":\"index_1,index_2\",\n" +
+            "    \"ignore_unavailable\":true,\n" +
+            "    \"include_global_state\":false,\n" +
+            "    \"rename_pattern\":\"index(.+)\",\n" +
+            "    \"rename_replacement\":\"restored_index$1\",\n" +
+            "    \"include_aliases\":false\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

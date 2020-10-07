@@ -23,27 +23,23 @@ import org.springframework.web.bind.annotation.*;
 public class Search_ExplainValidateController {
 
 
-    @ApiOperation(value = "解释API(解释指定文档为什么匹配到/匹配不到)", notes =
-            "" +
-                    "<pre>" +
-                    " {<br>" +
-                    " &nbsp;\"from\": 0,<br>" +
-                    " &nbsp;\"size\": 1,<br>" +
-                    " &nbsp;\"query\": {<br>" +
-                    " &nbsp;&nbsp;\"bool\": {<br>" +
-                    " &nbsp;&nbsp;&nbsp;\"must\":[<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"exists\": {\"field\": \"age\"}},<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"exists\": {\"field\": \"address\"}},<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"term\": {\"age\": {<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp &nbsp;\"boost\": 0,<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp &nbsp;\"value\": 32<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp }}<br>" +
-                    " &nbsp;&nbsp;&nbsp; }<br>" +
-                    " &nbsp;&nbsp;&nbsp;]<br>" +
-                    " &nbsp;&nbsp;}<br>" +
-                    " &nbsp;}<br>" +
-                    "}'<br>" +
-                    "</pre>")
+    @ApiOperation(value = "解释API(解释指定文档为什么匹配到/匹配不到)", notes = "```\n" +
+            "{\n" +
+            " \"query\": {\n" +
+            "  \"bool\": {\n" +
+            "   \"must\":[\n" +
+            "    {\"exists\": {\"field\": \"age\"}},\n" +
+            "    {\"exists\": {\"field\": \"address\"}},\n" +
+            "    {\"term\": {\"age\": {\n" +
+            "       \"boost\": 0,\n" +
+            "       \"value\": 32\n" +
+            "      }}\n" +
+            "    }\n" +
+            "   ]\n" +
+            "  }\n" +
+            " }\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -62,27 +58,26 @@ public class Search_ExplainValidateController {
         return Response.Ok(JSONObject.parse(result));
     }
 
-    @ApiOperation(value = "验证搜索的代价", notes =
-            "" +
-                    "<pre>" +
-                    " {<br>" +
-                    " &nbsp;\"from\": 0,<br>" +
-                    " &nbsp;\"size\": 1,<br>" +
-                    " &nbsp;\"query\": {<br>" +
-                    " &nbsp;&nbsp;\"bool\": {<br>" +
-                    " &nbsp;&nbsp;&nbsp;\"must\":[<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"exists\": {\"field\": \"age\"}},<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"exists\": {\"field\": \"address\"}},<br>" +
-                    " &nbsp;&nbsp;&nbsp; {\"term\": {\"age\": {<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp &nbsp;\"boost\": 0,<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp &nbsp;\"value\": 32<br>" +
-                    " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp }}<br>" +
-                    " &nbsp;&nbsp;&nbsp; }<br>" +
-                    " &nbsp;&nbsp;&nbsp;]<br>" +
-                    " &nbsp;&nbsp;}<br>" +
-                    " &nbsp;}<br>" +
-                    "}'<br>" +
-                    "</pre>")
+
+    @ApiOperation(value = "验证搜索的代价", notes = "```\n" +
+            "{\n" +
+            " \"from\": 0,\n" +
+            " \"size\": 1,\n" +
+            " \"query\": {\n" +
+            "  \"bool\": {\n" +
+            "   \"must\":[\n" +
+            "    {\"exists\": {\"field\": \"age\"}},\n" +
+            "    {\"exists\": {\"field\": \"address\"}},\n" +
+            "    {\"term\": {\"age\": {\n" +
+            "       \"boost\": 0,\n" +
+            "       \"value\": 32\n" +
+            "      }}\n" +
+            "    }\n" +
+            "   ]\n" +
+            "  }\n" +
+            " }\n" +
+            "}"
+            + "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -93,7 +88,7 @@ public class Search_ExplainValidateController {
     })
     @PostMapping(value = "/{index}/_validate/query")
     public Response _validate(
-            @ApiParam(defaultValue = "tb_object_0088")
+            @ApiParam(defaultValue = "index_bulk")
             @PathVariable(value = "index") String index,
             @ApiParam(defaultValue = "false", value = "如果为true，则对所有分片执行验证，而不是对每个索引随机分配一个分片。默认为false")
             @RequestParam(value = "all_shards", required = false) Boolean all_shards,

@@ -78,7 +78,18 @@ public class Index_DocumentController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "批量操作", notes = "(提供执行多种方式index，create，delete，和update在一个请求的动作) 注意最后一行要单独换行")
+    @ApiOperation(value = "批量操作", notes = "(提供执行多种方式index，create，delete，和update在一个请求的动作) 注意最后一行要单独换行"
+            + "\n"
+            + "```"
+            + "\n"
+            + "{ \"index\" : { \"_index\" : \"test\", \"_id\" : \"1\" } }\n" +
+            "{ \"field1\" : \"value1\" }\n" +
+            "{ \"delete\" : { \"_index\" : \"test\", \"_id\" : \"2\" } }\n" +
+            "{ \"create\" : { \"_index\" : \"test\", \"_id\" : \"3\" } }\n" +
+            "{ \"field1\" : \"value3\" }\n" +
+            "{ \"update\" : {\"_id\" : \"1\", \"_index\" : \"test\"} }\n" +
+            "{ \"doc\" : {\"field2\" : \"value2\"} }"
+            + "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -90,20 +101,20 @@ public class Index_DocumentController {
     @PostMapping(value = "/{index}/_bulk")
     public Response _bulk(
             @ApiParam(value = "（必需，字符串）包含文档的索引的名称") @PathVariable(value = "index") String index,
-            @ApiParam(value = "{ \"index\" : { \"_index\" : \"test\", \"_id\" : \"1\" } }<br>" +
-                    "{ \"field1\" : \"value1\" }<br>" +
-                    "{ \"delete\" : { \"_index\" : \"test\", \"_id\" : \"2\" } }<br>" +
-                    "{ \"create\" : { \"_index\" : \"test\", \"_id\" : \"3\" } }<br>" +
-                    "{ \"field1\" : \"value3\" }<br>" +
-                    "{ \"update\" : {\"_id\" : \"1\", \"_index\" : \"test\"} }<br>" +
-                    "{ \"doc\" : {\"field2\" : \"value2\"} }")
             @RequestBody String body) {
         DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
         String s = documentService._bulk(index, body);
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "将JSON文档添加到指定索引并使其可搜索。如果文档已存在，请更新文档并增加其版本")
+
+    @ApiOperation(value = "将JSON文档添加到指定索引并使其可搜索。如果文档已存在，请更新文档并增加其版本", notes = "```\n"
+            + "{\n" +
+            "    \"user\":\"kimchy\",\n" +
+            "    \"post_date\":\"2009-11-15T14:12:12\",\n" +
+            "    \"message\":\"trying out Elasticsearch\"\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -117,18 +128,19 @@ public class Index_DocumentController {
             @ApiParam(value = "（必需，字符串）目标索引的名称。默认情况下，如果索引不存在，则会自动创建")
             @PathVariable(value = "index") String index,
             @PathVariable(value = "_id") String _id,
-            @ApiParam(value = "{<br>" +
-                    "  \"user\" : \"kimchy\",<br>" +
-                    "  \"post_date\" : \"2009-11-15T14:12:12\",<br>" +
-                    "  \"message\" : \"trying out Elasticsearch\"<br>" +
-                    "}")
             @RequestBody String body) {
         DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
         String s = documentService.put_doc(index, _id, body);
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "将JSON文档添加到指定索引并使其可搜索。如果文档已存在，请更新文档并增加其版本")
+    @ApiOperation(value = "将JSON文档添加到指定索引并使其可搜索。如果文档已存在，请更新文档并增加其版本", notes = "```\n"
+            + "{\n" +
+            "    \"user\":\"kimchy\",\n" +
+            "    \"post_date\":\"2009-11-15T14:12:12\",\n" +
+            "    \"message\":\"trying out Elasticsearch\"\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -141,11 +153,6 @@ public class Index_DocumentController {
     public Response post_doc(
             @ApiParam(value = "（必需，字符串）目标索引的名称。默认情况下，如果索引不存在，则会自动创建")
             @PathVariable(value = "index") String index,
-            @ApiParam(value = "{<br>" +
-                    "  \"user\" : \"kimchy\",<br>" +
-                    "  \"post_date\" : \"2009-11-15T14:12:12\",<br>" +
-                    "  \"message\" : \"trying out Elasticsearch\"<br>" +
-                    "}")
             @RequestBody String body) {
         DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
         String s = documentService.post_doc(index, body);
@@ -204,7 +211,13 @@ public class Index_DocumentController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "使用指定的脚本更新文档")
+    @ApiOperation(value = "使用指定的脚本更新文档", notes = "```\n"
+            + "{\n" +
+            "    \"user\":\"kimchy\",\n" +
+            "    \"post_date\":\"2009-11-15T14:12:12\",\n" +
+            "    \"message\":\"trying out Elasticsearch\"\n" +
+            "}" +
+            "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,
@@ -213,18 +226,9 @@ public class Index_DocumentController {
                     paramType = "header",
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
-    @DeleteMapping(value = "/{index}/_update/{_id}")
+    @PostMapping(value = "/{index}/_update/{_id}")
     public Response _update(@ApiParam(value = "（必需，字符串）包含文档的索引的名称") @PathVariable(value = "index") String index,
                             @ApiParam(value = "（必需，字符串）文档的唯一标识符") @PathVariable(value = "_id") String _id,
-                            @ApiParam(value = "{<br>" +
-                                    "  \"script\" : {<br>" +
-                                    "    \"source\": \"ctx._source.age += params.count\",<br>" +
-                                    "    \"lang\": \"painless\",<br>" +
-                                    "    \"params\" : {<br>" +
-                                    "      \"count\" : 4<br>" +
-                                    "    }<br>" +
-                                    "  }<br>" +
-                                    "}")
                             @RequestBody String body) {
         DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
         String s = documentService._update(index, _id, body);
