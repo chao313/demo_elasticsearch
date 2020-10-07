@@ -27,6 +27,26 @@ public class Cluster {
      *
      * @return
      */
+    @ApiOperation(value = "ES的base请求")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @GetMapping(value = "/")
+    public String _base() {
+        CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
+        return catService._base();
+    }
+
+    /**
+     * 列出CAT的全部接口
+     *
+     * @return
+     */
     @ApiOperation(value = "列出Cat的全部接口", notes = "列出CAT的全部接口")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(

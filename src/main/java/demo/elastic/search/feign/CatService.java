@@ -39,6 +39,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "cat", url = Bootstrap.IN_USE, configuration = FeignServiceConfig.class)
 public interface CatService {
 
+    @ApiOperation(value = "ES的base请求")
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    String _base();
+
     @ApiOperation(value = "列出Cat的全部接口")
     @RequestMapping(value = "/_cat", method = RequestMethod.GET)
     String _cat();
