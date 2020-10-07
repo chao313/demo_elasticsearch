@@ -4,6 +4,6 @@ package demo.elastic.search.po.request;
 //@JsonSubTypes({
 //        @JsonSubTypes.Type(value = TermRequest.TermQuery.class, name = "term"),
 //        @JsonSubTypes.Type(value = RegexpRequest.RegexpQuery.class, name = "regexp")})
-public interface Aggs {
+public interface Aggs extends Bucket, Metrics {
 
 }

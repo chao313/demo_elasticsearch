@@ -3,6 +3,7 @@ package demo.elastic.search.po.request.aggs.bucket;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import demo.elastic.search.po.request.Aggs;
+import demo.elastic.search.po.request.Bucket;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class BucketTermsAggs implements Aggs {
+public class BucketTermsAggs implements Bucket, Aggs {
 
     private Map<String, TermsBucketAggsMiddle> aggs = new HashMap<>();
 

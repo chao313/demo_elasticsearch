@@ -95,7 +95,7 @@ public class Aggregation_BucketController {
     }
 
 
-    @ApiOperation(value = "range", notes = "```" +
+    @ApiOperation(value = "histogram", notes = "```" +
             "\n" +
             "{\n" +
             "  \"_source\": [\n" +
