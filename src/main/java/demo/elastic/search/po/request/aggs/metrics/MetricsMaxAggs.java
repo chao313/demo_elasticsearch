@@ -1,4 +1,4 @@
-package demo.elastic.search.po.request.aggs;
+package demo.elastic.search.po.request.aggs.metrics;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,15 +16,15 @@ import java.util.Map;
  */
 @Data
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class AggsQuery implements Aggs {
+public class MetricsMaxAggs implements Aggs {
 
-    private Map<String, AggsMiddle> aggs = new HashMap<>();
+    private Map<String, MaxAggsMiddle> aggs = new HashMap<>();
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    public static class AggsMiddle {
+    public static class MaxAggsMiddle {
         private AggsParam max;
     }
 

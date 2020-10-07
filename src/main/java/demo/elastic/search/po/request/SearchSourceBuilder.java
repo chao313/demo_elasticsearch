@@ -1,6 +1,7 @@
 package demo.elastic.search.po.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -20,6 +21,7 @@ public final class SearchSourceBuilder<T extends Query, K extends Aggs> extends 
 
     private T query;
 
+    @JsonUnwrapped
     private K aggs;
 
     @ApiModelProperty(example = "0")
