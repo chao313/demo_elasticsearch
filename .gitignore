@@ -33,3 +33,4 @@ build/
 .mvn/
 logs/
 locationResourcePath/
+.DS_Store

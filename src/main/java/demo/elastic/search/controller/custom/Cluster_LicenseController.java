@@ -1,11 +1,13 @@
 package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.LicenseService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
+import demo.elastic.search.util.StringToJson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -61,10 +63,10 @@ public class Cluster_LicenseController {
     public Response get(
             @ApiParam(value = "（布尔值）指定是否检索本地信息。默认值为false，表示从主节点检索信息")
             @RequestParam(value = "local", defaultValue = "false") String local
-    ) {
+    ) throws JsonProcessingException {
         LicenseService licenseService = ThreadLocalFeign.getFeignService(LicenseService.class);
         String result = licenseService.get(local);
-        return Response.Ok(JSONObject.parseObject(result));
+        return Response.Ok(StringToJson.getSortJson(result));
     }
 
 
