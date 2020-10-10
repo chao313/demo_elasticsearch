@@ -1,6 +1,7 @@
 package demo.elastic.search.feign;
 
 import demo.elastic.search.feign.CatService;
+import demo.elastic.search.feign.enums.FormatEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_aliases() {
-        String response = catService._cat_aliases(true);
+        String response = catService._cat_aliases(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -69,7 +70,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_allocation() {
-        String response = catService._cat_allocation(true);
+        String response = catService._cat_allocation(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -79,7 +80,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_allocation_nodeId() {
-        String response = catService._cat_allocation_nodeId(true, "dataNode-dwserver18-4");
+        String response = catService._cat_allocation_nodeId(true, "dataNode-dwserver18-4", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -89,7 +90,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_count() {
-        String response = catService._cat_count(true);
+        String response = catService._cat_count(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -99,7 +100,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_count_index() {
-        String response = catService._cat_count(true, "comstore_tb_object_0088");
+        String response = catService._cat_count(true, "comstore_tb_object_0088", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -110,7 +111,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_fielddata() {
-        String response = catService._cat_fielddata(true);
+        String response = catService._cat_fielddata(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -121,7 +122,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_fielddata_field() {
-        String response = catService._cat_fielddata_field(true, "F2_0088");
+        String response = catService._cat_fielddata_field(true, "F2_0088", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -131,7 +132,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_health() {
-        String response = catService._cat_health(true);
+        String response = catService._cat_health(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -143,7 +144,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_indices() {
-        String response = catService._cat_indices(true);
+        String response = catService._cat_indices(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -153,7 +154,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_indices_index() {
-        String response = catService._cat_indices_index(true, "tb_object_0088_v2");
+        String response = catService._cat_indices_index(true, "tb_object_0088_v2", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -163,7 +164,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_master() {
-        String response = catService._cat_master(true);
+        String response = catService._cat_master(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -175,7 +176,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_nodeattrs() {
-        String response = catService._cat_nodeattrs(true);
+        String response = catService._cat_nodeattrs(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -187,7 +188,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_nodes() {
-        String response = catService._cat_nodes(true, "ip,heap.percent,ram.percent,file_desc.percent,node.role,master,name,id,pid,port,http_address,version,build,jdk,disk.total,disk.used,disk.avail,disk.used_percent,heap.current,ram.current,ram.max,file_desc.current,file_desc.max,cpu,load_1m,load_5m,load_15m,uptime,completion.size,fielddata.evictions,query_cache.memory_size,query_cache.evictions,request_cache.memory_size,request_cache.evictions,request_cache.hit_count,request_cache.miss_count,flush.total,flush.total_time,get.current,get.time,get.total,get.exists_time,get.exists_total,get.missing_time,get.missing_total,indexing.delete_current,indexing.delete_time,indexing.delete_total,indexing.index_current,indexing.index_time,indexing,index_total,indexing.index_failed,merges.current,merges.current_docs,merges.current_size,merges.total,merges.total_docs,merges.total_size,merges.total_time,refresh.total,refresh.time,script.compilations,script.cache_evictions,search.fetch_current,search.fetch_time,search.fetch_total,search.open_contexts,search.query_current,search.query_time,search.query_total,search.scroll_current,search.scroll_time,search.scroll_total,segments.count,segments.memory,segments.index_writer_memory,segments.version_map_memory,segments.fixed_bitset_memory");
+        String response = catService._cat_nodes(true, "ip,heap.percent,ram.percent,file_desc.percent,node.role,master,name,id,pid,port,http_address,version,build,jdk,disk.total,disk.used,disk.avail,disk.used_percent,heap.current,ram.current,ram.max,file_desc.current,file_desc.max,cpu,load_1m,load_5m,load_15m,uptime,completion.size,fielddata.evictions,query_cache.memory_size,query_cache.evictions,request_cache.memory_size,request_cache.evictions,request_cache.hit_count,request_cache.miss_count,flush.total,flush.total_time,get.current,get.time,get.total,get.exists_time,get.exists_total,get.missing_time,get.missing_total,indexing.delete_current,indexing.delete_time,indexing.delete_total,indexing.index_current,indexing.index_time,indexing,index_total,indexing.index_failed,merges.current,merges.current_docs,merges.current_size,merges.total,merges.total_docs,merges.total_size,merges.total_time,refresh.total,refresh.time,script.compilations,script.cache_evictions,search.fetch_current,search.fetch_time,search.fetch_total,search.open_contexts,search.query_current,search.query_time,search.query_total,search.scroll_current,search.scroll_time,search.scroll_total,segments.count,segments.memory,segments.index_writer_memory,segments.version_map_memory,segments.fixed_bitset_memory", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -197,7 +198,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_pending_tasks() {
-        String response = catService._cat_pending_tasks(true);
+        String response = catService._cat_pending_tasks(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -212,7 +213,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_plugins() {
-        String response = catService._cat_plugins(true);
+        String response = catService._cat_plugins(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -221,7 +222,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_recovery() {
-        String response = catService._cat_recovery(true);
+        String response = catService._cat_recovery(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -233,7 +234,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_recovery_index() {
-        String response = catService._cat_recovery_index(true, "tb_object_0088_v2");
+        String response = catService._cat_recovery_index(true, "tb_object_0088_v2", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -244,7 +245,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_repositories() {
-        String response = catService._cat_repositories(true);
+        String response = catService._cat_repositories(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -257,7 +258,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_shards() {
-        String response = catService._cat_shards(true, "index,shard,prirep,state,docs,store,ip,id,node,completion.size,fielddata.memory_size,fielddata.evictions,flush.total,flush.total_time,get.current,get.time,get.total,get.exists_time,get.exists_total,get.missing_time,get.missing_total,indexing.delete_current,indexing.delete_time,indexing.delete_total,indexing.index_current,indexing.index_time,indexing.index_total,indexing.index_failed,merges.current,merges.current_docs,merges.current_size,merges.total,merges.total_docs,merges.total_size,merges.total_time,query_cache.memory_size,query_cache.evictions,recoverysource.type,refresh.total,refresh.time,search.fetch_current,search.fetch_time,search.fetch_total,search.open_contexts,search.query_current,search.query_time,search.query_total,search.scroll_current,search.scroll_time,search.scroll_total,segments.count,segments.memory,segments.index_writer_memory,segments.version_map_memory,segments.fixed_bitset_memory,seq_no.global_checkpoint,seq_no.local_checkpoint,seq_no.max,suggest.current,suggest.time,suggest.total,sync_id,unassigned.at,unassigned.details,unassigned.for,unassigned.reason");
+        String response = catService._cat_shards(true, "index,shard,prirep,state,docs,store,ip,id,node,completion.size,fielddata.memory_size,fielddata.evictions,flush.total,flush.total_time,get.current,get.time,get.total,get.exists_time,get.exists_total,get.missing_time,get.missing_total,indexing.delete_current,indexing.delete_time,indexing.delete_total,indexing.index_current,indexing.index_time,indexing.index_total,indexing.index_failed,merges.current,merges.current_docs,merges.current_size,merges.total,merges.total_docs,merges.total_size,merges.total_time,query_cache.memory_size,query_cache.evictions,recoverysource.type,refresh.total,refresh.time,search.fetch_current,search.fetch_time,search.fetch_total,search.open_contexts,search.query_current,search.query_time,search.query_total,search.scroll_current,search.scroll_time,search.scroll_total,segments.count,segments.memory,segments.index_writer_memory,segments.version_map_memory,segments.fixed_bitset_memory,seq_no.global_checkpoint,seq_no.local_checkpoint,seq_no.max,suggest.current,suggest.time,suggest.total,sync_id,unassigned.at,unassigned.details,unassigned.for,unassigned.reason", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -272,7 +273,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_shards_index() {
-        String response = catService._cat_shards_index(true, "tb_object_0088_v2", "");
+        String response = catService._cat_shards_index(true, "tb_object_0088_v2", "", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -286,7 +287,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_segments() {
-        String response = catService._cat_segments(true);
+        String response = catService._cat_segments(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -305,7 +306,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_segments_index() {
-        String response = catService._cat_segments_index(true, "comstore_tb_object_0088");
+        String response = catService._cat_segments_index(true, "comstore_tb_object_0088", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -316,7 +317,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_snapshots() {
-        String response = catService._cat_snapshots(true, "112");
+        String response = catService._cat_snapshots(true, "112", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -328,7 +329,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_tasks() {
-        String response = catService._cat_tasks(true, true);
+        String response = catService._cat_tasks(true, true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -344,7 +345,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_templates() {
-        String response = catService._cat_templates(true);
+        String response = catService._cat_templates(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -354,7 +355,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_templates_name() {
-        String response = catService._cat_templates(true, ".monitoring-logstash");
+        String response = catService._cat_templates(true, ".monitoring-logstash", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -366,7 +367,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_thread_pool() {
-        String response = catService._cat_thread_pool(true);
+        String response = catService._cat_thread_pool(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -376,7 +377,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_thread_pool_name() {
-        String response = catService._cat_thread_pool(true, "ccr");
+        String response = catService._cat_thread_pool(true, "ccr", FormatEnum.JSON);
         log.info("response:{}", response);
     }
 
@@ -385,7 +386,7 @@ public class CatServiceTest {
      */
     @Test
     public void _cat_transforms() {
-        String response = catService._cat_transforms(true);
+        String response = catService._cat_transforms(true, FormatEnum.JSON);
         log.info("response:{}", response);
     }
 

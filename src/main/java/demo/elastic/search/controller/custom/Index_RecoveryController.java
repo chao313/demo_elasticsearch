@@ -1,10 +1,13 @@
 package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.CatService;
 import demo.elastic.search.feign.IndexService;
+import demo.elastic.search.feign.enums.FormatEnum;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
@@ -47,10 +50,16 @@ public class Index_RecoveryController {
     })
     @ApiOperation(value = "返回有关正在进行的和已完成的碎片恢复的信息")
     @GetMapping(value = "/_cat/recovery/{index}")
-    public String _cat_recovery_index(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
-                                      @PathVariable(value = "index") String index) {
+    public Object _cat_recovery_index(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                                      @PathVariable(value = "index") String index,
+                                      @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_recovery_index(v, index);
+        String s = catService._cat_recovery_index(v, index, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
 
 }

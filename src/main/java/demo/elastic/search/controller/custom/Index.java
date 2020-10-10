@@ -1,11 +1,14 @@
 package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.CatService;
 import demo.elastic.search.feign.ClusterService;
 import demo.elastic.search.feign.IndexService;
+import demo.elastic.search.feign.enums.FormatEnum;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
@@ -33,10 +36,16 @@ public class Index {
     })
     @ApiOperation(value = "提供对单个索引或集群中所有索引的文档计数的快速访问")
     @GetMapping(value = "/_cat/count/{index}")
-    public String _cat_count(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
-                             @PathVariable(value = "index") String index) {
+    public Object _cat_count(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                             @PathVariable(value = "index") String index,
+                             @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_count(v, index);
+        String s = catService._cat_count(v, index, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
 
     @ApiImplicitParams(value = {
@@ -49,10 +58,16 @@ public class Index {
     })
     @ApiOperation(value = "列出index(指定)")
     @GetMapping(value = "/_cat/indices/{index}")
-    public String _cat_indices_index(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
-                                     @PathVariable(value = "index") String index) {
+    public Object _cat_indices_index(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                                     @PathVariable(value = "index") String index,
+                                     @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_indices_index(v, index);
+        String s = catService._cat_indices_index(v, index, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
 
 
@@ -82,8 +97,10 @@ public class Index {
                                           @RequestParam(value = "wait_for_active_shards") String wait_for_active_shards,
                                           @ApiParam(allowableValues = "immediate,urgent,high,normal,low,languid")
                                           @RequestParam(value = "wait_for_events", required = false) String wait_for_events,
-                                          @RequestParam(value = "wait_for_no_initializing_shards", defaultValue = "false") Boolean wait_for_no_initializing_shards,
-                                          @RequestParam(value = "wait_for_no_relocating_shards", defaultValue = "false") Boolean wait_for_no_relocating_shards,
+                                          @RequestParam(value = "wait_for_no_initializing_shards", defaultValue = "false") Boolean
+                                                  wait_for_no_initializing_shards,
+                                          @RequestParam(value = "wait_for_no_relocating_shards", defaultValue = "false") Boolean
+                                                  wait_for_no_relocating_shards,
                                           @ApiParam(allowableValues = ">=2,<=3,>3", defaultValue = "<=3")
                                           @RequestParam(value = "wait_for_nodes", required = false) String wait_for_nodes,
                                           @ApiParam(allowableValues = "green,yellow,red", defaultValue = "green")
@@ -152,7 +169,8 @@ public class Index {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @RequestMapping(value = "/{index}/_forcemerge", method = RequestMethod.POST)
-    public Response _forcemerge(@ApiParam(value = "索引名称(可以用,分隔,要操作所有索引，请使用_all)") @PathVariable(value = "index") String index) {
+    public Response _forcemerge
+            (@ApiParam(value = "索引名称(可以用,分隔,要操作所有索引，请使用_all)") @PathVariable(value = "index") String index) {
         IndexService indexService = ThreadLocalFeign.getFeignService(IndexService.class);
         String s = indexService._forcemerge(index);
         return Response.Ok(JSONObject.parse(s));

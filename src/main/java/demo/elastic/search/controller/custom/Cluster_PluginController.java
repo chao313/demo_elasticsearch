@@ -1,8 +1,12 @@
 package demo.elastic.search.controller.custom;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.CatService;
+import demo.elastic.search.feign.enums.FormatEnum;
+import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -32,9 +36,15 @@ public class Cluster_PluginController {
     })
     @ApiOperation(value = "返回一个群集的每个节点上运行的插件的列表")
     @GetMapping(value = "/_cat/plugins")
-    public String _cat_plugins(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
+    public Object _cat_plugins(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                               @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_plugins(v);
+        String s = catService._cat_plugins(v, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
 }
 

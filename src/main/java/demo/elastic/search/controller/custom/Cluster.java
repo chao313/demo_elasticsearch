@@ -1,20 +1,20 @@
 package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.CatService;
 import demo.elastic.search.feign.ClusterService;
+import demo.elastic.search.feign.enums.FormatEnum;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
-import demo.elastic.search.util.StringToJson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 
 /**
@@ -76,25 +76,15 @@ public class Cluster {
     })
     @ApiOperation(value = "返回集群的运行状况")
     @GetMapping(value = "/_cat/health")
-    public String _cat_health(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
+    public Object _cat_health(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                              @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_health(v);
-    }
-
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @ApiOperation(value = "返回集群的运行状况")
-    @GetMapping(value = "/_cat/health/format")
-    public Response _cat_health_format() throws IOException {
-        CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        String result = catService._cat_health(true);
-        return Response.Ok(StringToJson.toJSON(result));
+        String s = catService._cat_health(v, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
 
 
@@ -108,11 +98,16 @@ public class Cluster {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @GetMapping(value = "/_cat/count")
-    public String _cat_count(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
+    public Object _cat_count(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                             @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_count(v);
+        String s = catService._cat_count(v, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
-
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
@@ -123,9 +118,15 @@ public class Cluster {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @GetMapping(value = "/_cat/thread_pool")
-    public String _cat_thread_pool(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
+    public Object _cat_thread_pool(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                                   @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_thread_pool(v);
+        String s = catService._cat_thread_pool(v, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
 
     @ApiOperation(value = "提供集群中分片分配的说明")

@@ -1,10 +1,13 @@
 package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.CatService;
 import demo.elastic.search.feign.ClusterService;
+import demo.elastic.search.feign.enums.FormatEnum;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import io.swagger.annotations.ApiImplicitParam;
@@ -31,10 +34,16 @@ public class Node {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @GetMapping(value = "/_cat/allocation/{node_id}")
-    public String _cat_allocation_nodeId(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
-                                         @ApiParam(value = "节点Id") @PathVariable(value = "node_id") String node_id) {
+    public Object _cat_allocation_nodeId(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                                         @ApiParam(value = "节点Id") @PathVariable(value = "node_id") String node_id,
+                                         @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_allocation_nodeId(v, node_id);
+        String s = catService._cat_allocation_nodeId(v, node_id, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
 
     @ApiImplicitParams(value = {
@@ -47,10 +56,16 @@ public class Node {
     })
     @ApiOperation(value = "列出集群中每个数据节点上的字段数据 当前 使用的堆内存量")
     @GetMapping(value = "/_cat/fielddata/{field}")
-    public String _cat_fielddata(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
-                                 @PathVariable(value = "field") String field) {
+    public Object _cat_fielddata(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                                 @PathVariable(value = "field") String field,
+                                 @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_fielddata_field(v, field);
+        String s = catService._cat_fielddata_field(v, field, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
 
     @ApiOperation(value = "返回有关功能用法的信息")

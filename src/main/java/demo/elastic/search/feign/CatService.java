@@ -2,6 +2,7 @@ package demo.elastic.search.feign;
 
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.feign.FeignServiceConfig;
+import demo.elastic.search.feign.enums.FormatEnum;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,38 +51,46 @@ public interface CatService {
 
     @ApiOperation(value = "列出当前配置的index的alias,包括filter和router的信息")
     @RequestMapping(value = "/_cat/aliases", method = RequestMethod.GET)
-    String _cat_aliases(@RequestParam(value = "v") Boolean v);
+    String _cat_aliases(@RequestParam(value = "v") Boolean v,
+                        @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "列出分配给每个数据节点的分片数量及其磁盘空间的快照")
     @RequestMapping(value = "/_cat/allocation", method = RequestMethod.GET)
-    String _cat_allocation(@RequestParam(value = "v") Boolean v);
+    String _cat_allocation(@RequestParam(value = "v") Boolean v,
+                           @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "列出指定数据节点的分片数量及其磁盘空间的快照")
     @RequestMapping(value = "/_cat/allocation/{node_id}", method = RequestMethod.GET)
     String _cat_allocation_nodeId(@RequestParam(value = "v") Boolean v,
-                                  @PathVariable(value = "node_id") String node_id);
+                                  @PathVariable(value = "node_id") String node_id,
+                                  @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "列出单个索引或集群中所有索引的文档计数的快速访问")
     @RequestMapping(value = "/_cat/count", method = RequestMethod.GET)
-    String _cat_count(@RequestParam(value = "v") Boolean v);
+    String _cat_count(@RequestParam(value = "v") Boolean v,
+                      @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "列出单个索引或集群中所有索引的文档计数的快速访问")
     @RequestMapping(value = "/_cat/count/{index}", method = RequestMethod.GET)
     String _cat_count(@RequestParam(value = "v") Boolean v,
-                      @PathVariable(value = "index") String index);
+                      @PathVariable(value = "index") String index,
+                      @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "列出集群中每个数据节点上的字段数据当前使用的堆内存量")
     @RequestMapping(value = "/_cat/fielddata", method = RequestMethod.GET)
-    String _cat_fielddata(@RequestParam(value = "v") Boolean v);
+    String _cat_fielddata(@RequestParam(value = "v") Boolean v,
+                          @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "列出集群中每个数据节点上的字段数据当前使用的堆内存量")
     @RequestMapping(value = "/_cat/fielddata/{field}", method = RequestMethod.GET)
     String _cat_fielddata_field(@RequestParam(value = "v") Boolean v,
-                                @PathVariable(value = "field") String field);
+                                @PathVariable(value = "field") String field,
+                                @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回集群的运行状况")
     @RequestMapping(value = "/_cat/health", method = RequestMethod.GET)
-    String _cat_health(@RequestParam(value = "v") Boolean v);
+    String _cat_health(@RequestParam(value = "v") Boolean v,
+                       @RequestParam(value = "format") FormatEnum formatEnum);
 
 
     /**
@@ -94,12 +103,14 @@ public interface CatService {
      */
     @ApiOperation(value = "列出index")
     @RequestMapping(value = "/_cat/indices", method = RequestMethod.GET)
-    String _cat_indices(@RequestParam(value = "v") Boolean v);
+    String _cat_indices(@RequestParam(value = "v") Boolean v,
+                        @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "列出index")
     @RequestMapping(value = "/_cat/indices/{index}", method = RequestMethod.GET)
     String _cat_indices_index(@RequestParam(value = "v") Boolean v,
-                              @PathVariable(value = "index") String index);
+                              @PathVariable(value = "index") String index,
+                              @RequestParam(value = "format") FormatEnum formatEnum);
 
     /**
      * id                     host         ip           node
@@ -107,7 +118,8 @@ public interface CatService {
      */
     @ApiOperation(value = "返回master节点的信息，包括ID绑定IP地址和名称")
     @RequestMapping(value = "/_cat/master", method = RequestMethod.GET)
-    String _cat_master(@RequestParam(value = "v") Boolean v);
+    String _cat_master(@RequestParam(value = "v") Boolean v,
+                       @RequestParam(value = "format") FormatEnum formatEnum);
 
     /**
      * node                    host         ip           attr   value
@@ -117,7 +129,8 @@ public interface CatService {
      */
     @ApiOperation(value = "返回有关自定义节点属性的信息")
     @RequestMapping(value = "/_cat/nodeattrs", method = RequestMethod.GET)
-    String _cat_nodeattrs(@RequestParam(value = "v") Boolean v);
+    String _cat_nodeattrs(@RequestParam(value = "v") Boolean v,
+                          @RequestParam(value = "format") FormatEnum formatEnum);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-nodes.html"></a>
@@ -384,15 +397,18 @@ public interface CatService {
     @ApiOperation(value = "返回有关群集节点的信息")
     @RequestMapping(value = "/_cat/nodes", method = RequestMethod.GET)
     String _cat_nodes(@RequestParam(value = "v") Boolean v,
-                      @RequestParam(value = "h") String h);
+                      @RequestParam(value = "h") String h,
+                      @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回正在挂起的task")
     @RequestMapping(value = "/_cat/pending_tasks", method = RequestMethod.GET)
-    String _cat_pending_tasks(@RequestParam(value = "v") Boolean v);
+    String _cat_pending_tasks(@RequestParam(value = "v") Boolean v,
+                              @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回一个群集的每个节点上运行的插件的列表")
     @RequestMapping(value = "/_cat/plugins", method = RequestMethod.GET)
-    String _cat_plugins(@RequestParam(value = "v") Boolean v);
+    String _cat_plugins(@RequestParam(value = "v") Boolean v,
+                        @RequestParam(value = "format") FormatEnum formatEnum);
 
     /**
      * index                            shard time    type       stage source_host  target_host  repository snapshot files files_percent bytes       bytes_percent total_files total_bytes translog translog_percent total_translog
@@ -406,16 +422,19 @@ public interface CatService {
      */
     @ApiOperation(value = "返回有关正在进行的和已完成的碎片恢复的信息")
     @RequestMapping(value = "/_cat/recovery", method = RequestMethod.GET)
-    String _cat_recovery(@RequestParam(value = "v") Boolean v);
+    String _cat_recovery(@RequestParam(value = "v") Boolean v,
+                         @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回有关正在进行的和已完成的碎片恢复的信息(指定index)")
     @RequestMapping(value = "/_cat/recovery/{index}", method = RequestMethod.GET)
     String _cat_recovery_index(@RequestParam(value = "v") Boolean v,
-                               @PathVariable(value = "index") String index);
+                               @PathVariable(value = "index") String index,
+                               @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回快照仓库")
     @RequestMapping(value = "/_cat/repositories", method = RequestMethod.GET)
-    String _cat_repositories(@RequestParam(value = "v") Boolean v);
+    String _cat_repositories(@RequestParam(value = "v") Boolean v,
+                             @RequestParam(value = "format") FormatEnum formatEnum);
 
     /**
      * <a href='https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-shards.html'></a>
@@ -423,13 +442,15 @@ public interface CatService {
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @RequestMapping(value = "/_cat/shards", method = RequestMethod.GET)
     String _cat_shards(@RequestParam(value = "v") Boolean v,
-                       @RequestParam(value = "h") String h);
+                       @RequestParam(value = "h") String h,
+                       @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回分片信息", notes = "返回节点包含哪些分片,是主分片还是复制分片,doc的数量,使用的磁盘空间")
     @RequestMapping(value = "/_cat/shards/{index}", method = RequestMethod.GET)
     String _cat_shards_index(@RequestParam(value = "v") Boolean v,
                              @PathVariable(value = "index") String index,
-                             @RequestParam(value = "h") String h);
+                             @RequestParam(value = "h") String h,
+                             @RequestParam(value = "format") FormatEnum formatEnum);
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/cat-segments.html"></a>
@@ -455,44 +476,53 @@ public interface CatService {
      */
     @ApiOperation(value = "返回index中的低级关于Lucene段的信息碎片")
     @RequestMapping(value = "/_cat/segments", method = RequestMethod.GET)
-    String _cat_segments(@RequestParam(value = "v") Boolean v);
+    String _cat_segments(@RequestParam(value = "v") Boolean v,
+                         @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回index中的低级关于Lucene段的信息碎片")
     @RequestMapping(value = "/_cat/segments/{index}", method = RequestMethod.GET)
     String _cat_segments_index(@RequestParam(value = "v") Boolean v,
-                               @PathVariable(value = "index") String index);
+                               @PathVariable(value = "index") String index,
+                               @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回信息有关快照存储在一个或多个存储库")
     @RequestMapping(value = "/_cat/snapshots/{repository}", method = RequestMethod.GET)
     String _cat_snapshots(@RequestParam(value = "v") Boolean v,
-                          @PathVariable(value = "repository") String repository);
+                          @PathVariable(value = "repository") String repository,
+                          @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回有关在群集中当前正在执行的任务的信息")
     @RequestMapping(value = "/_cat/tasks", method = RequestMethod.GET)
     String _cat_tasks(@RequestParam(value = "v") Boolean v,
-                      @RequestParam(value = "detailed", defaultValue = "false") Boolean detailed);
+                      @RequestParam(value = "detailed", defaultValue = "false") Boolean detailed,
+                      @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回群集中的index template的信息")
     @RequestMapping(value = "/_cat/templates", method = RequestMethod.GET)
-    String _cat_templates(@RequestParam(value = "v") Boolean v);
+    String _cat_templates(@RequestParam(value = "v") Boolean v,
+                          @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回群集中的index template的信息")
     @RequestMapping(value = "/_cat/templates/{template_name}", method = RequestMethod.GET)
     String _cat_templates(@RequestParam(value = "v") Boolean v,
-                          @PathVariable(value = "template_name") String template_name);
+                          @PathVariable(value = "template_name") String template_name,
+                          @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回在群集中每个节点的返回线程池统计信息")
     @RequestMapping(value = "/_cat/thread_pool", method = RequestMethod.GET)
-    String _cat_thread_pool(@RequestParam(value = "v") Boolean v);
+    String _cat_thread_pool(@RequestParam(value = "v") Boolean v,
+                            @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回在群集中每个节点的返回线程池统计信息")
     @RequestMapping(value = "/_cat/thread_pool/{thread_pool}", method = RequestMethod.GET)
     String _cat_thread_pool(@RequestParam(value = "v") Boolean v,
-                            @PathVariable(value = "thread_pool") String thread_pool);
+                            @PathVariable(value = "thread_pool") String thread_pool,
+                            @RequestParam(value = "format") FormatEnum formatEnum);
 
     @ApiOperation(value = "返回有关转换的配置和使用信息")
     @RequestMapping(value = "/_cat/transforms", method = RequestMethod.POST)
-    String _cat_transforms(@RequestParam(value = "v") Boolean v);
+    String _cat_transforms(@RequestParam(value = "v") Boolean v,
+                           @RequestParam(value = "format") FormatEnum formatEnum);
 
 
 }

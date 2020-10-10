@@ -1,10 +1,13 @@
 package demo.elastic.search.controller.custom;
 
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.CatService;
 import demo.elastic.search.feign.SnapshotService;
+import demo.elastic.search.feign.enums.FormatEnum;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.po.request.snapshot.CreateSnapshot;
 import demo.elastic.search.po.request.snapshot.RestoreSnapshot;
@@ -33,10 +36,16 @@ public class Cluster_SnapshotController {
     })
     @ApiOperation(value = "返回信息有关快照存储在一个或多个存储库")
     @GetMapping(value = "/_cat/snapshots/{repository}")
-    public String _cat_snapshots(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
-                                 @PathVariable(value = "repository") String repository) {
+    public Object _cat_snapshots(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+                                 @PathVariable(value = "repository") String repository,
+                                 @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_snapshots(v, repository);
+        String s = catService._cat_snapshots(v, repository, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(s));
+        } else {
+            return s;
+        }
     }
 
     @ApiOperation(value = "创建快照", notes = " 默认情况下，快照会备份群集中的所有打开的索引。您可以通过在快照请求的正文中指定索引列表来更改此行为<br>快照名称可以使用日期数学表达式自动导出，类似于创建新索引时。特殊字符必须经过URI编码")

@@ -1,8 +1,11 @@
 package demo.elastic.search.controller.custom;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.CatService;
+import demo.elastic.search.feign.enums.FormatEnum;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import demo.elastic.search.util.StringToJson;
@@ -35,27 +38,19 @@ public class Cluster_AliasController {
                     defaultValue = Bootstrap.DEFAULT_VALUE)
     })
     @GetMapping(value = "/_cat/aliases")
-    public String _cat_aliases(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) {
+    public Object _cat_aliases(
+            @ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v,
+            @ApiParam(value = "格式") @RequestParam(name = "format", required = false) FormatEnum formatEnum
+    ) throws JsonProcessingException {
         CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        return catService._cat_aliases(v);
+        String source = catService._cat_aliases(v, formatEnum);
+        if (null != formatEnum && formatEnum.equals(FormatEnum.JSON)) {
+            return Response.Ok(new JsonMapper().readTree(source));
+        } else {
+            return source;
+        }
     }
 
-
-    @ApiOperation(value = "列出当前配置的index的alias,包括filter和router的信息")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @GetMapping(value = "/_cat/aliases/format")
-    public Response _cat_aliases_format(@ApiParam(value = "是否格式化") @RequestParam(name = "v", defaultValue = "true") boolean v) throws IOException {
-        CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        String source = catService._cat_aliases(v);
-        return Response.Ok(StringToJson.toJSONArray(source));
-    }
 }
 
 
