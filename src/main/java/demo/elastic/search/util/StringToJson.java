@@ -128,4 +128,16 @@ public class StringToJson {
     }
 
 
+    public static JsonNode getSortJson(JSONObject jsonObject) throws JsonProcessingException {
+        Set<String> set = jsonObject.keySet();
+        SortedMap map = new TreeMap();
+        set.forEach(key -> {
+            Object value = jsonObject.get(key);
+            map.put(key, value);
+        });
+        String s = new JsonMapper().writeValueAsString(map);
+        JsonNode jsonNode = new JsonMapper().readTree(s);
+        return jsonNode;
+    }
+
 }

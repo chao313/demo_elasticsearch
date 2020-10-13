@@ -1,11 +1,16 @@
 package demo.elastic.search.controller.custom;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.MappingService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
+import demo.elastic.search.util.JSONUtil;
+import demo.elastic.search.util.StringToJson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +40,25 @@ public class Index_MappingController {
         return Response.Ok(JSONObject.parse(s));
     }
 
-    @ApiOperation(value = "查看指定index的全部的mapping")
+    @ApiOperation(value = "查看指定index的全部的mapping(格式化，直接获取properties)")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @PostMapping(value = "/{index}/_mapping/compatible")
+    public Response get_compatible(@PathVariable(value = "index") String index) throws JsonProcessingException {
+        MappingService mappingService = ThreadLocalFeign.getFeignService(MappingService.class);
+        String s = mappingService.get(index);
+        JSONObject properties = JSONUtil.getByKey(JSON.parseObject(JSONObject.parse(s).toString()), "properties");
+        JsonNode sortJson = StringToJson.getSortJson(properties);
+        return Response.Ok(sortJson);
+    }
+
+    @ApiOperation(value = "查看指定index的指定字段的mapping")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
                     name = CustomInterceptConfig.HEADER_KEY,

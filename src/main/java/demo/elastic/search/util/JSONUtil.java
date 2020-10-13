@@ -54,4 +54,43 @@ public class JSONUtil {
         return null;
 
     }
+
+    /**
+     * @param root
+     * @param fieldName 要获取的value的key
+     * @param <T>
+     * @return 注意:
+     * 这里返回前会判断 -> 把递归多个返回值的情况下归为1条路径即可!!!
+     */
+    public static <T> T getByKey(JSONObject root, String fieldName) {
+        for (Map.Entry<String, Object> entry : root.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (fieldName.equalsIgnoreCase(key)) {
+                /**
+                 * 当key和field的name相同时 -> 表明目标值已经确定
+                 */
+                log.info("目标值已经找到:{}", value);
+                return (T) value;
+            } else {
+
+                if (value instanceof JSONObject) {
+                    Object result = getByKey((JSONObject) value, fieldName);
+                    if (null != result) {//加入非null才返回! 这点很重要!!
+                        return (T) result;
+                    }
+                } else if (value instanceof JSONArray) {
+                    JSONArray jsonArray = (JSONArray) value;
+                    for (Object jsonObject : jsonArray) {
+                        Object result = getByKey((JSONObject) jsonObject, key);
+                        if (null != result) {//加入非null才返回! 这点很重要!!
+                            return (T) result;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+
+    }
 }

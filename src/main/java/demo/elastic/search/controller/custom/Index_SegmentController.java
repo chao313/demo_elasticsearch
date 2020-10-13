@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 集群分片相关
  */
-@RequestMapping(value = "/Cluster_SegmentController")
+@RequestMapping(value = "/Index_SegmentController")
 @RestController
 public class Index_SegmentController {
 
