@@ -5,4 +5,14 @@ server:
 spring:
   name: demo-elasticsearch
   profiles:
-    active: local
+    active: dev
+  redis:
+    host: 10.202.16.136
+    port: 6379
+
+##是否启动本地redis
+redis:
+  local:
+    active: false
+    maxheap: 200m
+    port: 6379

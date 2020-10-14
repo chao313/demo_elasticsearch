@@ -14,13 +14,13 @@ public class IndexServiceTest {
 
     @Test
     public void _freeze() {
-        String response = indexService._freeze("tmp2");
+        String response = indexService._freeze("test2");
         log.info("response：{}", response);
     }
 
     @Test
     public void _unfreeze() {
-        String response = indexService._unfreeze("tmp2");
+        String response = indexService._unfreeze("test2");
         log.info("response：{}", response);
     }
 }
