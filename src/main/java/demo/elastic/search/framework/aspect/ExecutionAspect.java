@@ -1,16 +1,29 @@
 package demo.elastic.search.framework.aspect;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.service.RedisService;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.mortbay.util.ajax.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * 2018/8/9    Created by   chao
@@ -20,6 +33,11 @@ import org.springframework.stereotype.Component;
 public class ExecutionAspect {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private RedisService redisService;
 
     /**
      * 定义切面执行的方法
@@ -45,6 +63,22 @@ public class ExecutionAspect {
         Response response = new Response<>();
         try {
             Object result = joinPoint.proceed(); //继续下一个方法的调用 ：就是调用拦截的函数，得到拦截函数执行的结果
+            if (null != ThreadLocalFeign.getES_PAGE() && true == ThreadLocalFeign.getES_PAGE()) {
+                //走分页
+                if (result instanceof Response) {
+                    Object content = ((Response) result).getContent();
+                    if (content instanceof ArrayNode) {
+                        JSONArray jsonArray = JSONArray.parseArray(content.toString());
+                        List<Object> objects = Arrays.asList(jsonArray.toArray());
+                        //添加过滤
+                        objects = filter(objects);
+                        String uuid = UUID.randomUUID().toString();
+                        redisTemplate.opsForList().leftPushAll(uuid, objects);//存入list
+                        Object resultPage = redisService.getRecordByScrollId(uuid, 1, ThreadLocalFeign.getES_PAGE_SIZE());
+                        ((Response) result).setContent(resultPage);
+                    }
+                }
+            }
             logger.info("执行结果:{}", JSONObject.toJSON(result));
             return result;
         } catch (Exception e) {
@@ -54,6 +88,38 @@ public class ExecutionAspect {
             logger.error("[]FAIL path:{}", e.getMessage(), e);
             return response;
         }
+    }
+
+    private List<Object> filter(List<Object> sources) {
+        String s = ThreadLocalFeign.geES_FILTER();
+        JSONObject jsonObject = JSONObject.parseObject(s);
+        Map<String, Object> innerMap = jsonObject.getInnerMap();//过滤的map
+        List<Object> collect = sources.stream().filter(o -> {
+            if (o instanceof JSONObject) {
+                JSONObject tmp = (JSONObject) o;
+                boolean[] flags = new boolean[innerMap.size()];//记录每个条件的数组
+                AtomicInteger i = new AtomicInteger();
+                innerMap.forEach((key, val) -> {
+                    if (tmp.containsKey(key)) {
+                        Object value = tmp.get(key);
+                        if (value.toString().contains(val.toString())) {
+                            //如果相等一个 -> flag标记一个为 true
+                            flags[i.getAndIncrement()] = true;
+                        }
+                    }
+                });
+                boolean result = true;
+                for (boolean flag : flags) {
+                    if (flag == false) {
+                        result = false;
+                        break;
+                    }
+                }
+                return result;
+            }
+            return true;
+        }).collect(Collectors.toList());
+        return collect;
     }
 
 

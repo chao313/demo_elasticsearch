@@ -26,7 +26,7 @@ public class Index_OpenCloseController {
     @ApiOperation(value = "关闭index")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -43,7 +43,7 @@ public class Index_OpenCloseController {
     @ApiOperation(value = "打开index")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",

@@ -36,7 +36,7 @@ public class SnapshotController {
             "}")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -53,7 +53,7 @@ public class SnapshotController {
     @ApiOperation(value = "注册Url快照存储库", notes = "")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -70,7 +70,7 @@ public class SnapshotController {
     @ApiOperation(value = "注册Source快照存储库", notes = "")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -88,7 +88,7 @@ public class SnapshotController {
     @ApiOperation(value = "获取仓库详情", notes = "要检索有关多个存储库的信息，请指定以逗号分隔的存储库列表。*指定存储库名称时，也可以使用通配符")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -105,7 +105,7 @@ public class SnapshotController {
     @ApiOperation(value = "删除仓库")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -121,7 +121,7 @@ public class SnapshotController {
     @ApiOperation(value = "创建快照", notes = " 默认情况下，快照会备份群集中的所有打开的索引。您可以通过在快照请求的正文中指定索引列表来更改此行为<br>快照名称可以使用日期数学表达式自动导出，类似于创建新索引时。特殊字符必须经过URI编码")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -147,7 +147,7 @@ public class SnapshotController {
             "}")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -165,7 +165,7 @@ public class SnapshotController {
     @ApiOperation(value = "检索快照", notes = "_current检索集群中所有当前正在运行的快照(运行完就检索不到了)")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -181,7 +181,7 @@ public class SnapshotController {
     @ApiOperation(value = "检索指定快照")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -198,7 +198,7 @@ public class SnapshotController {
     @ApiOperation(value = "删除指定仓库的指定快照", notes = "该操作检查删除的快照当前是否正在运行。如果是，则删除快照操作将停止该快照，然后再从存储库中删除快照数据")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -215,7 +215,7 @@ public class SnapshotController {
     @ApiOperation(value = "检索指定仓库的全部快照")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -231,7 +231,7 @@ public class SnapshotController {
     @ApiOperation(value = "检索全部仓库")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -247,7 +247,7 @@ public class SnapshotController {
     @ApiOperation(value = "检索所有当前正在运行的快照以及详细的状态信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -263,7 +263,7 @@ public class SnapshotController {
     @ApiOperation(value = "检索所有当前正在运行的指定仓库快照以及详细的状态信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -279,7 +279,7 @@ public class SnapshotController {
     @ApiOperation(value = "检索指定仓库快照指定快照详细的状态信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",

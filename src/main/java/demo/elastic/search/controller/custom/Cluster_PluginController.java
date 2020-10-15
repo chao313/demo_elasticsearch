@@ -28,11 +28,23 @@ public class Cluster_PluginController {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
+                    defaultValue = Bootstrap.DEFAULT_VALUE),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT)
     })
     @ApiOperation(value = "返回一个群集的每个节点上运行的插件的列表")
     @GetMapping(value = "/_cat/plugins")

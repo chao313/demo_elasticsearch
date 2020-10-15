@@ -33,7 +33,7 @@ public class Cluster {
     @ApiOperation(value = "ES的base请求")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -53,7 +53,7 @@ public class Cluster {
     @ApiOperation(value = "列出Cat的全部接口", notes = "列出CAT的全部接口")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -68,7 +68,7 @@ public class Cluster {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -91,7 +91,7 @@ public class Cluster {
     @ApiOperation(value = "提供对单个索引或集群中所有索引的文档计数的快速访问")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -111,7 +111,7 @@ public class Cluster {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -132,7 +132,7 @@ public class Cluster {
     @ApiOperation(value = "提供集群中分片分配的说明")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -166,7 +166,7 @@ public class Cluster {
     @ApiOperation(value = "获取集群范围内的设置")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -190,7 +190,7 @@ public class Cluster {
     @ApiOperation(value = "返回集群健康状态")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -232,7 +232,7 @@ public class Cluster {
     @ApiOperation(value = "返回集群统计信息", notes = "节点的信息（数量，角色，操作系统，jvm版本，内存使用情况，cpu和已安装的插件）")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -288,7 +288,7 @@ public class Cluster {
     @ApiOperation(value = "返回已配置的远程集群信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",

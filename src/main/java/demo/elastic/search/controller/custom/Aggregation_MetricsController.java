@@ -26,7 +26,7 @@ public class Aggregation_MetricsController {
     @ApiOperation(value = "匹配最大值")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -45,7 +45,7 @@ public class Aggregation_MetricsController {
     @ApiOperation(value = "匹配最大值")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -63,7 +63,7 @@ public class Aggregation_MetricsController {
     @ApiOperation(value = "匹配sum")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -81,7 +81,7 @@ public class Aggregation_MetricsController {
     @ApiOperation(value = "avg")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -100,7 +100,7 @@ public class Aggregation_MetricsController {
     @ApiOperation(value = "stats(min max sum count avg)")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -119,7 +119,7 @@ public class Aggregation_MetricsController {
     @ApiOperation(value = "stats(min max sum count avg) 增加了sum_of_squares 平方和 , variance 方差, std_deviation 标准差 , std_deviation_bonds 标准差范围")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -137,7 +137,7 @@ public class Aggregation_MetricsController {
     @ApiOperation(value = " min_length max_length sum_length avg_length entropy")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",

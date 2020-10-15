@@ -51,9 +51,9 @@ public enum Bootstrap {
 
     //    public static final String IN_USE = "http://10.202.16.9:9200";
 //    public static final String IN_USE = "http://10.202.16.136:9201";
-//    public static final String IN_USE = "http://127.0.0.1:80";
+    public static final String IN_USE = "http://127.0.0.1:80";
 //    public static final String IN_USE = "http://39.107.236.187:7013";
-    public static final String IN_USE = "http://39.107.236.187:7014";
+//    public static final String IN_USE = "http://39.107.236.187:7014";
 
     public static final String EXAMPLE = "http://127.0.0.1:9200 http://127.0.0.1:9202 http://39.107.236.187:7013 http://10.202.16.9:9200 http://127.0.0.1:80 http://39.107.236.187:7014";
     //    public static final String DEFAULT_VALUE = "http://39.107.236.187:7013";

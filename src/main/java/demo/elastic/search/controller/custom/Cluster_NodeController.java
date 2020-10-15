@@ -27,7 +27,7 @@ public class Cluster_NodeController {
     @ApiOperation(value = "列出分配给每个数据节点的分片数量及其磁盘空间的快照")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -47,7 +47,7 @@ public class Cluster_NodeController {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -68,7 +68,7 @@ public class Cluster_NodeController {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -90,7 +90,7 @@ public class Cluster_NodeController {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -111,11 +111,23 @@ public class Cluster_NodeController {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
+                    defaultValue = Bootstrap.DEFAULT_VALUE),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT)
     })
     @ApiOperation(value = "返回有关群集节点的信息")
     @GetMapping(value = "/_cat/nodes")
@@ -142,7 +154,7 @@ public class Cluster_NodeController {
     @ApiOperation(value = "返回有关功能用法的信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -158,7 +170,7 @@ public class Cluster_NodeController {
     @ApiOperation(value = "返回有关功能用法的信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",

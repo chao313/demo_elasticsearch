@@ -107,6 +107,24 @@ public class Swagger2Configuration {
                 ;
     }
 
+    @Bean
+    public Docket RedisPevcApi() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors
+                        .basePackage("demo.elastic.search.controller.redis"))
+                .paths(PathSelectors.any())
+                .build()
+                .genericModelSubstitutes(DeferredResult.class)//异步http请求
+                .forCodeGeneration(true)
+                .pathMapping("/")
+                .apiInfo(apiInfo())
+                .useDefaultResponseMessages(false)
+                .groupName("Redis")
+//                .produces(Sets.newHashSet("application/octet-stream"))
+                ;
+    }
+
     /**
      * api描述信息
      *

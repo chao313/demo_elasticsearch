@@ -32,7 +32,7 @@ public class Cluster_LicenseController {
     @ApiOperation(value = "当您的许可证过期时，X-Pack将以降级模式运行。有关更多信息，请参阅 许可到期")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -53,7 +53,7 @@ public class Cluster_LicenseController {
     @ApiOperation(value = "检索许可信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -76,7 +76,7 @@ public class Cluster_LicenseController {
     @ApiOperation(value = "如果您想尝试所有订阅功能，则可以开始30天的试用期")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -96,7 +96,7 @@ public class Cluster_LicenseController {
     @ApiOperation(value = "如果您想尝试所有订阅功能，则可以开始30天的试用期")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -115,7 +115,7 @@ public class Cluster_LicenseController {
     @ApiOperation(value = "基本许可证的状态")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -134,7 +134,7 @@ public class Cluster_LicenseController {
     @ApiOperation(value = "开始无限期基本许可证")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",

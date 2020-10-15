@@ -8,7 +8,6 @@ import demo.elastic.search.feign.CatService;
 import demo.elastic.search.feign.enums.FormatEnum;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
-import demo.elastic.search.util.StringToJson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
 
 
 /**
@@ -30,11 +27,23 @@ public class Cluster_SegmentController {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
+                    defaultValue = Bootstrap.DEFAULT_VALUE),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT)
     })
     @ApiOperation(value = "返回index中的低级关于Lucene段的信息碎片")
     @GetMapping(value = "/_cat/segments")

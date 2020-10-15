@@ -26,14 +26,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/Cluster_RepositoryController")
 @RestController
 public class Cluster_RepositoryController {
-
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
+                    defaultValue = Bootstrap.DEFAULT_VALUE),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT)
     })
     @ApiOperation(value = "返回快照仓库")
     @GetMapping(value = "/_cat/repositories")
@@ -62,7 +73,7 @@ public class Cluster_RepositoryController {
             "```")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -79,7 +90,7 @@ public class Cluster_RepositoryController {
     @ApiOperation(value = "注册Url快照存储库", notes = "")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -96,7 +107,7 @@ public class Cluster_RepositoryController {
     @ApiOperation(value = "注册Source快照存储库", notes = "")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -114,7 +125,7 @@ public class Cluster_RepositoryController {
     @ApiOperation(value = "获取仓库详情", notes = "要检索有关多个存储库的信息，请指定以逗号分隔的存储库列表。*指定存储库名称时，也可以使用通配符")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -131,7 +142,7 @@ public class Cluster_RepositoryController {
     @ApiOperation(value = "删除仓库")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",

@@ -26,11 +26,23 @@ public class Cluster_TaskController {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
+                    defaultValue = Bootstrap.DEFAULT_VALUE),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_HEADER_KEY_DEFAULT),
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY,
+                    value = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = CustomInterceptConfig.ES_PAGE_SIZE_HEADER_KEY_DEFAULT)
     })
     @ApiOperation(value = "返回正在挂起的task")
     @GetMapping(value = "/_cat/pending_tasks")
@@ -47,7 +59,7 @@ public class Cluster_TaskController {
 
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",
@@ -71,7 +83,7 @@ public class Cluster_TaskController {
     @ApiOperation(value = "返回有关集群中当前正在执行的任务的信息")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
-                    name = CustomInterceptConfig.HEADER_KEY,
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
                     value = Bootstrap.EXAMPLE,
                     dataType = "string",
                     paramType = "header",

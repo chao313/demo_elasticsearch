@@ -25,6 +25,9 @@ public class ThreadLocalFeign {
 
 
     private static ThreadLocal<String> ESHOSTThreadLocal = new ThreadLocal<>();//存放URL
+    private static ThreadLocal<Boolean> ESPageThreadLocal = new ThreadLocal<>();//存放是否分页
+    private static ThreadLocal<Integer> ESPageSizeThreadLocal = new ThreadLocal<>();//存放分页的每页数量
+    private static ThreadLocal<String> ESFilterThreadLocal = new ThreadLocal<>();//存放过滤条件
     /**
      * HOST -> Class -> BEAN
      */
@@ -64,17 +67,58 @@ public class ThreadLocalFeign {
     /**
      * 设置 ESHOST
      */
-    public static void setESHOST(String ESHOST) {
-        ESHOSTThreadLocal.set(ESHOST);
+    public static void setES_HOST(String ES_HOST) {
+        ESHOSTThreadLocal.set(ES_HOST);
     }
 
     /**
      * 获取 ESHOST
      */
-    public static String getESHOST() {
+    public static String getES_HOST() {
         return ESHOSTThreadLocal.get();
     }
 
+    /**
+     * 设置 ESPAGE
+     */
+    public static void setES_PAGE(Boolean ES_PAGE) {
+        ESPageThreadLocal.set(ES_PAGE);
+    }
+
+    /**
+     * 获取 ESPAGE
+     */
+    public static Boolean getES_PAGE() {
+        return ESPageThreadLocal.get();
+    }
+
+    /**
+     * 设置 ES_PAGE_SIZE
+     */
+    public static void setES_PAGE_SIZE(Integer ES_PAGE_SIZE) {
+        ESPageSizeThreadLocal.set(ES_PAGE_SIZE);
+    }
+
+    /**
+     * 获取 ES_PAGE_SIZE
+     */
+    public static Integer getES_PAGE_SIZE() {
+        return ESPageSizeThreadLocal.get();
+    }
+
+    /**
+     * 设置 ES_FILTER
+     */
+    public static void setES_FILTER(String ES_FILTER) {
+        ESFilterThreadLocal.set(ES_FILTER);
+    }
+
+    /**
+     * 获取 ES_FILTER
+     */
+    public static String geES_FILTER() {
+        return ESFilterThreadLocal.get();
+    }
 
     /**
      * 根据url构造Feign的bean
@@ -104,7 +148,7 @@ public class ThreadLocalFeign {
             return;
         }
         if (hostToClassToBeanMap.containsKey(ESHOSTThreadLocal.get())) {
-            //如果包含 ->
+            //如果包含 -> 不做处理
         } else {
             //如果不包含 -> 进行初始化工作
             Map<Class, Object> tmpMap = Collections.synchronizedMap(new HashMap<>());//新建class to Bean的map
