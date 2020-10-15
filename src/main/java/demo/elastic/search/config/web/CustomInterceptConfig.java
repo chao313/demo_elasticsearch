@@ -68,7 +68,10 @@ public class CustomInterceptConfig extends WebMvcConfigurerAdapter {
 
             @Override
             public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-//                LOGGER.info("【拦截请求】: 请求路径 {}", request.getRequestURI());
+                ThreadLocalFeign.setES_HOST(null);//移除
+                ThreadLocalFeign.setES_PAGE(null);//移除
+                ThreadLocalFeign.setES_PAGE_SIZE(null);//移除
+                ThreadLocalFeign.setES_FILTER(null);//移除
             }
         };
         /**

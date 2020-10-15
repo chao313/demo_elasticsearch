@@ -1,0 +1,11 @@
+spring:
+  redis:
+    host: 39.107.236.187
+    port: 7016
+
+##是否启动本地redis
+redis:
+  local:
+    active: false
+    maxheap: 200m
+    port: 6379

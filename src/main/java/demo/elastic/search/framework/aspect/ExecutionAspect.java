@@ -7,11 +7,11 @@ import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.service.RedisService;
 import demo.elastic.search.thread.ThreadLocalFeign;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.mortbay.util.ajax.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +71,9 @@ public class ExecutionAspect {
                         JSONArray jsonArray = JSONArray.parseArray(content.toString());
                         List<Object> objects = Arrays.asList(jsonArray.toArray());
                         //添加过滤
-                        objects = filter(objects);
+                        if (StringUtils.isNotBlank(ThreadLocalFeign.geES_FILTER())) {
+                            objects = filter(objects);
+                        }
                         String uuid = UUID.randomUUID().toString();
                         redisTemplate.opsForList().leftPushAll(uuid, objects);//存入list
                         Object resultPage = redisService.getRecordByScrollId(uuid, 1, ThreadLocalFeign.getES_PAGE_SIZE());
@@ -102,7 +104,15 @@ public class ExecutionAspect {
                 innerMap.forEach((key, val) -> {
                     if (tmp.containsKey(key)) {
                         Object value = tmp.get(key);
-                        if (value.toString().contains(val.toString())) {
+                        String contain = val.toString();
+                        String regexToWildcard = val.toString().replace("*", ".*").replace("?", ".{1}");
+                        if (null == value) {
+                            //如果value 为null
+                            if (contain.equalsIgnoreCase("*") || contain.equalsIgnoreCase(".*")) {
+                                //如果为通配 -> flag标记一个为 true
+                                flags[i.getAndIncrement()] = true;
+                            }
+                        } else if (value.toString().contains(contain) || value.toString().matches(regexToWildcard)) {
                             //如果相等一个 -> flag标记一个为 true
                             flags[i.getAndIncrement()] = true;
                         }
