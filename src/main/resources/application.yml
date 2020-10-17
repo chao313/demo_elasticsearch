@@ -5,7 +5,7 @@ server:
 spring:
   name: demo-elasticsearch
   profiles:
-    active: dev
+    active: local
 
 ##是否启动本地redis
 redis:

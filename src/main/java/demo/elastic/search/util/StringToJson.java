@@ -10,10 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 public class StringToJson {
 
@@ -117,7 +114,8 @@ public class StringToJson {
     public static JsonNode getSortJson(String source) throws JsonProcessingException {
         JSONObject jsonObjectTmp = JSONObject.parseObject(source);
         Set<String> set = jsonObjectTmp.keySet();
-        SortedMap map = new TreeMap();
+        //排序 -> key去除下划线排序
+        TreeMap map = new TreeMap();
         set.forEach(key -> {
             Object value = jsonObjectTmp.get(key);
             map.put(key, value);
@@ -130,7 +128,25 @@ public class StringToJson {
 
     public static JsonNode getSortJson(JSONObject jsonObject) throws JsonProcessingException {
         Set<String> set = jsonObject.keySet();
-        SortedMap map = new TreeMap();
+        //排序 -> key去除下划线排序
+        TreeMap map = new TreeMap(new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                Integer key1 = null;
+                if (o1.toString().matches("F\\d{1,}_\\d{1,}")) {
+                    key1 = Integer.valueOf(o1.toString().replace("F", "").replace("_", ""));
+                }
+                Integer key2 = null;
+                if (o2.toString().matches("F\\d{1,}_\\d{1,}")) {
+                    key2 = Integer.valueOf(o2.toString().replace("F", "").replace("_", ""));
+                }
+                if (key1 != null && key2 != null) {
+                    return key1.compareTo(key2);
+                } else {
+                    return o1.toString().compareTo(o2.toString());
+                }
+            }
+        });
         set.forEach(key -> {
             Object value = jsonObject.get(key);
             map.put(key, value);
