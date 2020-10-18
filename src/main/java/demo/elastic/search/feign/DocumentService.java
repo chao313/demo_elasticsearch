@@ -120,6 +120,14 @@ public interface DocumentService {
      * }
      *
      * </pre>
+     *
+     * <pre>
+     * 更新！！
+     * {"doc": {
+     *     "address": "new_name"
+     *   }
+     * }
+     * </pre>
      */
     @RequestMapping(value = "/{index}/_update/{_id}", method = RequestMethod.POST, headers = {"content-type=application/json"})
     String _update(@ApiParam(value = "（必需，字符串）包含文档的索引的名称") @PathVariable(value = "index") String index,
