@@ -1,4 +1,4 @@
-package demo.elastic.search.controller.redis;
+package demo.elastic.search.controller.helper;
 
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.service.RedisService;

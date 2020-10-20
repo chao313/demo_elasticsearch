@@ -112,7 +112,7 @@ public class Swagger2Configuration {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors
-                        .basePackage("demo.elastic.search.controller.redis"))
+                        .basePackage("demo.elastic.search.controller.helper"))
                 .paths(PathSelectors.any())
                 .build()
                 .genericModelSubstitutes(DeferredResult.class)//异步http请求
@@ -120,7 +120,7 @@ public class Swagger2Configuration {
                 .pathMapping("/")
                 .apiInfo(apiInfo())
                 .useDefaultResponseMessages(false)
-                .groupName("Redis")
+                .groupName("Helper")
 //                .produces(Sets.newHashSet("application/octet-stream"))
                 ;
     }
