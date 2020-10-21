@@ -3,9 +3,9 @@ package demo.elastic.search.feign.plus;
 import demo.elastic.search.feign.ScrollService;
 import demo.elastic.search.po.response.ESResponse;
 import demo.elastic.search.po.response.InnerHits;
+import demo.elastic.search.thread.ThreadLocalFeign;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -15,14 +15,12 @@ import java.util.function.Consumer;
  */
 @Service
 public class ScrollServicePlus {
-
-    @Resource
-    private ScrollService scrollService;
-
+    
     /**
      * 反序列化scroll的结果
      */
     public ESResponse _search(String scroll, String scroll_id) {
+        ScrollService scrollService = ThreadLocalFeign.getFeignService(ScrollService.class);
         String result = scrollService._search(scroll, scroll_id);
         return ESResponse.parse(result);
     }

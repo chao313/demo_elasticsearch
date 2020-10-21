@@ -159,7 +159,7 @@ public class CustomController {
 
         List<String> urls = new ArrayList<>();
         filesNames.forEach(path -> {
-            String url = "http://" + host + resourceService.getContextPath() + "ResourceController/downloadByFileName?fileName=" + path;
+            String url = "http://" + host + resourceService.getContextPath() + "/ResourceController/downloadByFileName?fileName=" + path;
             urls.add(url);
         });
         return Response.Ok(urls);
@@ -814,7 +814,7 @@ public class CustomController {
             }
             List<String> urls = new ArrayList<>();
             filesNames.forEach(path -> {
-                String url = "http://" + host + resourceService.getContextPath() + "ResourceController/downloadByFileName?fileName=" + path;
+                String url = "http://" + host + resourceService.getContextPath() + "/ResourceController/downloadByFileName?fileName=" + path;
                 urls.add(url);
             });
             log.info("提取完成,return");

@@ -2,6 +2,7 @@ package demo.elastic.search.feign.plus;
 
 import demo.elastic.search.engine.script.ExecuteScript;
 import demo.elastic.search.engine.script.impl.JavaScriptExecuteScript;
+import demo.elastic.search.feign.AnalyzeService;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.out.remove.compound.Body;
 import demo.elastic.search.out.remove.compound.Query;
@@ -10,6 +11,7 @@ import demo.elastic.search.out.remove.compound.level.TermLevel;
 import demo.elastic.search.out.remove.compound.level.base.Terms;
 import demo.elastic.search.po.response.ESResponse;
 import demo.elastic.search.po.response.InnerHits;
+import demo.elastic.search.thread.ThreadLocalFeign;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,9 +32,6 @@ import java.util.function.Consumer;
 @Service
 @Slf4j
 public class SearchServicePlus {
-
-    @Resource
-    private SearchService searchService;
 
     @Autowired
     private MappingServicePlus mappingServicePlus;
@@ -73,6 +72,7 @@ public class SearchServicePlus {
                                                 Consumer<Integer> totalConsumer,
                                                 Consumer<InnerHits> consumer
     ) {
+        SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService._search(index, body);
         ESResponse esResponse = ESResponse.parse(result);
         if (null != totalConsumer) {
@@ -125,6 +125,7 @@ public class SearchServicePlus {
                                              Consumer<Integer> totalConsumer,
                                              Consumer<InnerHits> consumer
     ) {
+        SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService._search(index, scroll, body);
         ESResponse esResponse = ESResponse.parse(result);
         if (null != totalConsumer) {
@@ -145,7 +146,7 @@ public class SearchServicePlus {
     public List<List<String>> _searchToList(String index,
                                             String body,
                                             Boolean addHeader
-    ) throws ScriptException, NoSuchMethodException {
+    ) {
         return this._searchToList(index, body, addHeader, null, null, null);
     }
 
@@ -157,7 +158,7 @@ public class SearchServicePlus {
                                             String body,
                                             Boolean addHeader,
                                             Action2<Integer, Integer> progress
-    ) throws ScriptException, NoSuchMethodException {
+    ) {
         return this._searchToList(index, body, addHeader, progress, null, null);
     }
 
