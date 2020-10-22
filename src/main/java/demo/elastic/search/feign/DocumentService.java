@@ -55,6 +55,18 @@ public interface DocumentService {
             @PathVariable(value = "index") String index,
             @RequestBody String body);
 
+    /**
+     * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/docs-index_.html#docs-index-api-request"></a>
+     * <p>
+     * 将JSON文档添加到指定索引并使其可搜索。如果文档已存在，请更新文档并增加其版本
+     */
+    @RequestMapping(value = "/{index}/{type}", method = RequestMethod.POST, headers = {"content-type=application/json"})
+    String post_doc_v2(
+            @ApiParam(value = "（必需，字符串）目标索引的名称。默认情况下，如果索引不存在，则会自动创建")
+            @PathVariable(value = "index") String index,
+            @PathVariable(value = "type") String type,
+            @RequestBody String body);
+
 
     /**
      * <a href="https://www.elastic.co/guide/en/elasticsearch/reference/7.8/docs-get.html"></a>

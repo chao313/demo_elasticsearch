@@ -59,9 +59,39 @@ public interface IndexService {
      *     }
      * }
      * </pre>
-     *
-     * @param index
-     * @return
+     * <p>
+     * 2.3.1 版本
+     * <pre>
+     * curl -XPOST http://10.202.16.9:9200/tags -d '{
+     *     "settings" : {
+     *         "number_of_shards" : 1
+     *     },
+     *     "mappings" : {
+     *         "type1" : {
+     *             "properties" : {
+     *                 "name" : { "type" : "string", "index" : "not_analyzed" },
+     *                 "tags" : { "type" : "string", "index" : "not_analyzed" },
+     *             }
+     *         }
+     *     }
+     * }
+     * $ curl -XPOST http://10.202.16.9:9200/tags -d '{
+     *     "settings" : {
+     *         "number_of_shards" : 1
+     *     },
+     *     "mappings" : {
+     *         "tags" : {
+     *             "properties" : {
+     *                 "windcode" : { "type" : "string", "index" : "not_analyzed" },
+     *                 "compname" : { "type" : "string", "index" : "not_analyzed" },
+     *                 "itemID" : { "type" : "string", "index" : "not_analyzed" },
+     *                 "label" : { "type" : "string", "index" : "not_analyzed" }
+     *             }
+     *         }
+     *     }
+     * }
+     * '
+     * </pre>
      */
     @RequestMapping(value = "/{index}", method = RequestMethod.PUT, headers = {"content-type=application/json"})
     String create(@ApiParam(value = "索引名称") @PathVariable(value = "index") String index,

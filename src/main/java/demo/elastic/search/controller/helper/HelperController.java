@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import demo.elastic.search.feign.plus.MappingServicePlus;
 import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.out.db.mysql.service.DBService;
 import demo.elastic.search.out.resource.service.ResourceService;
 import demo.elastic.search.po.helper.DSLHelper;
 import demo.elastic.search.po.request.QueryBuilders;
@@ -13,6 +15,7 @@ import demo.elastic.search.po.request.SearchSourceBuilder;
 import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.compound.BoolQuery;
 import demo.elastic.search.service.RedisService;
+import demo.elastic.search.thread.ThreadPoolExecutorService;
 import demo.elastic.search.util.DateUtil;
 import demo.elastic.search.util.ExcelUtil;
 import io.swagger.annotations.ApiOperation;
@@ -51,6 +54,16 @@ public class HelperController {
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private DBService dbService;
+
+    @Autowired
+    private MappingServicePlus mappingServicePlus;
+
+    @Autowired
+    private ThreadPoolExecutorService threadPoolExecutorService;
+
 
     private static final Integer LIMIT_EXCEL = 500000;
     private static final Integer LIMIT_DB = 50000;
@@ -229,4 +242,71 @@ public class HelperController {
         });
         return Response.Ok(urls);
     }
+
+    @ApiOperation(value = "导出全部的查询到DB(收编入ES体系)")
+    @PostMapping(value = "/_search/outputToDB/{index}")
+    public Response _searchOutputToDB(
+            @ApiParam(defaultValue = "tb_object_0088")
+            @PathVariable(value = "index") String index,
+            @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
+            @RequestParam(value = "scroll", required = false) String scroll,
+            @RequestBody String body
+    ) throws Exception {
+        String tableName = null;
+        tableName = index;
+        if (index.matches("comstore_(.*)")) {
+            tableName = index.replaceAll("comstore_(.*)", "$1");
+        }
+        if (index.matches("(.*)?_ext")) {
+            tableName = index.replaceAll("(.*)?_ext", "$1");
+        }
+        if (index.matches("comstore_(.*)?_ext")) {
+            tableName = index.replaceAll("comstore_(.*)?_ext", "$1");
+        }
+
+        String targetTable = tableName + "_" + DateUtil.getNow();
+        dbService.cloneTableStruct(tableName, targetTable);//创建新的表
+        List<String> fieldNames = mappingServicePlus.getFieldNamesList(index);//获取name
+        fieldNames.remove("row_feature");
+        fieldNames.remove("ES_MOD_TIME");
+        List<List<String>> lists = new ArrayList<>();
+        AtomicReference<Integer> i = new AtomicReference<>(0);
+        if (StringUtils.isBlank(scroll)) {
+            lists = searchServicePlus._searchToList(index, body, false, (size, total) -> log.info("读取进度:{}/{}->{}", size, total, percent(size, total)));
+        } else {
+            lists = searchServicePlus._searchScrollToList(index, scroll, body, false, (size, total) -> {
+                log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
+            }, new Consumer<List<List<String>>>() {
+                @SneakyThrows
+                @Override
+                public void accept(List<List<String>> lists) {
+                    if (lists.size() >= LIMIT_DB) {
+                        List<List<String>> tmp = new ArrayList<>(lists);
+                        threadPoolExecutorService.addWork(new Runnable() {
+                            @Override
+                            public void run() {
+                                dbService.batchInsert(targetTable, tmp, fieldNames);
+                            }
+                        });
+                        lists.clear();
+                    }
+                }
+            });
+        }
+        if (lists.size() > 0) {
+            List<List<String>> tmp = new ArrayList<>(lists);
+            threadPoolExecutorService.addWork(new Runnable() {
+                @Override
+                public void run() {
+                    dbService.batchInsert(targetTable, tmp, fieldNames);
+                }
+            });
+            lists.clear();
+        }
+
+        threadPoolExecutorService.waitComplete();
+        log.info("提取完成,return");
+        return Response.Ok(targetTable);
+    }
+
 }

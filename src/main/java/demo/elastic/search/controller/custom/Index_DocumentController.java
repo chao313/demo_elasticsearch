@@ -6,11 +6,20 @@ import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.DocumentService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
+import demo.elastic.search.util.ExcelUtil;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -18,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RequestMapping(value = "/Index_DocumentController")
 @RestController
+@Slf4j
 public class Index_DocumentController {
 
     @ApiOperation(value = "创建一个Document")
@@ -157,6 +167,68 @@ public class Index_DocumentController {
         DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
         String s = documentService.post_doc(index, body);
         return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "将JSON文档添加到指定索引并使其可搜索。如果文档已存在，请更新文档并增加其版本(老版的上传)", notes = "```\n"
+            + "{\n" +
+            "    \"user\":\"kimchy\",\n" +
+            "    \"post_date\":\"2009-11-15T14:12:12\",\n" +
+            "    \"message\":\"trying out Elasticsearch\"\n" +
+            "}" +
+            "```")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @PostMapping(value = "/{index}/{type}")
+    public Response post_doc_v2(
+            @ApiParam(value = "（必需，字符串）目标索引的名称。默认情况下，如果索引不存在，则会自动创建")
+            @PathVariable(value = "index") String index,
+            @PathVariable(value = "type") String type,
+            @RequestBody String body) {
+        DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
+        String s = documentService.post_doc_v2(index, type, body);
+        return Response.Ok(JSONObject.parse(s));
+    }
+
+    @ApiOperation(value = "将JSON文档添加到指定索引并使其可搜索。如果文档已存在，请更新文档并增加其版本(老版的上传,批量上传)", notes = "```\n"
+            + "{\n" +
+            "    \"user\":\"kimchy\",\n" +
+            "    \"post_date\":\"2009-11-15T14:12:12\",\n" +
+            "    \"message\":\"trying out Elasticsearch\"\n" +
+            "}" +
+            "```")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @PostMapping(value = "/{index}/{type}/file")
+    public Response post_doc_v2_file(
+            @ApiParam(value = "（必需，字符串）目标索引的名称。默认情况下，如果索引不存在，则会自动创建")
+            @PathVariable(value = "index") String index,
+            @PathVariable(value = "type") String type,
+            @RequestParam(name = "listFile", required = false) MultipartFile listFile) throws IOException {
+        DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
+//        String body = IOUtils.toString(listFile.getInputStream(), "UTF-8");
+//        String s = documentService._bulk(index, body);
+        List<String> list = IOUtils.readLines(listFile.getInputStream(), "UTF-8");
+        int total = list.size();
+        AtomicInteger i = new AtomicInteger();
+        list.stream().parallel().forEach(line -> {
+            documentService.post_doc_v2(index, type, line);
+            ExcelUtil.percent(i.getAndIncrement(), total);
+            log.info("处理进度:{}/{}->{}", i, total, ExcelUtil.percent(i.get(), total));
+        });
+
+        return Response.Ok(list.size());
     }
 
     @ApiOperation(value = "从索引检索指定的JSON文档")
