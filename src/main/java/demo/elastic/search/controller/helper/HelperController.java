@@ -210,8 +210,6 @@ public class HelperController {
     ) throws IOException, IllegalAccessException {
         List<String> filesNames = new ArrayList<>();//文件名称
         List<List<String>> lists = new ArrayList<>();
-        AtomicReference<Integer> i = new AtomicReference<>(0);
-
         lists = searchServicePlus._searchScrollToList(index, scroll, body, true, (size, total) -> {
             log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
         }, new Function<List<List<String>>, Boolean>() {
@@ -224,6 +222,13 @@ public class HelperController {
                     File file = resourceService.addNewFile(fileName);
                     ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
                     lists.clear();
+                }
+                //限制导出大小
+                if (outPutSize != -1) {
+                    if (lists.size() > outPutSize) {
+                        //如果大于导出数据 -> 停止
+                        return false;
+                    }
                 }
                 return true;
             }
@@ -252,6 +257,7 @@ public class HelperController {
             @PathVariable(value = "index") String index,
             @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = false) String scroll,
+            @ApiParam(value = "导出的size(-1代表全部)") @RequestParam(value = "outPutSize", required = false) Integer outPutSize,
             @RequestBody String body
     ) throws Exception {
         String tableName = null;
@@ -291,6 +297,13 @@ public class HelperController {
                             }
                         });
                         lists.clear();
+                    }
+                    //限制导出大小
+                    if (outPutSize != -1) {
+                        if (lists.size() > outPutSize) {
+                            //如果大于导出数据 -> 停止
+                            return false;
+                        }
                     }
                     return true;
                 }
