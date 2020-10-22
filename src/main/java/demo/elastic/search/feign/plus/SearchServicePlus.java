@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Service
 @Slf4j
@@ -42,7 +43,7 @@ public class SearchServicePlus {
 
     /**
      * 普通查询
-     * {@link #_searchWithoutScrollParam(String, String, Consumer, Consumer)}
+     * {@link #_searchWithoutScrollParam(String, String, Consumer, Function)}
      */
     public ESResponse _searchWithoutScrollParam(String index,
                                                 String body) {
@@ -52,13 +53,13 @@ public class SearchServicePlus {
 
     /**
      * 普通查询
-     * {@link #_searchWithoutScrollParam(String, String, Consumer, Consumer)}
+     * {@link #_searchWithoutScrollParam(String, String, Consumer, Function)}
      */
     public ESResponse _searchWithoutScrollParam(String index,
                                                 String body,
-                                                Consumer<InnerHits> consumer) {
+                                                Function<InnerHits, Boolean> function) {
 
-        return this._searchWithoutScrollParam(index, body, null, consumer);
+        return this._searchWithoutScrollParam(index, body, null, function);
     }
 
     /**
@@ -70,7 +71,7 @@ public class SearchServicePlus {
     public ESResponse _searchWithoutScrollParam(String index,
                                                 String body,
                                                 Consumer<Integer> totalConsumer,
-                                                Consumer<InnerHits> consumer
+                                                Function<InnerHits, Boolean> function
     ) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService._search(index, body);
@@ -78,9 +79,9 @@ public class SearchServicePlus {
         if (null != totalConsumer) {
             totalConsumer.accept(esResponse.getHits().getTotal());
         }
-        if (null != consumer) {
+        if (null != function) {
             esResponse.getHits().getHits().forEach(innerHits -> {
-                consumer.accept(innerHits);
+                function.apply(innerHits);
             });
         }
         return esResponse;
@@ -88,7 +89,7 @@ public class SearchServicePlus {
 
     /**
      * 普通查询
-     * {@link #_searchWithoutScrollParam(String, String, Consumer, Consumer)}
+     * {@link #_searchWithoutScrollParam(String, String, Consumer, Function)}
      */
     public ESResponse _searchWithScrollParam(String index,
                                              String scroll,
@@ -99,14 +100,14 @@ public class SearchServicePlus {
 
     /**
      * 普通查询
-     * {@link #_searchWithoutScrollParam(String, String, Consumer, Consumer)}
+     * {@link #_searchWithoutScrollParam(String, String, Consumer, Function)}
      */
     public ESResponse _searchWithScrollParam(String index,
                                              String scroll,
                                              String body,
-                                             Consumer<InnerHits> consumer) {
+                                             Function<InnerHits, Boolean> function) {
 
-        return this._searchWithScrollParam(index, body, scroll, null, consumer);
+        return this._searchWithScrollParam(index, body, scroll, null, function);
     }
 
     /**
@@ -115,7 +116,7 @@ public class SearchServicePlus {
      * @param index
      * @param scroll
      * @param body
-     * @param consumer
+     * @param function
      * @param totalConsumer
      * @return
      */
@@ -123,7 +124,7 @@ public class SearchServicePlus {
                                              String scroll,
                                              String body,
                                              Consumer<Integer> totalConsumer,
-                                             Consumer<InnerHits> consumer
+                                             Function<InnerHits, Boolean> function
     ) {
         SearchService searchService = ThreadLocalFeign.getFeignService(SearchService.class);
         String result = searchService._search(index, scroll, body);
@@ -131,9 +132,9 @@ public class SearchServicePlus {
         if (null != totalConsumer) {
             totalConsumer.accept(esResponse.getHits().getTotal());
         }
-        if (null != consumer) {
+        if (null != function) {
             esResponse.getHits().getHits().forEach(innerHits -> {
-                consumer.accept(innerHits);
+                function.apply(innerHits);
             });
         }
         return esResponse;
@@ -194,10 +195,10 @@ public class SearchServicePlus {
             if (true == addHeader) {
                 result.get().add(names);//添加head
             }
-        }, new Consumer<InnerHits>() {
+        }, new Function<InnerHits, Boolean>() {
             @SneakyThrows
             @Override
-            public void accept(InnerHits innerHits) {
+            public Boolean apply(InnerHits innerHits) {
                 if (null != progress) {
                     progress.call(i.getAndSet(i.get() + 1), totalNum.get());
                 }
@@ -215,16 +216,17 @@ public class SearchServicePlus {
                     });
                     result.get().add(tmp);//添加row
                 }
+                return true;
             }
         });
         return result.get();
     }
 
     /**
-     * {@link SearchServicePlus#_searchToConsumer(java.lang.String, java.lang.String, java.util.function.Consumer, java.util.function.Consumer)}
+     * {@link SearchServicePlus#_searchToConsumer(java.lang.String, java.lang.String, java.util.function.Function, java.util.function.Consumer)}
      */
-    public void _searchToConsumer(String index, String body, Consumer<InnerHits> consumer) {
-        this._searchToConsumer(index, body, consumer, null);
+    public void _searchToConsumer(String index, String body, Function<InnerHits,Boolean> function) {
+        this._searchToConsumer(index, body, function, null);
     }
 
     /**
@@ -232,17 +234,17 @@ public class SearchServicePlus {
      *
      * @param index
      * @param body
-     * @param consumer      消费 函数式处理
+     * @param function      消费 函数式处理
      * @param totalConsumer 消费，获取total
      */
-    public void _searchToConsumer(String index, String body, Consumer<InnerHits> consumer, Consumer<Integer> totalConsumer) {
+    public void _searchToConsumer(String index, String body, Function<InnerHits,Boolean> function, Consumer<Integer> totalConsumer) {
         ESResponse esResponse = this._searchWithoutScrollParam(index, body);
         log.info("ES匹配到数量:{}", esResponse.getHits().getTotal());
         if (null != totalConsumer) {
             totalConsumer.accept(esResponse.getHits().getTotal());
         }
         esResponse.getHits().getHits().forEach(innerHits -> {
-            consumer.accept(innerHits);
+            function.apply(innerHits);
         });
     }
 
@@ -250,7 +252,7 @@ public class SearchServicePlus {
     /**
      * 搜索的数据存放到 List<List<String>> (这个是scroll)
      * <p>
-     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Consumer, ExecuteScript, String)}
+     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Function, ExecuteScript, String)}
      * <p>
      * 注意:持续性查询会给ES造成压力,因为在ES缓存中有缓存
      *
@@ -272,7 +274,7 @@ public class SearchServicePlus {
     /**
      * 搜索的数据存放到 List<List<String>> (这个是scroll)
      * <p>
-     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Consumer, ExecuteScript, String)}
+     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Function, ExecuteScript, String)}
      *
      * @param index
      * @param scroll
@@ -293,7 +295,7 @@ public class SearchServicePlus {
     /**
      * 搜索的数据存放到 List<List<String>> (这个是scroll)
      * <p>
-     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Consumer, ExecuteScript, String)}
+     * {@link #_searchScrollToList(String, String, String, Boolean, Action2, Function, ExecuteScript, String)}
      *
      * @param index
      * @param scroll
@@ -306,7 +308,7 @@ public class SearchServicePlus {
                                                   String body,
                                                   Boolean addHeader,
                                                   Action2<Integer, Integer> progress,
-                                                  Consumer<List<List<String>>> resultConsumer) {
+                                                  Function<List<List<String>>, Boolean> resultConsumer) {
 
         return this._searchScrollToList(index, scroll, body, addHeader, progress, resultConsumer, null, null);
 
@@ -329,21 +331,20 @@ public class SearchServicePlus {
                                                   String body,
                                                   Boolean addHeader,
                                                   Action2<Integer, Integer> progress,
-                                                  Consumer<List<List<String>>> resultConsumer,
+                                                  Function<List<List<String>>, Boolean> resultFunction,
                                                   ExecuteScript executeScript,
                                                   String script) {
         List<String> names = mappingServicePlus.getFieldNamesList(index);//获取
-//        final List<List<String>>[] resultList = new List[]{new ArrayList<>()};
         AtomicReference<List<List<String>>> resultList = new AtomicReference<>();
         AtomicReference<Integer> i = new AtomicReference<>(0);
         AtomicReference<Integer> totalNum = new AtomicReference<>(0);
         /**
          * 消费者提取出来
          */
-        Consumer<InnerHits> consumer = new Consumer<InnerHits>() {
+        Function<InnerHits, Boolean> function = new Function<InnerHits, Boolean>() {
             @SneakyThrows
             @Override
-            public void accept(InnerHits innerHits) {
+            public Boolean apply(InnerHits innerHits) {
                 if (null != progress) {
                     progress.call(i.getAndSet(i.get() + 1), totalNum.get());
                 }
@@ -366,10 +367,11 @@ public class SearchServicePlus {
 //                    log.info("获取的数据:{}", tmp);
                     resultList.get().add(tmp);//添加row
                 }
-                if (null != resultConsumer) {
-                    //处理结果集
-                    resultConsumer.accept(resultList.get());
+                if (null != resultFunction) {
+                    //处理结果集 如果不为空，就继续处理
+                    return resultFunction.apply(resultList.get());
                 }
+                return true;
             }
         };
         ESResponse esResponse = this._searchWithScrollParam(index, scroll, body, total -> {
@@ -379,28 +381,27 @@ public class SearchServicePlus {
             if (null != addHeader && true == addHeader) {
                 resultList.get().add(names);//添加head
             }
-        }, consumer);
+        }, function);
         /**
          * 进行滚动查询
          */
         String scrollId = esResponse.getScrollId();
-        scrollServicePlus._search(scroll, scrollId, consumer);
+        scrollServicePlus._search(scroll, scrollId, function);
         return resultList.get();
     }
-
 
     /**
      * 搜索的数据存放到 函数式处理（滚动）
      * <p>
-     * {@link SearchServicePlus#_searchScrollToConsumer(String, String, String, Consumer, Consumer)}
+     * {@link SearchServicePlus#_searchScrollToConsumer(String, String, String, Consumer, Function)}
      *
      * @param index
      * @param scroll
      * @param body
-     * @param consumer 消费
+     * @param function 消费
      */
-    public void _searchScrollToConsumer(String index, String scroll, String body, Consumer<InnerHits> consumer) {
-        this._searchScrollToConsumer(index, scroll, body, null, consumer);
+    public void _searchScrollToConsumer(String index, String scroll, String body, Function<InnerHits, Boolean> function) {
+        this._searchScrollToConsumer(index, scroll, body, null, function);
     }
 
 
@@ -410,21 +411,23 @@ public class SearchServicePlus {
      * @param index
      * @param scroll
      * @param body
-     * @param consumer 消费
+     * @param function 消费
      */
     public void _searchScrollToConsumer(String index,
                                         String scroll,
                                         String body,
                                         Consumer<Integer> totalConsumer,
-                                        Consumer<InnerHits> consumer) {
+                                        Function<InnerHits, Boolean> function) {
         ESResponse esResponse = this._searchWithScrollParam(index, scroll, body);
         log.info("ES匹配到数量:{}", esResponse.getHits().getTotal());
         if (null != totalConsumer) {
             totalConsumer.accept(esResponse.getHits().getTotal());
         }
-        esResponse.getHits().getHits().forEach(consumer::accept);
+        esResponse.getHits().getHits().forEach(function::apply);
         String scrollId = esResponse.getScrollId();
-        scrollServicePlus._search(scroll, scrollId, innerHits -> consumer.accept(innerHits));
+        scrollServicePlus._search(scroll, scrollId, innerHits -> {
+            return function.apply(innerHits);
+        });
     }
 
 
@@ -471,7 +474,7 @@ public class SearchServicePlus {
      * @return
      * @throws IOException
      */
-    public void _searchScrollToListTerms(String index, String scroll, String field, List<String> values, Consumer<InnerHits> consumer) throws IOException {
+    public void _searchScrollToListTerms(String index, String scroll, String field, List<String> values, Function<InnerHits,Boolean> function) throws IOException {
         Body body = new Body();
         Terms terms = new Terms();
         terms.setField(field);
@@ -486,7 +489,7 @@ public class SearchServicePlus {
         body.setSize(10000);
         String bodyRequest = body.parse();
 
-        this._searchScrollToConsumer(index, scroll, bodyRequest, consumer);
+        this._searchScrollToConsumer(index, scroll, bodyRequest, function);
     }
 
 }

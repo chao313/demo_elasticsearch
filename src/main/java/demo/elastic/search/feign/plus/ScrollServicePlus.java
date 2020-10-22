@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * scroll是加强版本
  */
 @Service
 public class ScrollServicePlus {
-    
+
     /**
      * 反序列化scroll的结果
      */
@@ -26,16 +27,19 @@ public class ScrollServicePlus {
     }
 
     /**
-     * 反序列化scroll的结果
+     * 反序列化scroll的结果（这里赋予实现者停止的权限）
+     *
+     * @param function 处理获取的结果集+返回是否继续检索
      */
-    public void _search(String scroll, String scroll_id, Consumer<InnerHits> consumer) {
+    public void _search(String scroll, String scroll_id, Function<InnerHits, Boolean> function) {
         List<InnerHits> hits = new ArrayList<>();
+        Boolean isGoon = true;//是否继续检索
         do {
             hits = this._search(scroll, scroll_id).getHits().getHits();
-            hits.forEach(innerHits -> {
-                consumer.accept(innerHits);
-            });
-        } while (hits.size() > 0);
+            for (InnerHits innerHits : hits) {
+                isGoon = function.apply(innerHits);
+            }
+        } while (hits.size() > 0 && isGoon == true);
 
     }
 }

@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static demo.elastic.search.util.ExcelUtil.percent;
 
@@ -213,10 +214,10 @@ public class HelperController {
 
         lists = searchServicePlus._searchScrollToList(index, scroll, body, true, (size, total) -> {
             log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
-        }, new Consumer<List<List<String>>>() {
+        }, new Function<List<List<String>>, Boolean>() {
             @SneakyThrows
             @Override
-            public void accept(List<List<String>> lists) {
+            public Boolean apply(List<List<String>> lists) {
                 if (lists.size() >= LIMIT_EXCEL) {
                     String fileName = index + DateUtil.getNow() + ".xlsx";
                     filesNames.add(fileName);
@@ -224,6 +225,7 @@ public class HelperController {
                     ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
                     lists.clear();
                 }
+                return true;
             }
         });
 
@@ -276,10 +278,10 @@ public class HelperController {
         } else {
             lists = searchServicePlus._searchScrollToList(index, scroll, body, false, (size, total) -> {
                 log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
-            }, new Consumer<List<List<String>>>() {
+            }, new Function<List<List<String>>, Boolean>() {
                 @SneakyThrows
                 @Override
-                public void accept(List<List<String>> lists) {
+                public Boolean apply(List<List<String>> lists) {
                     if (lists.size() >= LIMIT_DB) {
                         List<List<String>> tmp = new ArrayList<>(lists);
                         threadPoolExecutorService.addWork(new Runnable() {
@@ -290,6 +292,7 @@ public class HelperController {
                         });
                         lists.clear();
                     }
+                    return true;
                 }
             });
         }

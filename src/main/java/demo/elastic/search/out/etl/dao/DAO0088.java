@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * 这里使用ES作为
@@ -36,9 +37,9 @@ public class DAO0088 {
         List<Tb0088Vo> tb0088Vos = new ArrayList<>();
         Body body = Body.build(0, 1000);
         body.getQuery().getBool().getMust().getTerm().add(new Term("F6_0088", F6_0088));
-        searchServicePlus._searchToConsumer(index, body.parse(), new Consumer<InnerHits>() {
+        searchServicePlus._searchToConsumer(index, body.parse(), new Function<InnerHits, Boolean>() {
             @Override
-            public void accept(InnerHits innerHits) {
+            public Boolean apply(InnerHits innerHits) {
                 String F1_0088 = innerHits.getSource().get("F1_0088") == null ? " " : innerHits.getSource().get("F1_0088").toString();
                 String F2_0088 = innerHits.getSource().get("F2_0088") == null ? " " : innerHits.getSource().get("F2_0088").toString();
                 String F3_0088 = innerHits.getSource().get("F3_0088") == null ? " " : innerHits.getSource().get("F3_0088").toString();
@@ -70,6 +71,7 @@ public class DAO0088 {
                         F11_0088, F12_0088, F13_0088, F14_0088, F15_0088, F16_0088, F17_0088, F18_0088, F19_0088, F20_0088,
                         F21_0088, F22_0088, F23_0088, F24_0088, F25_0088, F26_0088);
                 tb0088Vos.add(tb0088Vo);
+                return true;
             }
         });
         return tb0088Vos;

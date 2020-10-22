@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static demo.elastic.search.util.ExcelUtil.percent;
 
@@ -135,10 +136,10 @@ public class CustomController {
         } else {
             lists = searchServicePlus._searchScrollToList(index, scroll, body, true, (size, total) -> {
                 log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
-            }, new Consumer<List<List<String>>>() {
+            }, new Function<List<List<String>>, Boolean>() {
                 @SneakyThrows
                 @Override
-                public void accept(List<List<String>> lists) {
+                public Boolean apply(List<List<String>> lists) {
                     if (lists.size() >= LIMIT) {
                         String fileName = "AggTerms" + DateUtil.getNow() + ".xlsx";
                         filesNames.add(fileName);
@@ -146,6 +147,7 @@ public class CustomController {
                         ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
                         lists.clear();
                     }
+                    return true;
                 }
             });
         }
@@ -198,10 +200,10 @@ public class CustomController {
         } else {
             lists = searchServicePlus._searchScrollToList(index, scroll, body, false, (size, total) -> {
                 log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
-            }, new Consumer<List<List<String>>>() {
+            }, new Function<List<List<String>>, Boolean>() {
                 @SneakyThrows
                 @Override
-                public void accept(List<List<String>> lists) {
+                public Boolean apply(List<List<String>> lists) {
                     if (lists.size() >= LIMIT_DB) {
                         List<List<String>> tmp = new ArrayList<>(lists);
                         threadPoolExecutorService.addWork(new Runnable() {
@@ -212,6 +214,7 @@ public class CustomController {
                         });
                         lists.clear();
                     }
+                    return true;
                 }
             });
         }
@@ -258,10 +261,10 @@ public class CustomController {
     ) {
 
         if (StringUtils.isBlank(scroll)) {
-            searchServicePlus._searchToConsumer(index, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchToConsumer(index, body, new Function<InnerHits, Boolean>() {
                 @SneakyThrows
                 @Override
-                public void accept(InnerHits innerHits) {
+                public Boolean apply(InnerHits innerHits) {
                     Boolean scriptDeal = null;
                     if (StringUtils.isNotBlank(script)) {
                         //执行脚本
@@ -274,15 +277,15 @@ public class CustomController {
                     } else if (false == scriptDeal) {
                         log.info("返回false->不处理：topic:{},policyId:{},json:{}", topic, policyId, innerHits.getSource());
                     }
-
+                    return true;
                 }
             });
 
         } else {
-            searchServicePlus._searchScrollToConsumer(index, scroll, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchScrollToConsumer(index, scroll, body, new Function<InnerHits, Boolean>() {
                 @SneakyThrows
                 @Override
-                public void accept(InnerHits innerHits) {
+                public Boolean apply(InnerHits innerHits) {
                     Boolean scriptDeal = null;
                     if (StringUtils.isNotBlank(script)) {
                         //执行脚本
@@ -295,6 +298,7 @@ public class CustomController {
                     } else if (false == scriptDeal) {
                         log.info("返回false->不处理：topic:{},policyId:{},json:{}", topic, policyId, innerHits.getSource());
                     }
+                    return true;
                 }
             });
         }
@@ -342,11 +346,12 @@ public class CustomController {
         final List<List<String>>[] result = new List[]{new ArrayList<>()};
         final Set<String>[] masterFieldValues = new Set[]{new HashSet<>()};
         if (StringUtils.isBlank(scroll)) {
-            searchServicePlus._searchToConsumer(masterIndex, body.get(0).parse(), new Consumer<InnerHits>() {
+            searchServicePlus._searchToConsumer(masterIndex, body.get(0).parse(), new Function<InnerHits, Boolean>() {
                 @Override
-                public void accept(InnerHits innerHits) {
+                public Boolean apply(InnerHits innerHits) {
                     String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
                     masterFieldValues[0].add(filedValue);
+                    return true;
                 }
             }, total -> {
                 /**
@@ -380,6 +385,7 @@ public class CustomController {
             }, innerHits -> {
                 String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
                 masterFieldValues[0].add(filedValue);
+                return true;
             });
         }
 
@@ -477,21 +483,24 @@ public class CustomController {
          */
         Set<String> masterFieldValues = new HashSet<>(1600000);
         if (StringUtils.isBlank(scroll)) {
-            searchServicePlus._searchToConsumer(masterIndex, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchToConsumer(masterIndex, body, new Function<InnerHits, Boolean>() {
                 @Override
-                public void accept(InnerHits innerHits) {
+                public Boolean apply(InnerHits innerHits) {
                     String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
                     masterFieldValues.add(filedValue);
+                    return true;
                 }
             });
 
         } else {
-            searchServicePlus._searchScrollToConsumer(masterIndex, scroll, body, new Consumer<InnerHits>() {
+            searchServicePlus._searchScrollToConsumer(masterIndex, scroll, body, new Function<InnerHits, Boolean>() {
                 @Override
-                public void accept(InnerHits innerHits) {
+                public Boolean apply(InnerHits innerHits) {
                     String filedValue = innerHits.getSource().get(masterField) == null ? "" : innerHits.getSource().get(masterField).toString();
                     masterFieldValues.add(filedValue);
+                    return true;
                 }
+
             });
         }
 
@@ -511,13 +520,14 @@ public class CustomController {
                     /**
                      * 处理1000条
                      */
-                    searchServicePlus._searchScrollToListTerms(slaveIndex, scroll, slaveField, dealValues, new Consumer<InnerHits>() {
+                    searchServicePlus._searchScrollToListTerms(slaveIndex, scroll, slaveField, dealValues, new Function<InnerHits, Boolean>() {
                         @SneakyThrows
                         @Override
-                        public void accept(InnerHits innerHits) {
+                        public Boolean apply(InnerHits innerHits) {
                             JSONObject json = javaScriptExecuteScript.eval(script, innerHits.getSource());
                             kafkaOutService.load(topic, json, policyId, toTable.getTable());
                             log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, json);
+                            return true;
                         }
                     });
                     dealValues.clear();
@@ -529,13 +539,14 @@ public class CustomController {
         /**
          * 处理剩余数据
          */
-        searchServicePlus._searchScrollToListTerms(slaveIndex, scroll, slaveField, dealValues, new Consumer<InnerHits>() {
+        searchServicePlus._searchScrollToListTerms(slaveIndex, scroll, slaveField, dealValues, new Function<InnerHits, Boolean>() {
             @SneakyThrows
             @Override
-            public void accept(InnerHits innerHits) {
+            public Boolean apply(InnerHits innerHits) {
                 JSONObject json = javaScriptExecuteScript.eval(script, innerHits.getSource());
                 kafkaOutService.load(topic, json, policyId, toTable.getTable());
                 log.info("发送成功:topic:{},policyId:{},root0088:{}", topic, policyId, json);
+                return true;
             }
         });
 
@@ -1012,10 +1023,10 @@ public class CustomController {
         /**
          * 定义消费者 -> 后面经常使用
          */
-        Consumer<InnerHits> consumer = new Consumer<InnerHits>() {
+        Function<InnerHits, Boolean> function = new Function<InnerHits, Boolean>() {
             @SneakyThrows
             @Override
-            public void accept(InnerHits innerHits) {
+            public Boolean apply(InnerHits innerHits) {
                 Boolean scriptDeal = null;
                 if (StringUtils.isNotBlank(script)) {
                     //执行脚本
@@ -1028,6 +1039,7 @@ public class CustomController {
                 } else if (false == scriptDeal) {
                     log.info("返回false->不处理：topic:{},policyId:{},json:{}", topic, policyId, innerHits.getSource());
                 }
+                return true;
 
             }
         };
@@ -1042,9 +1054,9 @@ public class CustomController {
                 body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
                 body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
                 if (StringUtils.isBlank(scroll)) {
-                    searchServicePlus._searchToConsumer(index, body.parse(), consumer);
+                    searchServicePlus._searchToConsumer(index, body.parse(), function);
                 } else {
-                    searchServicePlus._searchScrollToConsumer(index, scroll, body.parse(), consumer);
+                    searchServicePlus._searchScrollToConsumer(index, scroll, body.parse(), function);
                 }
                 deal.clear();
             }
@@ -1054,9 +1066,9 @@ public class CustomController {
         body = JSONObject.parseObject(bodyStr.toString(), Body.class);//需要重新生成 -> 不然会持续叠加
         body.getQuery().getBool().getMust().getTerms().add((new Terms(field, deal)));
         if (StringUtils.isBlank(scroll)) {
-            searchServicePlus._searchToConsumer(index, body.parse(), consumer);
+            searchServicePlus._searchToConsumer(index, body.parse(), function);
         } else {
-            searchServicePlus._searchScrollToConsumer(index, scroll, body.parse(), consumer);
+            searchServicePlus._searchScrollToConsumer(index, scroll, body.parse(), function);
         }
         log.info("执行完成");
         return Response.Ok(true);
