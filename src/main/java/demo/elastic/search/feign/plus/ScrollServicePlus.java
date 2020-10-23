@@ -38,6 +38,10 @@ public class ScrollServicePlus {
             hits = this._search(scroll, scroll_id).getHits().getHits();
             for (InnerHits innerHits : hits) {
                 isGoon = function.apply(innerHits);
+                if (false == isGoon) {
+                    //如果判断不继续 就跳出当前循环
+                    break;
+                }
             }
         } while (hits.size() > 0 && isGoon == true);
 

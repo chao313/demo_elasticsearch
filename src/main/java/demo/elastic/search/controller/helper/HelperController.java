@@ -210,6 +210,7 @@ public class HelperController {
     ) throws IOException, IllegalAccessException {
         List<String> filesNames = new ArrayList<>();//文件名称
         List<List<String>> lists = new ArrayList<>();
+        AtomicReference<Integer> sum = new AtomicReference<>(0);
         lists = searchServicePlus._searchScrollToList(index, scroll, body, true, (size, total) -> {
             log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
         }, new Function<List<List<String>>, Boolean>() {
@@ -221,15 +222,17 @@ public class HelperController {
                     filesNames.add(fileName);
                     File file = resourceService.addNewFile(fileName);
                     ExcelUtil.writeListSXSS(lists, new FileOutputStream(file), (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
+                    sum.set(sum.get() + lists.size());
                     lists.clear();
                 }
                 //限制导出大小
                 if (outPutSize != -1) {
-                    if (lists.size() > outPutSize) {
+                    if (sum.get() >= outPutSize) {
                         //如果大于导出数据 -> 停止
                         return false;
                     }
                 }
+                sum.set(sum.get() + 1);//每次接收一条记录 只需要+1
                 return true;
             }
         });
@@ -256,7 +259,7 @@ public class HelperController {
             @ApiParam(defaultValue = "tb_object_0088")
             @PathVariable(value = "index") String index,
             @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
-            @RequestParam(value = "scroll", required = false) String scroll,
+            @RequestParam(value = "scroll", required = true) String scroll,
             @ApiParam(value = "导出的size(-1代表全部)") @RequestParam(value = "outPutSize", required = false) Integer outPutSize,
             @RequestBody String body
     ) throws Exception {
@@ -264,6 +267,12 @@ public class HelperController {
         tableName = index;
         if (index.matches("comstore_(.*)")) {
             tableName = index.replaceAll("comstore_(.*)", "$1");
+        }
+        if (index.matches("comstore_(.*)_v\\d+")) {
+            tableName = index.replaceAll("comstore_(.*)_v\\d+", "$1");
+        }
+        if (index.matches("(.*)_v\\d+")) {
+            tableName = index.replaceAll("(.*)_v\\d+", "$1");
         }
         if (index.matches("(.*)?_ext")) {
             tableName = index.replaceAll("(.*)?_ext", "$1");
@@ -279,36 +288,36 @@ public class HelperController {
         fieldNames.remove("ES_MOD_TIME");
         List<List<String>> lists = new ArrayList<>();
         AtomicReference<Integer> i = new AtomicReference<>(0);
-        if (StringUtils.isBlank(scroll)) {
-            lists = searchServicePlus._searchToList(index, body, false, (size, total) -> log.info("读取进度:{}/{}->{}", size, total, percent(size, total)));
-        } else {
-            lists = searchServicePlus._searchScrollToList(index, scroll, body, false, (size, total) -> {
-                log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
-            }, new Function<List<List<String>>, Boolean>() {
-                @SneakyThrows
-                @Override
-                public Boolean apply(List<List<String>> lists) {
-                    if (lists.size() >= LIMIT_DB) {
-                        List<List<String>> tmp = new ArrayList<>(lists);
-                        threadPoolExecutorService.addWork(new Runnable() {
-                            @Override
-                            public void run() {
-                                dbService.batchInsert(targetTable, tmp, fieldNames);
-                            }
-                        });
-                        lists.clear();
-                    }
-                    //限制导出大小
-                    if (outPutSize != -1) {
-                        if (lists.size() > outPutSize) {
-                            //如果大于导出数据 -> 停止
-                            return false;
+        AtomicReference<Integer> sum = new AtomicReference<>(0);
+
+        lists = searchServicePlus._searchScrollToList(index, scroll, body, false, (size, total) -> {
+            log.info("读取进度:{}/{}->{}", size + 1, total, percent(size + 1, total));
+        }, new Function<List<List<String>>, Boolean>() {
+            @SneakyThrows
+            @Override
+            public Boolean apply(List<List<String>> lists) {
+                if (lists.size() >= LIMIT_DB) {
+                    List<List<String>> tmp = new ArrayList<>(lists);
+                    threadPoolExecutorService.addWork(new Runnable() {
+                        @Override
+                        public void run() {
+                            dbService.batchInsert(targetTable, tmp, fieldNames);
                         }
-                    }
-                    return true;
+                    });
+                    lists.clear();
                 }
-            });
-        }
+                //限制导出大小
+                if (outPutSize != -1) {
+                    if (sum.get() >= outPutSize) {
+                        //如果大于导出数据 -> 停止
+                        return false;
+                    }
+                }
+                sum.set(sum.get() + 1);//每次接收一条记录 只需要+1
+                return true;
+            }
+        });
+
         if (lists.size() > 0) {
             List<List<String>> tmp = new ArrayList<>(lists);
             threadPoolExecutorService.addWork(new Runnable() {

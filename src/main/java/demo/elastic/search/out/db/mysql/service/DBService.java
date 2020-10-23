@@ -68,7 +68,7 @@ public class DBService {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 List<String> model = datas.get(i);
-                log.info("插入进度:{}/{}->{}", i, size, ExcelUtil.percent(i, size));
+                log.info("插入进度:{}/{}->{}", i + 1, size, ExcelUtil.percent(i + 1, size));
                 for (int j = 0; j < fieldNames.size(); j++) {
                     ps.setNString(j + 1, model.get(j));
                 }

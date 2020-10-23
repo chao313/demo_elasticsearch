@@ -132,10 +132,15 @@ public class SearchServicePlus {
         if (null != totalConsumer) {
             totalConsumer.accept(esResponse.getHits().getTotal());
         }
+        Boolean isGoon = true;//是否继续检索
         if (null != function) {
-            esResponse.getHits().getHits().forEach(innerHits -> {
-                function.apply(innerHits);
-            });
+            for (InnerHits innerHits : esResponse.getHits().getHits()) {
+                isGoon = function.apply(innerHits);
+                if (isGoon == false) {
+                    //如果不继续 跳出当前循环
+                    break;
+                }
+            }
         }
         return esResponse;
     }
@@ -225,7 +230,7 @@ public class SearchServicePlus {
     /**
      * {@link SearchServicePlus#_searchToConsumer(java.lang.String, java.lang.String, java.util.function.Function, java.util.function.Consumer)}
      */
-    public void _searchToConsumer(String index, String body, Function<InnerHits,Boolean> function) {
+    public void _searchToConsumer(String index, String body, Function<InnerHits, Boolean> function) {
         this._searchToConsumer(index, body, function, null);
     }
 
@@ -237,7 +242,7 @@ public class SearchServicePlus {
      * @param function      消费 函数式处理
      * @param totalConsumer 消费，获取total
      */
-    public void _searchToConsumer(String index, String body, Function<InnerHits,Boolean> function, Consumer<Integer> totalConsumer) {
+    public void _searchToConsumer(String index, String body, Function<InnerHits, Boolean> function, Consumer<Integer> totalConsumer) {
         ESResponse esResponse = this._searchWithoutScrollParam(index, body);
         log.info("ES匹配到数量:{}", esResponse.getHits().getTotal());
         if (null != totalConsumer) {
@@ -474,7 +479,7 @@ public class SearchServicePlus {
      * @return
      * @throws IOException
      */
-    public void _searchScrollToListTerms(String index, String scroll, String field, List<String> values, Function<InnerHits,Boolean> function) throws IOException {
+    public void _searchScrollToListTerms(String index, String scroll, String field, List<String> values, Function<InnerHits, Boolean> function) throws IOException {
         Body body = new Body();
         Terms terms = new Terms();
         terms.setField(field);
