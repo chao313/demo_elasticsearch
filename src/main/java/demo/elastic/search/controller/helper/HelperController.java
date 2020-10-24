@@ -1,7 +1,5 @@
 package demo.elastic.search.controller.helper;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.feign.plus.MappingServicePlus;
@@ -18,15 +16,19 @@ import demo.elastic.search.service.RedisService;
 import demo.elastic.search.thread.ThreadPoolExecutorService;
 import demo.elastic.search.util.DateUtil;
 import demo.elastic.search.util.ExcelUtil;
+import demo.elastic.search.util.SQLOracleCalciteParseUtils;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.calcite.sql.SqlBasicCall;
+import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.parser.SqlParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.script.ScriptException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,7 +36,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static demo.elastic.search.util.ExcelUtil.percent;
@@ -336,7 +337,53 @@ public class HelperController {
 
     @ApiOperation(value = "SQL转换成ES结构体")
     @PostMapping(value = "/SQLHelper")
-    public Response SQLHelper(@RequestBody String sql) throws JsonProcessingException {
+    public Response SQLHelper(@RequestBody String sql) throws JsonProcessingException, SqlParseException {
+
+
+        SqlKind kind = SQLOracleCalciteParseUtils.getKind(sql);
+        SqlNode from = SQLOracleCalciteParseUtils.getFrom(sql);
+        SqlNodeList selectList = SQLOracleCalciteParseUtils.getSelectList(sql);
+        SqlBasicCall where = SQLOracleCalciteParseUtils.getWhere(sql);
+        List<SqlBasicCall> sqlBasicCalls = SQLOracleCalciteParseUtils.getWhereSimpleSqlBasicCall(sql);
+        for (SqlBasicCall sqlBasicCall : sqlBasicCalls) {
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IS_NULL)) {
+                //处理null
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.EQUALS)) {
+                //处理 =
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IN)) {
+                //处理 in
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.BETWEEN)) {
+                //处理 between
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.GREATER_THAN_OR_EQUAL)) {
+                //处理 >=
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LESS_THAN_OR_EQUAL)) {
+                //处理 <=
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LIKE)) {
+                //处理 like
+            }
+            //处理 not
+
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IS_NOT_NULL)) {
+                //处理null
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.NOT_EQUALS)) {
+                //处理 =
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.NOT_IN)) {
+                //处理 in
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LIKE)) {
+                //处理 like not like¬
+            }
+
+        }
+
 
         BoolQuery boolQuery = QueryBuilders.boolQuery();
 
