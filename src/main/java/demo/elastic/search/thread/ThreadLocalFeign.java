@@ -5,6 +5,7 @@ import demo.elastic.search.config.feign.JAXRSContract;
 import demo.elastic.search.config.feign.SpringDecoder;
 import demo.elastic.search.config.feign.SpringEncoder;
 import feign.Feign;
+import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -128,7 +129,7 @@ public class ThreadLocalFeign {
                 .contract(new JAXRSContract())
                 .encoder(AwareUtil.applicationContext.getBean(SpringEncoder.class))
                 .decoder(AwareUtil.applicationContext.getBean(SpringDecoder.class))
-//                .errorDecoder(AwareUtil.applicationContext.getBean(ErrorDecoder.class))
+                .errorDecoder(AwareUtil.applicationContext.getBean(ErrorDecoder.class))
                 .decode404()
                 .target(clz, url);
         return (T) bean;

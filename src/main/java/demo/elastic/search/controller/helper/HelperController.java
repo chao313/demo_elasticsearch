@@ -28,6 +28,7 @@ import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParseException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -198,8 +199,8 @@ public class HelperController {
             boolQuery.should(QueryBuilders.idsQuery(dslHelper.getFilter().getIds().getValue()));
         }
         JsonMapper jsonMapper = new JsonMapper();
-//        StringEscapeUtils ?????
-        return Response.Ok(jsonMapper.readTree(boolQuery.getRequestBody()));
+        String s = StringEscapeUtils.unescapeJavaScript(boolQuery.getRequestBody());//去除双\\
+        return Response.Ok(jsonMapper.readTree(s));
     }
 
     @ApiOperation(value = "导出全部的查询结果(收编入ES体系)")
