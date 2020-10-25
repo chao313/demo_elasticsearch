@@ -83,11 +83,13 @@ public class ExecutionAspect {
             }
             if (result instanceof Response) {
                 Response tmp = ((Response) result);
-                JSONObject tmpJsonObject = JSONObject.parseObject(JSONObject.toJSON(tmp.getContent()).toString());
-                if (tmpJsonObject.containsKey("error")) {
-                    //包含异常错误
-                    ((Response) result).setCode(Code.System.FAIL);
-                    ((Response) result).setMsg(tmpJsonObject.toJSONString());
+                if (tmp.getContent() instanceof JSONObject) {
+                    JSONObject tmpJsonObject = (JSONObject) tmp.getContent();
+                    if (tmpJsonObject.containsKey("error")) {
+                        //包含异常错误
+                        ((Response) result).setCode(Code.System.FAIL);
+                        ((Response) result).setMsg(tmpJsonObject.toJSONString());
+                    }
                 }
             }
             logger.info("执行结果:{}", JSONObject.toJSON(result));
