@@ -6,7 +6,7 @@ import demo.elastic.search.po.request.SearchSourceBuilder;
 import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.term.RegexpQuery;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -40,10 +40,21 @@ public class RegexpRequestTests {
     @Test
     public void testRegexpRequest3() {
         SearchSourceBuilder<RegexpQuery, VoidAggs> request = new SearchSourceBuilder<>();
-        String regex = ".*";
+        String regex = "\\d*";
         request.from(0).size(1).query(QueryBuilders.regexpQuery("F1_0088", regex));
         log.info("请求body:{}", request.getRequestBody());
         String response = searchService.DSL_search_regexp("tb_object_0088", request);
+        log.info("response:{}", response);
+    }
+
+    @Test
+    public void testRegexpRequest4() {
+        SearchSourceBuilder<RegexpQuery, VoidAggs> request = new SearchSourceBuilder<>();
+        String regex = "[\\u4e00-\\u9fa5]*";
+        request.from(0).size(1).query(QueryBuilders.regexpQuery("F2_0088", regex));
+        log.info("请求body:{}", request.getRequestBody());
+//        String response = searchService.DSL_search_regexp("tb_object_0088", request);
+        String response = searchService._search("tb_object_0088", StringEscapeUtils.unescapeJavaScript(request.getRequestBody()));
         log.info("response:{}", response);
     }
 }

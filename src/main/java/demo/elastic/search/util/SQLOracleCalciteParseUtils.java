@@ -6,6 +6,7 @@ import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.calcite.util.NlsString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class SQLOracleCalciteParseUtils {
 
-    private static final SqlParser.Config config = SqlParser.configBuilder().setLex(Lex.ORACLE).build();//使用mysql 语法
+    private static final SqlParser.Config config = SqlParser.configBuilder().setLex(Lex.ORACLE).setCaseSensitive(true).build();//使用mysql 语法
 
     private static final List<SqlKind> sqlKinds = Arrays.asList(SqlKind.AND, SqlKind.OR);
 
@@ -42,6 +43,23 @@ public class SQLOracleCalciteParseUtils {
         SqlSelect sqlSelect = ((SqlSelect) sqlNode);
         SqlNodeList sqlNodeList = sqlSelect.getSelectList();
         return sqlNodeList;
+    }
+
+
+    /**
+     * 获取检索的字段
+     */
+    public static List<String> getSimpleSelectList(String sql) throws SqlParseException {
+        //SqlParser 语法解析器
+        SqlParser sqlParser = SqlParser.create(sql, config);
+        SqlNode sqlNode = sqlParser.parseStmt();
+        SqlSelect sqlSelect = ((SqlSelect) sqlNode);
+        SqlNodeList sqlNodeList = sqlSelect.getSelectList();
+        List<String> result = new ArrayList<>();
+        sqlNodeList.getList().forEach(sqlNodeTmp -> {
+            result.add(sqlNodeTmp.toString());
+        });
+        return result;
     }
 
     /**
@@ -74,7 +92,14 @@ public class SQLOracleCalciteParseUtils {
     public static List<SqlBasicCall> getWhereSimpleSqlBasicCall(String sql) throws SqlParseException {
         SqlBasicCall sqlBasicCall = SQLOracleCalciteParseUtils.getWhere(sql);
         List<SqlBasicCall> sqlBasicCalls = new ArrayList<>();
-        getSimpleSqlBasicCalls(sqlBasicCall, sqlBasicCalls);
+        if (sqlKinds.contains(sqlBasicCall.getOperator().getKind())) {
+            //如果是AND 和 OR -> 遍历
+            getSimpleSqlBasicCalls(sqlBasicCall, sqlBasicCalls);
+        } else {
+            //如果是其他
+            sqlBasicCalls.add(sqlBasicCall);
+        }
+
         return sqlBasicCalls;
     }
 
@@ -138,6 +163,21 @@ public class SQLOracleCalciteParseUtils {
 
         }
 
+    }
+
+    public static String getValue(SqlNode sqlNode) {
+        if (sqlNode instanceof SqlIdentifier) {
+            return ((SqlIdentifier) sqlNode).getSimple();
+        }
+        if (sqlNode instanceof SqlCharStringLiteral) {
+            Object value = ((SqlCharStringLiteral) sqlNode).getValue();
+            if (value instanceof NlsString) {
+                return ((NlsString) value).getValue();
+            } else {
+                return value.toString();
+            }
+        }
+        return sqlNode.toString();
     }
 }
 

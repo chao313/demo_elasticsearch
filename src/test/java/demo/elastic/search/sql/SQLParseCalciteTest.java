@@ -2,6 +2,8 @@ package demo.elastic.search.sql;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.calcite.config.Lex;
+import org.apache.calcite.rel.RelNode;
+import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;

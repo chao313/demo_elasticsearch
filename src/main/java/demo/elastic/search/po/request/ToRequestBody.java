@@ -12,4 +12,12 @@ public class ToRequestBody {
         return new JsonMapper().writeValueAsString(this);
     }
 
+//    @SneakyThrows
+//    @JsonIgnore
+//    public String getRequestBody() {
+//        JsonMapper mapper = new JsonMapper();
+//        String json = mapper.writeValueAsString(this);
+//        String result = StringEscapeUtils.unescapeJavaScript(json);//去除双\\
+//        return result;
+//    }
 }

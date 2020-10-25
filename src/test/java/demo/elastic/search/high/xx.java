@@ -25,6 +25,7 @@ public class xx {
             sourceBuilder.query(matchQueryBuilder);*/
 
         sourceBuilder.query(QueryBuilders.termQuery("age", 24));
+        sourceBuilder.query(QueryBuilders.regexpQuery("age", "cc"));
 
     }
 }
