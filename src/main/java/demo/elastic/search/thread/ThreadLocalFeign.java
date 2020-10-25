@@ -141,17 +141,19 @@ public class ThreadLocalFeign {
      * @throws ClassNotFoundException
      */
     public static void init() throws ClassNotFoundException {
-        Map<String, Object> feignClientBeansWithAnnotation = AwareUtil.applicationContext.getBeansWithAnnotation(FeignClient.class);
-        Set<String> keySet = feignClientBeansWithAnnotation.keySet();
-        log.info("初始化本地变量：{}", keySet);
         if (StringUtils.isBlank(ESHOSTThreadLocal.get())) {
             //为空不初始化
             return;
         }
         if (hostToClassToBeanMap.containsKey(ESHOSTThreadLocal.get())) {
             //如果包含 -> 不做处理
+            log.info("已经存在,不做处理");
         } else {
             //如果不包含 -> 进行初始化工作
+            log.info("如果不包含 -> 进行初始化工作");
+            Map<String, Object> feignClientBeansWithAnnotation = AwareUtil.applicationContext.getBeansWithAnnotation(FeignClient.class);
+            Set<String> keySet = feignClientBeansWithAnnotation.keySet();
+            log.info("初始化本地变量：{}", keySet);
             Map<Class, Object> tmpMap = Collections.synchronizedMap(new HashMap<>());//新建class to Bean的map
             for (String key : keySet) {
                 Class<?> clz = Class.forName(key);
@@ -159,6 +161,34 @@ public class ThreadLocalFeign {
                 tmpMap.put(clz, bean);
             }
             hostToClassToBeanMap.put(ESHOSTThreadLocal.get(), tmpMap);
+
+        }
+
+    }
+
+    /**
+     * 初始化指定默认的地址
+     *
+     * @param host
+     * @throws ClassNotFoundException
+     */
+    public static void init(String host) throws ClassNotFoundException {
+        if (hostToClassToBeanMap.containsKey(host)) {
+            //如果包含 -> 不做处理
+            log.info("包含,不做处理");
+        } else {
+            //如果不包含 -> 进行初始化工作
+            log.info("不包含 -> 进行初始化工作");
+            Map<String, Object> feignClientBeansWithAnnotation = AwareUtil.applicationContext.getBeansWithAnnotation(FeignClient.class);
+            Set<String> keySet = feignClientBeansWithAnnotation.keySet();
+            log.info("初始化本地变量：{}", keySet);
+            Map<Class, Object> tmpMap = Collections.synchronizedMap(new HashMap<>());//新建class to Bean的map
+            for (String key : keySet) {
+                Class<?> clz = Class.forName(key);
+                Object bean = ThreadLocalFeign.buildFeignBean(clz, host);
+                tmpMap.put(clz, bean);
+            }
+            hostToClassToBeanMap.put(host, tmpMap);
 
         }
 

@@ -1,6 +1,7 @@
 package demo.elastic.search.config;
 
 import demo.elastic.search.framework.Response;
+import demo.elastic.search.thread.ThreadLocalFeign;
 import demo.elastic.search.util.InetAddressUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -21,14 +22,20 @@ import java.util.Map;
 public class ConfigController {
 
 
-    @ApiOperation(value = "获取指定的kafka地址")
+    @ApiOperation(value = "获取指定的es地址")
     @GetMapping(value = "/getServers")
     public Response getServers() {
 
         /**
-         * 这里的地址是经过拦截的
+         * 这里的地址是经过尝试连接的
          */
         return Response.Ok(BootstrapServersConfig.getMapUseFul());
+    }
+
+    @ApiOperation(value = "获取默认的es地址")
+    @GetMapping(value = "/getDefaultServers")
+    public Response getDefaultServers() {
+        return Response.Ok(Bootstrap.IN_USE);
     }
 
     /**
@@ -58,6 +65,8 @@ public class ConfigController {
                     if (InetAddressUtil.isHostPortConnectable(ip, port)) {
                         //如果正常
                         mapUseFul.put(profile, ipAndPort);
+                        //初始化
+                        ThreadLocalFeign.init(ipAndPort);
                     }
                 }
             }

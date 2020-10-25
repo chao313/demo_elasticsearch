@@ -17,7 +17,6 @@ import demo.elastic.search.service.RedisService;
 import demo.elastic.search.thread.ThreadPoolExecutorService;
 import demo.elastic.search.util.DateUtil;
 import demo.elastic.search.util.ExcelUtil;
-import demo.elastic.search.util.SQLJsqlparserUtils;
 import demo.elastic.search.util.SQLOracleCalciteParseUtils;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -26,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlKind;
+import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static demo.elastic.search.util.ExcelUtil.percent;
+import static demo.elastic.search.util.SQLOracleCalciteParseUtils.getWhereSimpleSqlBasicCall;
 
 /**
  * helper使用
@@ -362,14 +363,14 @@ public class HelperController {
      * <pre>
      *  测试用例
      *  :
-     *  SELECT * FROM tb_object_0088 WHERE
-     * F1_0088 IS NOT NULL AND F2_0088 IS NULL
-     * AND F1_0088 = '1' AND F1_0088 <> '1'
-     * AND F1_0088 IN ('1','2') AND F1_0088 NOT IN ('1','2')
-     * AND F3_0088 BETWEEN 30 AND 40
-     * AND F3_0088 >= 30 AND F3_0088 <= 30
-     * AND REGEXP_LIKE(F4_0088,'\d*') AND  NOT REGEXP_LIKE(F4_0088,'\d*')
-     * AND F4_0088 LIKE 'St%'  AND F4_0088 NOT LIKE 'St%'
+     * SELECT * FROM "tb_object_0088" WHERE
+     * "F1_0088" IS NOT NULL AND "F2_0088" IS NULL
+     * AND "F1_0088" = '1' AND "F1_0088" <> '1'
+     * AND "F1_0088" IN ('1','2') AND "F1_0088" NOT IN ('1','2')
+     * AND "F3_0088" BETWEEN 30 AND 40
+     * AND "F3_0088" >= 30 AND F3_0088 <= 30
+     * AND REGEXP_LIKE("F2_0088",'[\u4e00-\u9fa5]+') AND  NOT REGEXP_LIKE("F1_0088",'[0-9]*')
+     * AND "F4_0088" LIKE 'St%'  AND "F4_0088" NOT LIKE 'St%'
      *
      *
      * SELECT * FROM tb_object_0088 WHERE F1_0088 = '1'
@@ -415,7 +416,7 @@ public class HelperController {
             throw new RuntimeException("只支持 select 类型,当前类型是:" + kind);
         }
         List<String> simpleSelectList = SQLOracleCalciteParseUtils.getSimpleSelectList(sql);
-        List<SqlBasicCall> sqlBasicCalls = SQLOracleCalciteParseUtils.getWhereSimpleSqlBasicCall(sql);
+        List<SqlBasicCall> sqlBasicCalls = getWhereSimpleSqlBasicCall(sql);
         for (SqlBasicCall sqlBasicCall : sqlBasicCalls) {
             if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IS_NOT_NULL)) {
                 //处理null
@@ -550,13 +551,10 @@ public class HelperController {
 
         }
 
-        List<String> tables = SQLJsqlparserUtils.getFrom(sql);
-        if (tables.size() > 1) {
-            throw new RuntimeException("涉及多张表");
-        }
+        SqlNode from = SQLOracleCalciteParseUtils.getFrom(sql);
         DSLHelperPlus dslHelperPlus = new DSLHelperPlus();
         dslHelperPlus.setDslHelper(dslHelper);
-        dslHelperPlus.setIndex(tables.get(0));
+        dslHelperPlus.setIndex(from.toString());
         dslHelperPlus.setFields(simpleSelectList);
         return Response.Ok(dslHelperPlus);
 
