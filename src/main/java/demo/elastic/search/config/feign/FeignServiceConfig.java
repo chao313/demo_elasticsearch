@@ -1,6 +1,8 @@
 package demo.elastic.search.config.feign;
 
 import feign.Logger;
+import feign.RequestInterceptor;
+import feign.RequestTemplate;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +51,17 @@ public class FeignServiceConfig {
                     log.error("解析返回值异常:{}", response, e);
                 }
                 return new RuntimeException(responseError);
+            }
+        };
+    }
+
+    @Bean
+    public RequestInterceptor headerInterceptor() {
+        return new RequestInterceptor() {
+            @Override
+            public void apply(RequestTemplate requestTemplate) {
+                // 设置请求头
+                requestTemplate.header("kbn-version", "4.5.4");
             }
         };
     }

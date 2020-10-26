@@ -59,7 +59,7 @@ public class MappingServicePlus {
         MappingService mappingService = ThreadLocalFeign.getFeignService(MappingService.class);
         String result = mappingService.get(index);
         JSONObject properties = null;
-        switch (Bootstrap.getInUseVersion()) {
+        switch (Bootstrap.getBootstrapByUrl(ThreadLocalFeign.getES_HOST()).getVersion()) {
             case TWO: {
                 properties = JSONUtil.getByKeyAndLevel(JSON.parseObject(result), 4, 0, "properties");
             }

@@ -21,6 +21,9 @@ import java.util.Map;
 @RestController
 public class ConfigController {
 
+    @Value("${default_bootstrap_servers}")
+    private String default_bootstrap_server;
+
 
     @ApiOperation(value = "获取指定的es地址")
     @GetMapping(value = "/getServers")
@@ -35,7 +38,7 @@ public class ConfigController {
     @ApiOperation(value = "获取默认的es地址")
     @GetMapping(value = "/getDefaultServers")
     public Response getDefaultServers() {
-        return Response.Ok(Bootstrap.IN_USE);
+        return Response.Ok(default_bootstrap_server);
     }
 
     /**
@@ -66,7 +69,7 @@ public class ConfigController {
                         //如果正常
                         mapUseFul.put(profile, ipAndPort);
                         //初始化
-                        ThreadLocalFeign.init(ipAndPort);
+//                        ThreadLocalFeign.init(ipAndPort);
                     }
                 }
             }

@@ -337,7 +337,7 @@ public class HelperController {
 
         threadPoolExecutorService.waitComplete();
         log.info("提取完成,return");
-        return Response.Ok(targetTable);
+        return Response.Ok(Arrays.asList(targetTable));
     }
 
     /**

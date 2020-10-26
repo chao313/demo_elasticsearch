@@ -1,7 +1,7 @@
 package demo.elastic.search.config;
 
-public enum Bootstrap {
 
+public enum Bootstrap {
 
     HONE("http://39.107.236.187:9200", Version.SEVEN),
 
@@ -17,7 +17,9 @@ public enum Bootstrap {
 
     PROD_OLD_WIND("http://127.0.0.1:8000", Version.TWO),
 
-    PROD_NEW_WIND("http://127.0.0.1:80", Version.TWO);
+    PROD_NEW_WIND("http://127.0.0.1:80", Version.TWO),
+
+    PROD_WIND("http://10.200.5.217:9161/elasticsearch/", Version.TWO);
 
     private String url;
     private Version version;
@@ -46,14 +48,13 @@ public enum Bootstrap {
 
     public static final String allowableValues = "39.107.236.187:9200,10.202.16.9:9200,127.0.0.1:8000,127.0.0.1:80";
 
-//    public static final String IN_USE = "http://10.202.16.9:9200";
-//    public static final String IN_USE = "http://127.0.0.1:9202";
-
     //    public static final String IN_USE = "http://10.202.16.9:9200";
+//    public static final String IN_USE = "http://127.0.0.1:9202";
+//    public static final String IN_USE = "http://10.202.16.9:9200";
 //    public static final String IN_USE = "http://10.202.16.136:9201";
 //    public static final String IN_USE = "http://127.0.0.1:80";
 //    public static final String IN_USE = "http://39.107.236.187:7013";
-    public static final String IN_USE = "http://39.107.236.187:7014";
+    public static final String IN_USE = "http://10.200.5.217:9161/elasticsearch/";
 
     public static final String EXAMPLE = "http://127.0.0.1:9200 http://127.0.0.1:9202 http://39.107.236.187:7013 http://10.202.16.9:9200 http://127.0.0.1:80 http://39.107.236.187:7014";
     //    public static final String DEFAULT_VALUE = "http://39.107.236.187:7013";
