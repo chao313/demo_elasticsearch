@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.LicenseService;
+import demo.elastic.search.feign.XPackService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import demo.elastic.search.util.StringToJson;
@@ -12,10 +13,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -147,6 +145,24 @@ public class Cluster_LicenseController {
         return Response.Ok(JSONObject.parseObject(result));
     }
 
+    /**
+     * 更新证书
+     */
+    @ApiOperation(value = "6.x的更新")
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @RequestMapping(value = "/_xpack/license", method = RequestMethod.POST)
+    public Response _xpack(@RequestBody String body) {
+        XPackService xPackService = ThreadLocalFeign.getFeignService(XPackService.class);
+        String result = xPackService._xpack_license(body);
+        return Response.Ok(JSONObject.parseObject(result));
+    }
 
 }
 

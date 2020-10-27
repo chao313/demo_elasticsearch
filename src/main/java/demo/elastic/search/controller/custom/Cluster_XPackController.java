@@ -50,25 +50,6 @@ public class Cluster_XPackController {
         return Response.Ok(JSONObject.parseObject(result));
     }
 
-    /**
-     * 更新证书
-     */
-    @ApiOperation(value = "6.x的更新迷")
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @RequestMapping(value = "/_xpack/license", method = RequestMethod.POST)
-    public Response _xpack(@RequestBody String body) {
-        XPackService xPackService = ThreadLocalFeign.getFeignService(XPackService.class);
-        String result = xPackService._xpack_license(body);
-        return Response.Ok(JSONObject.parseObject(result));
-    }
-
 
     /**
      * categories

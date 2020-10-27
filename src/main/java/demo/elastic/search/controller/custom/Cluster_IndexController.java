@@ -79,25 +79,25 @@ public class Cluster_IndexController {
         }
     }
 
-    @ApiImplicitParams(value = {
-            @ApiImplicitParam(
-                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
-                    value = Bootstrap.EXAMPLE,
-                    dataType = "string",
-                    paramType = "header",
-                    defaultValue = Bootstrap.DEFAULT_VALUE)
-    })
-    @ApiOperation(value = "列出index")
-    @GetMapping(value = "/_cat/indices/page")
-    public Object _cat_indices_page(@ApiParam(value = "每页数量") @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) throws JsonProcessingException {
-        CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
-        String source = catService._cat_indices(true, FormatEnum.JSON);
-        JSONArray jsonArray = JSONArray.parseArray(source);
-        List<Object> objects = Arrays.asList(jsonArray.toArray());
-        String uuid = UUID.randomUUID().toString();
-        redisTemplate.opsForList().leftPushAll(uuid, objects);//存入list
-        return redisService.getRecordByScrollId(uuid, 1, pageSize);
-    }
+//    @ApiImplicitParams(value = {
+//            @ApiImplicitParam(
+//                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
+//                    value = Bootstrap.EXAMPLE,
+//                    dataType = "string",
+//                    paramType = "header",
+//                    defaultValue = Bootstrap.DEFAULT_VALUE)
+//    })
+//    @ApiOperation(value = "列出index")
+//    @GetMapping(value = "/_cat/indices/page")
+//    public Object _cat_indices_page(@ApiParam(value = "每页数量") @RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) throws JsonProcessingException {
+//        CatService catService = ThreadLocalFeign.getFeignService(CatService.class);
+//        String source = catService._cat_indices(true, FormatEnum.JSON);
+//        JSONArray jsonArray = JSONArray.parseArray(source);
+//        List<Object> objects = Arrays.asList(jsonArray.toArray());
+//        String uuid = UUID.randomUUID().toString();
+//        redisTemplate.opsForList().leftPushAll(uuid, objects);//存入list
+//        return redisService.getRecordByScrollId(uuid, 1, pageSize);
+//    }
 
 }
 
