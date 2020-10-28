@@ -5,6 +5,7 @@ import demo.elastic.search.thread.ThreadLocalFeign;
 import demo.elastic.search.util.InetAddressUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +25,9 @@ public class ConfigController {
 
     @Value("${default_bootstrap_servers}")
     private String default_bootstrap_server;
+
+    @Autowired
+    private StartConfig startConfig;
 
 
     @ApiOperation(value = "获取指定的es地址")
@@ -39,6 +44,19 @@ public class ConfigController {
     @GetMapping(value = "/getDefaultServers")
     public Response getDefaultServers() {
         return Response.Ok(default_bootstrap_server);
+    }
+
+
+    @ApiOperation(value = "获取多字段匹配地址")
+    @GetMapping(value = "/getMulti_match_fields")
+    public Response getMulti_match_fields() {
+        return Response.Ok(startConfig.getMulti_match_fieldsList());
+    }
+
+    @ApiOperation(value = "获取多字段默认选中匹配地址")
+    @GetMapping(value = "/getMulti_match_fields_defaultList")
+    public Response getMulti_match_fields_defaultList() {
+        return Response.Ok(startConfig.getMulti_match_fields_defaultList());
     }
 
     /**

@@ -9,12 +9,16 @@ import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.MappingService;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
+import demo.elastic.search.util.FieldComparator;
 import demo.elastic.search.util.JSONUtil;
 import demo.elastic.search.util.StringToJson;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
 
 
 /**
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RequestMapping(value = "/Index_MappingController")
 @RestController
+@Slf4j
 public class Index_MappingController {
 
     @ApiOperation(value = "查看指定index的全部的mapping")
@@ -56,6 +61,34 @@ public class Index_MappingController {
         JSONObject properties = JSONUtil.getByKey(JSON.parseObject(JSONObject.parse(s).toString()), "properties");
         JsonNode sortJson = StringToJson.getSortJson(properties);
         return Response.Ok(sortJson);
+    }
+
+    /**
+     * 批量获取index的属性
+     * -> index->[field1,field2...]
+     */
+    @PostMapping(value = "/_mapping/compatible/list")
+    public Response get_compatible(@RequestBody List<String> indexs) {
+        MappingService mappingService = ThreadLocalFeign.getFeignService(MappingService.class);
+        StringBuilder indexPath = new StringBuilder();
+        indexs.forEach(index -> {
+            indexPath.append(index).append(",");
+        });
+        indexPath.substring(0, indexPath.length());
+        String s = mappingService.get(indexPath.toString());
+        JSONObject root = JSON.parseObject(JSONObject.parse(s).toString());
+        Map<String, Collection<String>> map = new HashMap<>();
+        root.forEach((key, obj) -> {
+            if (obj instanceof JSONObject) {
+                JSONObject properties = JSONUtil.getByKey((JSONObject) obj, "properties");
+                Set<String> keySet = properties.keySet();
+                Set<String> sortSet = new TreeSet<String>(new FieldComparator());
+                sortSet.addAll(keySet);
+                map.put(key, sortSet);
+            }
+        });
+
+        return Response.Ok(map);
     }
 
     @ApiOperation(value = "查看指定index的指定字段的mapping")
