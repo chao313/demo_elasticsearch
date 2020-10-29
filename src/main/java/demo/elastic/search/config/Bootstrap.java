@@ -19,7 +19,9 @@ public enum Bootstrap {
 
     PROD_NEW_WIND("http://127.0.0.1:80", Version.TWO),
 
-    PROD_WIND("http://10.200.5.217:9161/elasticsearch/", Version.TWO);
+    PROD_UNIQE("http://10.200.5.217:9161/elasticsearch/", Version.TWO),
+
+    PROD_CHECK("http://10.200.5.217:9162/elasticsearch/", Version.TWO);
 
     private String url;
     private Version version;
