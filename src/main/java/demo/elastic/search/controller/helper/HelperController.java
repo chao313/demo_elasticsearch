@@ -94,7 +94,7 @@ public class HelperController {
             boolQuery.filter(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
         });
         dslHelper.getFilter().getRange().forEach(range -> {
-            boolQuery.filter(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getLte()));
+            boolQuery.filter(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
         });
         dslHelper.getFilter().getRegexp().forEach(regexp -> {
             boolQuery.filter(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
@@ -123,7 +123,7 @@ public class HelperController {
             boolQuery.must(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
         });
         dslHelper.getMust().getRange().forEach(range -> {
-            boolQuery.must(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getLte()));
+            boolQuery.must(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
         });
         dslHelper.getMust().getRegexp().forEach(regexp -> {
             boolQuery.must(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
@@ -152,7 +152,7 @@ public class HelperController {
             boolQuery.must_not(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
         });
         dslHelper.getMust_not().getRange().forEach(range -> {
-            boolQuery.must_not(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getLte()));
+            boolQuery.must_not(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
         });
         dslHelper.getMust_not().getRegexp().forEach(regexp -> {
             boolQuery.must_not(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
@@ -181,7 +181,7 @@ public class HelperController {
             boolQuery.should(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
         });
         dslHelper.getShould().getRange().forEach(range -> {
-            boolQuery.should(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getLte()));
+            boolQuery.should(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
         });
         dslHelper.getShould().getRegexp().forEach(regexp -> {
             boolQuery.should(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
@@ -462,11 +462,25 @@ public class HelperController {
                 range.setGte(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
                 dslHelper.must(range);
             }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.GREATER_THAN)) {
+                //处理 >=
+                DSLHelper.Range range = new DSLHelper.Range();
+                range.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                range.setGt(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                dslHelper.must(range);
+            }
             if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LESS_THAN_OR_EQUAL)) {
                 //处理 <=
                 DSLHelper.Range range = new DSLHelper.Range();
                 range.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
                 range.setLte(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                dslHelper.must(range);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LESS_THAN)) {
+                //处理 <=
+                DSLHelper.Range range = new DSLHelper.Range();
+                range.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                range.setLt(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
                 dslHelper.must(range);
             }
             if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LIKE)) {

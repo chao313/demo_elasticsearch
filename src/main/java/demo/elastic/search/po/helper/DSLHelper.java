@@ -295,7 +295,9 @@ public class DSLHelper {
     public static class Range {
         private String field;
         private String gte;
+        private String gt;
         private String lte;
+        private String lt;
     }
 
 
