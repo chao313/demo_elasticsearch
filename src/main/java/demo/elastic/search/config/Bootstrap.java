@@ -19,6 +19,10 @@ public enum Bootstrap {
 
     PROD_NEW_WIND("http://127.0.0.1:80", Version.TWO),
 
+    Ali2("http://39.107.236.187:7014", Version.SEVEN),
+
+    Ali("http://39.107.236.187:7013", Version.SEVEN),
+
     PROD_UNIQE("http://10.200.5.217:9161/elasticsearch/", Version.TWO),
 
     PROD_CHECK("http://10.200.5.217:9162/elasticsearch/", Version.TWO);
@@ -56,7 +60,7 @@ public enum Bootstrap {
 //    public static final String IN_USE = "http://10.202.16.136:9201";
 //    public static final String IN_USE = "http://127.0.0.1:80";
 //    public static final String IN_USE = "http://39.107.236.187:7013";
-    public static final String IN_USE = "http://10.200.5.217:9161/elasticsearch/";
+    public static final String IN_USE = "http://39.107.236.187:7013";
 
     public static final String EXAMPLE = "http://127.0.0.1:9200 http://127.0.0.1:9202 http://39.107.236.187:7013 http://10.202.16.9:9200 http://127.0.0.1:80 http://39.107.236.187:7014";
     //    public static final String DEFAULT_VALUE = "http://39.107.236.187:7013";

@@ -88,24 +88,30 @@
        * 削减
        * 拆分
 4. Search
-   * Seach分词检索
-   * Seach数量检索
-   * SeachDSL组合检索
-   * Seach全文检索
-   * SeachDSL术语检索
-   * Seach解释验证
-   * SeachLucene检索
-   * Seach脚本检索
-   * Seach滚动检索
-   * Seach分片检索
-   * SeachSQL检索
+   * Search分词检索
+   * Search数量检索
+   * SearchDSL组合检索
+   * Search全文检索
+   * SearchDSL术语检索
+   * Search解释验证
+   * SearchLucene检索
+   * Search脚本检索
+   * Search滚动检索
+   * Search分片检索
+   * SearchSQL检索
+     * 支持 = <>
+     * 支持 IS NULL / IS NOT NULL
+     * 支持 REGEXP / NOT REGEXP
+     * 支持 LIKE / NOT LIKE
+     * 支持 > >= <= < BETWEEN AND
+     * 支持 IN / NOT IN
 5. Aggregation
 
 
 
 * 其他
   * 数据提取进度
-  * 日志推送到前段
+  * 日志推送到前端
   * 数据提取管理(终止...)
   * 数据批量操作（in 一个文本）
   * SQL单独放置

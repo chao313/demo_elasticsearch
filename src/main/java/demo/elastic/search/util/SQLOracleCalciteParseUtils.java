@@ -92,14 +92,16 @@ public class SQLOracleCalciteParseUtils {
     public static List<SqlBasicCall> getWhereSimpleSqlBasicCall(String sql) throws SqlParseException {
         SqlBasicCall sqlBasicCall = SQLOracleCalciteParseUtils.getWhere(sql);
         List<SqlBasicCall> sqlBasicCalls = new ArrayList<>();
-        if (sqlKinds.contains(sqlBasicCall.getOperator().getKind())) {
-            //如果是AND 和 OR -> 遍历
-            getSimpleSqlBasicCalls(sqlBasicCall, sqlBasicCalls);
-        } else {
-            //如果是其他
-            sqlBasicCalls.add(sqlBasicCall);
+        if (null != sqlBasicCall) {
+            //如果没有where -> 这里可能为空
+            if (sqlKinds.contains(sqlBasicCall.getOperator().getKind())) {
+                //如果是AND 和 OR -> 遍历
+                getSimpleSqlBasicCalls(sqlBasicCall, sqlBasicCalls);
+            } else {
+                //如果是其他
+                sqlBasicCalls.add(sqlBasicCall);
+            }
         }
-
         return sqlBasicCalls;
     }
 
