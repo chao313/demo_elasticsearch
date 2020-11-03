@@ -16,9 +16,8 @@ import java.util.List;
  * 解析语句的工具类
  */
 @Slf4j
-public class SQLOracleCalciteParseUtils {
+public class SQLMysqlCalciteParseUtils {
 
-//    private static final SqlParser.Config config = SqlParser.configBuilder().setLex(Lex.ORACLE).setCaseSensitive(true).build();//使用mysql 语法
     private static final SqlParser.Config config = SqlParser.configBuilder().setLex(Lex.MYSQL).setCaseSensitive(true).build();//使用mysql 语法
 
     private static final List<SqlKind> sqlKinds = Arrays.asList(SqlKind.AND, SqlKind.OR);
@@ -41,7 +40,7 @@ public class SQLOracleCalciteParseUtils {
         //SqlParser 语法解析器
         SqlParser sqlParser = SqlParser.create(sql, config);
         SqlNode sqlNode = sqlParser.parseStmt();
-        SqlSelect sqlSelect = ((SqlSelect) sqlNode);
+        SqlSelect sqlSelect = getSqlSelect(sqlNode);
         SqlNodeList sqlNodeList = sqlSelect.getSelectList();
         return sqlNodeList;
     }
@@ -54,7 +53,7 @@ public class SQLOracleCalciteParseUtils {
         //SqlParser 语法解析器
         SqlParser sqlParser = SqlParser.create(sql, config);
         SqlNode sqlNode = sqlParser.parseStmt();
-        SqlSelect sqlSelect = ((SqlSelect) sqlNode);
+        SqlSelect sqlSelect = getSqlSelect(sqlNode);
         SqlNodeList sqlNodeList = sqlSelect.getSelectList();
         List<String> result = new ArrayList<>();
         sqlNodeList.getList().forEach(sqlNodeTmp -> {
@@ -70,7 +69,7 @@ public class SQLOracleCalciteParseUtils {
         //SqlParser 语法解析器
         SqlParser sqlParser = SqlParser.create(sql, config);
         SqlNode sqlNode = sqlParser.parseStmt();
-        SqlSelect sqlSelect = ((SqlSelect) sqlNode);
+        SqlSelect sqlSelect = getSqlSelect(sqlNode);
         SqlNode from = sqlSelect.getFrom();
         return from;
     }
@@ -82,7 +81,7 @@ public class SQLOracleCalciteParseUtils {
         //SqlParser 语法解析器
         SqlParser sqlParser = SqlParser.create(sql, config);
         SqlNode sqlNode = sqlParser.parseStmt();
-        SqlSelect sqlSelect = ((SqlSelect) sqlNode);
+        SqlSelect sqlSelect = getSqlSelect(sqlNode);
         SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlSelect.getWhere();
         return sqlBasicCall;
     }
@@ -91,7 +90,7 @@ public class SQLOracleCalciteParseUtils {
      * 获取检索的where 这里是简单的只有and的解析
      */
     public static List<SqlBasicCall> getWhereSimpleSqlBasicCall(String sql) throws SqlParseException {
-        SqlBasicCall sqlBasicCall = SQLOracleCalciteParseUtils.getWhere(sql);
+        SqlBasicCall sqlBasicCall = SQLMysqlCalciteParseUtils.getWhere(sql);
         List<SqlBasicCall> sqlBasicCalls = new ArrayList<>();
         if (null != sqlBasicCall) {
             //如果没有where -> 这里可能为空
@@ -181,6 +180,30 @@ public class SQLOracleCalciteParseUtils {
             }
         }
         return sqlNode.toString();
+    }
+
+    /**
+     * 兼容 select 和 order语法
+     *
+     * @param sqlNode
+     * @return
+     */
+    private static SqlSelect getSqlSelect(SqlNode sqlNode) {
+        SqlSelect sqlSelect = null;
+        if (sqlNode instanceof SqlOrderBy) {
+            //如果是order 语法
+            SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
+            SqlNode query = sqlOrderBy.query;
+            if (query instanceof SqlSelect) {
+                sqlSelect = (SqlSelect) query;
+            } else {
+                throw new RuntimeException("解析sql异常:" + query);
+            }
+        } else if (sqlNode instanceof SqlSelect) {
+            //普通的 select
+            sqlSelect = (SqlSelect) sqlNode;
+        }
+        return sqlSelect;
     }
 }
 

@@ -17,6 +17,7 @@ import demo.elastic.search.service.RedisService;
 import demo.elastic.search.thread.ThreadPoolExecutorService;
 import demo.elastic.search.util.DateUtil;
 import demo.elastic.search.util.ExcelUtil;
+import demo.elastic.search.util.SQLMysqlCalciteParseUtils;
 import demo.elastic.search.util.SQLOracleCalciteParseUtils;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -574,5 +575,172 @@ public class HelperController {
 
     }
 
+    @ApiOperation(value = "SQL转换成ES结构体Beta版本")
+    @PostMapping(value = "/SQLToEsHelper_Beta")
+    public Response SQLToEsHelper_Beta(@RequestBody String sql) throws JsonProcessingException, SqlParseException, JSQLParserException {
+
+        DSLHelper dslHelper = new DSLHelper();
+        SqlKind kind = SQLMysqlCalciteParseUtils.getKind(sql);
+        if (!kind.equals(SqlKind.SELECT) && !kind.equals(SqlKind.ORDER_BY)) {
+            throw new RuntimeException("只支持 select/order by 类型,当前类型是:" + kind);
+        }
+        List<String> simpleSelectList = SQLMysqlCalciteParseUtils.getSimpleSelectList(sql);
+        List<SqlBasicCall> sqlBasicCalls = SQLMysqlCalciteParseUtils.getWhereSimpleSqlBasicCall(sql);
+        for (SqlBasicCall sqlBasicCall : sqlBasicCalls) {
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IS_NOT_NULL)) {
+                //处理null
+                DSLHelper.Exists exists = new DSLHelper.Exists();
+                exists.setField(sqlBasicCall.getOperands()[0].toString());
+                dslHelper.must(exists);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.EQUALS)) {
+                //处理 =
+                DSLHelper.Term term = new DSLHelper.Term();
+                term.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                term.setValue(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                dslHelper.must(term);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IN)) {
+                //处理 in
+                DSLHelper.Terms terms = new DSLHelper.Terms();
+                terms.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                if (sqlBasicCall.getOperands()[1] instanceof SqlNodeList) {
+                    SqlNodeList sqlNodeList = (SqlNodeList) sqlBasicCall.getOperands()[1];
+                    List<String> values = new ArrayList<>();
+                    sqlNodeList.getList().forEach(sqlNode -> {
+                        values.add(SQLMysqlCalciteParseUtils.getValue(sqlNode));
+                    });
+                    terms.setValue(values);
+                } else {
+                    throw new RuntimeException("In 后不是数组");
+                }
+                dslHelper.must(terms);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.BETWEEN)) {
+                //处理 between
+                DSLHelper.Range range = new DSLHelper.Range();
+                range.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                range.setGte(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                range.setLte(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[2]));
+                dslHelper.must(range);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.GREATER_THAN_OR_EQUAL)) {
+                //处理 >=
+                DSLHelper.Range range = new DSLHelper.Range();
+                range.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                range.setGte(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                dslHelper.must(range);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.GREATER_THAN)) {
+                //处理 >=
+                DSLHelper.Range range = new DSLHelper.Range();
+                range.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                range.setGt(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                dslHelper.must(range);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LESS_THAN_OR_EQUAL)) {
+                //处理 <=
+                DSLHelper.Range range = new DSLHelper.Range();
+                range.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                range.setLte(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                dslHelper.must(range);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LESS_THAN)) {
+                //处理 <=
+                DSLHelper.Range range = new DSLHelper.Range();
+                range.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                range.setLt(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                dslHelper.must(range);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LIKE)) {
+                //处理 like -> 注意类型都是 LIKE
+                if (sqlBasicCall.getOperator().getName().equalsIgnoreCase("LIKE")) {
+                    DSLHelper.Wildcard wildcard = new DSLHelper.Wildcard();
+                    wildcard.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                    wildcard.setValue(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                    dslHelper.must(wildcard);
+                }
+
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.OTHER_FUNCTION)) {
+                //处理 regex_like 这里当做函数来处理
+                if (sqlBasicCall.getOperator().getName().equalsIgnoreCase("REGEXP_LIKE")) {
+                    DSLHelper.Regexp regexp = new DSLHelper.Regexp();
+                    regexp.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                    regexp.setValue(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                    dslHelper.must(regexp);
+                } else {
+                    throw new RuntimeException("出现不支持函数:" + sqlBasicCall.getOperator().getName());
+                }
+            }
+            //处理 not
+
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IS_NULL)) {
+                //处理 not null
+                //处理null
+                DSLHelper.Exists exists = new DSLHelper.Exists();
+                exists.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                dslHelper.must_not(exists);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.NOT_EQUALS)) {
+                //处理 <>
+                DSLHelper.Term term = new DSLHelper.Term();
+                term.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                term.setValue(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                dslHelper.must_not(term);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.NOT_IN)) {
+                //处理 not in
+                DSLHelper.Terms terms = new DSLHelper.Terms();
+                terms.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                if (sqlBasicCall.getOperands()[1] instanceof SqlNodeList) {
+                    SqlNodeList sqlNodeList = (SqlNodeList) sqlBasicCall.getOperands()[1];
+                    List<String> values = new ArrayList<>();
+                    sqlNodeList.getList().forEach(sqlNode -> {
+                        values.add(SQLMysqlCalciteParseUtils.getValue(sqlNode));
+                    });
+                    terms.setValue(values);
+                } else {
+                    throw new RuntimeException("In 后不是数组");
+                }
+                dslHelper.must_not(terms);
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LIKE)) {
+                //处理 not like -> 注意类型都是 LIKE
+                if (sqlBasicCall.getOperator().getName().equalsIgnoreCase("NOT LIKE")) {
+                    DSLHelper.Wildcard wildcard = new DSLHelper.Wildcard();
+                    wildcard.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
+                    wildcard.setValue(SQLMysqlCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
+                    dslHelper.must_not(wildcard);
+                }
+            }
+            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.NOT)) {
+                //处理 NOT 先判断是NOT类型。
+                //处理 regex_like 这里当做函数来处理
+                Arrays.stream(sqlBasicCall.getOperands()).forEach(sqlNode -> {
+                    if (sqlNode instanceof SqlBasicCall) {
+                        SqlBasicCall sqlBasicCallTmp = (SqlBasicCall) sqlNode;
+                        if (sqlBasicCallTmp.getOperator().getName().equalsIgnoreCase("REGEXP_LIKE")) {
+                            DSLHelper.Regexp regexp = new DSLHelper.Regexp();
+                            regexp.setField(SQLMysqlCalciteParseUtils.getValue(sqlBasicCallTmp.getOperands()[0]));
+                            regexp.setValue(SQLMysqlCalciteParseUtils.getValue(sqlBasicCallTmp.getOperands()[1]));
+                            dslHelper.must_not(regexp);
+                        } else {
+                            throw new RuntimeException("出现不支持函数:" + sqlBasicCall.getOperator().getName());
+                        }
+                    }
+                });
+            }
+
+        }
+
+        SqlNode from = SQLMysqlCalciteParseUtils.getFrom(sql);
+        DSLHelperPlus dslHelperPlus = new DSLHelperPlus();
+        dslHelperPlus.setDslHelper(dslHelper);
+        dslHelperPlus.setIndex(from.toString());
+        dslHelperPlus.setFields(simpleSelectList);
+        return Response.Ok(dslHelperPlus);
+
+    }
 
 }
