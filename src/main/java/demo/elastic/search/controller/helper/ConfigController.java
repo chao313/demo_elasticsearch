@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import demo.elastic.search.config.StartConfig;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.thread.ThreadLocalFeign;
+import demo.elastic.search.util.HttpRequestUtils;
 import demo.elastic.search.util.InetAddressUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -84,22 +85,8 @@ public class ConfigController {
     @ApiOperation(value = "获取ip的角色，获取请求段的ip")
     @GetMapping(value = "/getRoleAdmin")
     public Response getRoleAdmin(HttpServletRequest httpServletRequest) {
-        String ip = httpServletRequest.getHeader("x-forwarded-for");
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = httpServletRequest.getHeader("Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = httpServletRequest.getHeader("WL-Proxy-Client-IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = httpServletRequest.getHeader("HTTP_CLIENT_IP");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = httpServletRequest.getHeader("HTTP_X_FORWARDED_FOR");
-        }
-        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = httpServletRequest.getRemoteAddr();
-        }
+        String ip = HttpRequestUtils.getRealRequestIp(httpServletRequest);
+
         Response response;
         if (roleSupAdminIps.contains(ip)) {
             //如果是supAdmin角色

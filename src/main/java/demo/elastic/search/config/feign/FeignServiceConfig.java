@@ -55,8 +55,8 @@ public class FeignServiceConfig {
         };
     }
 
-    @Bean
-    public RequestInterceptor headerInterceptor() {
+    @Bean(value = "4.5.4")
+    public RequestInterceptor headerInterceptor4_5_4() {
         return new RequestInterceptor() {
             @Override
             public void apply(RequestTemplate requestTemplate) {
@@ -66,6 +66,26 @@ public class FeignServiceConfig {
         };
     }
 
+    @Bean(value = "default")
+    public RequestInterceptor headerInterceptorDefault() {
+        return new RequestInterceptor() {
+            @Override
+            public void apply(RequestTemplate requestTemplate) {
+
+            }
+        };
+    }
+
+    @Bean(value = "6.4.1")
+    public RequestInterceptor headerInterceptor6_4_1() {
+        return new RequestInterceptor() {
+            @Override
+            public void apply(RequestTemplate requestTemplate) {
+                // 设置请求头
+                requestTemplate.header("kbn-version", "6.4.1");
+            }
+        };
+    }
 
 }
 

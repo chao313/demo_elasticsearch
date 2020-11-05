@@ -8,9 +8,7 @@ import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.util.NlsString;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * 解析语句的工具类
@@ -204,6 +202,60 @@ public class SQLMysqlCalciteParseUtils {
             sqlSelect = (SqlSelect) sqlNode;
         }
         return sqlSelect;
+    }
+
+    /**
+     * 获取order list
+     *
+     * @param sql
+     * @return
+     */
+    public static SqlNodeList getSqlOrder(String sql) throws SqlParseException {
+        //SqlParser 语法解析器
+        SqlParser sqlParser = SqlParser.create(sql, config);
+        SqlNode sqlNode = sqlParser.parseStmt();
+        SqlNodeList order = null;
+        if (sqlNode instanceof SqlOrderBy) {
+            //如果是order 语法
+            SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
+            order = sqlOrderBy.orderList;
+        }
+        return order;
+    }
+
+    /**
+     * 获取order list
+     *
+     * @param sql
+     * @return
+     */
+    public static Map<String, String> getSqlOrderMap(String sql) throws SqlParseException {
+        SqlNodeList sqlNodes = getSqlOrder(sql);
+        Map<String, String> result = new LinkedHashMap<>();
+        if (null != sqlNodes) {
+            sqlNodes.getList().forEach(sqlNode -> {
+                if (sqlNode instanceof SqlBasicCall) {
+                    SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
+                    SqlKind kind = sqlBasicCall.getKind();
+                    if (kind.equals(SqlKind.DESCENDING)) {
+                        //倒序
+                        SqlNode[] operands = sqlBasicCall.getOperands();
+                        Arrays.stream(operands).forEach(operand -> {
+                            result.put(operand.toString(), "desc");
+                        });
+                    } else {
+                        throw new RuntimeException("预料之外的语法:" + kind);
+                    }
+
+                } else if (sqlNode instanceof SqlIdentifier) {
+                    SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
+                    result.put(sqlIdentifier.toString(), "asc");
+                } else {
+                    throw new RuntimeException("预料之外的语法:" + sqlNode);
+                }
+            });
+        }
+        return result;
     }
 }
 

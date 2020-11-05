@@ -1,6 +1,7 @@
 package demo.elastic.search.thread;
 
 import demo.elastic.search.config.AwareUtil;
+import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.feign.JAXRSContract;
 import demo.elastic.search.config.feign.SpringDecoder;
 import demo.elastic.search.config.feign.SpringEncoder;
@@ -126,12 +127,14 @@ public class ThreadLocalFeign {
      * 根据url构造Feign的bean
      */
     public static <T> T buildFeignBean(Class<T> clz, String url) {
+        Bootstrap bootstrap = Bootstrap.getBootstrapByUrl(url);
+        Bootstrap.KbnVersion kbn_version = bootstrap == null ? Bootstrap.KbnVersion.DEFAULT : bootstrap.getKbn_version();//如果为空 就是默认
         Object bean = Feign.builder()
                 .contract(new JAXRSContract())
                 .encoder(AwareUtil.applicationContext.getBean(SpringEncoder.class))
                 .decoder(AwareUtil.applicationContext.getBean(SpringDecoder.class))
                 .errorDecoder(AwareUtil.applicationContext.getBean(ErrorDecoder.class))
-                .requestInterceptor(AwareUtil.applicationContext.getBean(RequestInterceptor.class))//添加拦截器
+                .requestInterceptor((RequestInterceptor) AwareUtil.applicationContext.getBean(kbn_version.getVersion()))//添加拦截器
                 .decode404()
                 .target(clz, url);
         return (T) bean;

@@ -1,6 +1,8 @@
 package demo.elastic.search.config.web;
 
 import demo.elastic.search.thread.ThreadLocalFeign;
+import demo.elastic.search.util.HttpRequestUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  * 请求拦截器（HTTP层面的）
  */
 @Configuration
+@Slf4j
 public class CustomInterceptConfig extends WebMvcConfigurerAdapter {
 
     public static final String ES_HOST_HEADER_KEY = "ES_HOST";
@@ -63,7 +66,8 @@ public class CustomInterceptConfig extends WebMvcConfigurerAdapter {
 
             @Override
             public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
+                String ip = HttpRequestUtils.getRealRequestIp(request);
+                log.info("请求的ip:{}", ip);
             }
 
             @Override

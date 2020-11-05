@@ -36,10 +36,37 @@ public class TagsTest {
 
     private final String index = "tags";
 
+    /**
+     * <pre>
+     *  curl -XPOST http://10.202.16.9:9200/tags -d '{
+     *     "settings" : {
+     *         "number_of_shards" : 1,
+     * 		"number_of_replicas" : 0
+     *
+     *     },
+     *     "mappings" : {
+     *         "tags" : {
+     *             "properties" : {
+     *                 "windcode" : { "type" : "string", "index" : "not_analyzed" },
+     *                 "compname" : { "type" : "string", "index" : "not_analyzed" },
+     *                 "itemID" : { "type" : "string", "index" : "not_analyzed" },
+     *                 "label" : { "type" : "string", "index" : "not_analyzed" }
+     *             }
+     *         }
+     *     }
+     * }
+     * '
+     * </pre>
+     *
+     * @throws IOException
+     * @throws IllegalAccessException
+     */
     @Test
     public void test() throws IOException, IllegalAccessException {
         InputStream resourceAsStream = TagsTest.class.getResourceAsStream("/out/TagsWind.txt");
         List<String> list = IOUtils.readLines(resourceAsStream, "UTF-8");
+        InputStream removedTagsAsStream = TagsTest.class.getResourceAsStream("/out/removedTags");//移除的标签
+        List<String> removedTagsList = IOUtils.readLines(removedTagsAsStream, "UTF-8");
 
         List<TagsJP> tagsJPS = Collections.synchronizedList(new ArrayList<>(100000));
         for (String s : list) {
@@ -53,11 +80,13 @@ public class TagsTest {
                 parse.getHits().getHits().forEach(innerHits -> {
                     Map<String, Object> source = innerHits.getSource();
                     Tags masterTags = getTags(source);
+                    masterTags.getLabel().removeAll(removedTagsList);
                     String masterlabel = Arrays.toString(masterTags.getLabel().toArray());
                     masterTags.getLabel().forEach(masterLabel -> {
                         //获取竞品数据
                         List<Tags> jpTags = getOtherByLabel(masterLabel);
                         jpTags.forEach(jpTag -> {
+                            jpTag.getLabel().removeAll(removedTagsList);
                             TagsJP tagsJP = new TagsJP();
                             tagsJP.setMastercompname(masterTags.getCompname());
                             tagsJP.setMasteritemID(masterTags.getItemID());
@@ -81,7 +110,11 @@ public class TagsTest {
                 Set<TagsJP> set = new HashSet<>(tagsJPS);
                 List<TagsJP> result = new ArrayList<>(set);
 
-
+                File tagsDir = new File("d:/tags/");
+                if (!tagsDir.exists()) {
+                    //不存在创建
+                    tagsDir.mkdirs();
+                }
                 File file = new File("d:/tags/" + s + ".xlsx");
                 ExcelUtil.writeVosSXSS(result, new FileOutputStream(file), true, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
                 tagsJPS.clear();

@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
@@ -575,6 +576,15 @@ public class HelperController {
 
     }
 
+    /**
+     * SELECT F2_0088,F1_0088 FROM  tb_object_0088  WHERE  F1_0088  IS NOT NULL AND F21_0088 = '江苏' ORDER BY  F3_0088 ASC ,F1_0088 DESC
+     *
+     * @param sql
+     * @return
+     * @throws JsonProcessingException
+     * @throws SqlParseException
+     * @throws JSQLParserException
+     */
     @ApiOperation(value = "SQL转换成ES结构体Beta版本")
     @PostMapping(value = "/SQLToEsHelper_Beta")
     public Response SQLToEsHelper_Beta(@RequestBody String sql) throws JsonProcessingException, SqlParseException, JSQLParserException {
@@ -739,6 +749,9 @@ public class HelperController {
         dslHelperPlus.setDslHelper(dslHelper);
         dslHelperPlus.setIndex(from.toString());
         dslHelperPlus.setFields(simpleSelectList);
+
+        Map<String, String> sqlOrderMap = SQLMysqlCalciteParseUtils.getSqlOrderMap(sql);
+        dslHelperPlus.getSort().add(sqlOrderMap);
         return Response.Ok(dslHelperPlus);
 
     }
