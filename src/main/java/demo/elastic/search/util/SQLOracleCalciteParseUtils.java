@@ -8,9 +8,7 @@ import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.util.NlsString;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * 解析语句的工具类
@@ -18,8 +16,8 @@ import java.util.List;
 @Slf4j
 public class SQLOracleCalciteParseUtils {
 
-//    private static final SqlParser.Config config = SqlParser.configBuilder().setLex(Lex.ORACLE).setCaseSensitive(true).build();//使用mysql 语法
-    private static final SqlParser.Config config = SqlParser.configBuilder().setLex(Lex.MYSQL).setCaseSensitive(true).build();//使用mysql 语法
+    //    private static final SqlParser.Config config = SqlParser.configBuilder().setLex(Lex.ORACLE).setCaseSensitive(true).build();//使用mysql 语法
+    private static final SqlParser.Config config = SqlParser.configBuilder().setLex(Lex.ORACLE).setCaseSensitive(true).build();//使用mysql 语法
 
     private static final List<SqlKind> sqlKinds = Arrays.asList(SqlKind.AND, SqlKind.OR);
 
@@ -41,7 +39,7 @@ public class SQLOracleCalciteParseUtils {
         //SqlParser 语法解析器
         SqlParser sqlParser = SqlParser.create(sql, config);
         SqlNode sqlNode = sqlParser.parseStmt();
-        SqlSelect sqlSelect = ((SqlSelect) sqlNode);
+        SqlSelect sqlSelect = getSqlSelect(sqlNode);
         SqlNodeList sqlNodeList = sqlSelect.getSelectList();
         return sqlNodeList;
     }
@@ -54,7 +52,7 @@ public class SQLOracleCalciteParseUtils {
         //SqlParser 语法解析器
         SqlParser sqlParser = SqlParser.create(sql, config);
         SqlNode sqlNode = sqlParser.parseStmt();
-        SqlSelect sqlSelect = ((SqlSelect) sqlNode);
+        SqlSelect sqlSelect = getSqlSelect(sqlNode);
         SqlNodeList sqlNodeList = sqlSelect.getSelectList();
         List<String> result = new ArrayList<>();
         sqlNodeList.getList().forEach(sqlNodeTmp -> {
@@ -70,7 +68,7 @@ public class SQLOracleCalciteParseUtils {
         //SqlParser 语法解析器
         SqlParser sqlParser = SqlParser.create(sql, config);
         SqlNode sqlNode = sqlParser.parseStmt();
-        SqlSelect sqlSelect = ((SqlSelect) sqlNode);
+        SqlSelect sqlSelect = getSqlSelect(sqlNode);
         SqlNode from = sqlSelect.getFrom();
         return from;
     }
@@ -82,7 +80,7 @@ public class SQLOracleCalciteParseUtils {
         //SqlParser 语法解析器
         SqlParser sqlParser = SqlParser.create(sql, config);
         SqlNode sqlNode = sqlParser.parseStmt();
-        SqlSelect sqlSelect = ((SqlSelect) sqlNode);
+        SqlSelect sqlSelect = getSqlSelect(sqlNode);
         SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlSelect.getWhere();
         return sqlBasicCall;
     }
@@ -181,6 +179,84 @@ public class SQLOracleCalciteParseUtils {
             }
         }
         return sqlNode.toString();
+    }
+
+    /**
+     * 获取order list
+     *
+     * @param sql
+     * @return
+     */
+    public static Map<String, String> getSqlOrderMap(String sql) throws SqlParseException {
+        SqlNodeList sqlNodes = getSqlOrder(sql);
+        Map<String, String> result = new LinkedHashMap<>();
+        if (null != sqlNodes) {
+            sqlNodes.getList().forEach(sqlNode -> {
+                if (sqlNode instanceof SqlBasicCall) {
+                    SqlBasicCall sqlBasicCall = (SqlBasicCall) sqlNode;
+                    SqlKind kind = sqlBasicCall.getKind();
+                    if (kind.equals(SqlKind.DESCENDING)) {
+                        //倒序
+                        SqlNode[] operands = sqlBasicCall.getOperands();
+                        Arrays.stream(operands).forEach(operand -> {
+                            result.put(operand.toString(), "desc");
+                        });
+                    } else {
+                        throw new RuntimeException("预料之外的语法:" + kind);
+                    }
+
+                } else if (sqlNode instanceof SqlIdentifier) {
+                    SqlIdentifier sqlIdentifier = (SqlIdentifier) sqlNode;
+                    result.put(sqlIdentifier.toString(), "asc");
+                } else {
+                    throw new RuntimeException("预料之外的语法:" + sqlNode);
+                }
+            });
+        }
+        return result;
+    }
+
+    /**
+     * 获取order list
+     *
+     * @param sql
+     * @return
+     */
+    public static SqlNodeList getSqlOrder(String sql) throws SqlParseException {
+        //SqlParser 语法解析器
+        SqlParser sqlParser = SqlParser.create(sql, config);
+        SqlNode sqlNode = sqlParser.parseStmt();
+        SqlNodeList order = null;
+        if (sqlNode instanceof SqlOrderBy) {
+            //如果是order 语法
+            SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
+            order = sqlOrderBy.orderList;
+        }
+        return order;
+    }
+
+    /**
+     * 兼容 select 和 order语法
+     *
+     * @param sqlNode
+     * @return
+     */
+    private static SqlSelect getSqlSelect(SqlNode sqlNode) {
+        SqlSelect sqlSelect = null;
+        if (sqlNode instanceof SqlOrderBy) {
+            //如果是order 语法
+            SqlOrderBy sqlOrderBy = (SqlOrderBy) sqlNode;
+            SqlNode query = sqlOrderBy.query;
+            if (query instanceof SqlSelect) {
+                sqlSelect = (SqlSelect) query;
+            } else {
+                throw new RuntimeException("解析sql异常:" + query);
+            }
+        } else if (sqlNode instanceof SqlSelect) {
+            //普通的 select
+            sqlSelect = (SqlSelect) sqlNode;
+        }
+        return sqlSelect;
     }
 }
 

@@ -414,8 +414,8 @@ public class HelperController {
 
         DSLHelper dslHelper = new DSLHelper();
         SqlKind kind = SQLOracleCalciteParseUtils.getKind(sql);
-        if (!kind.equals(SqlKind.SELECT)) {
-            throw new RuntimeException("只支持 select 类型,当前类型是:" + kind);
+        if (!kind.equals(SqlKind.SELECT) && !kind.equals(SqlKind.ORDER_BY)) {
+            throw new RuntimeException("只支持 select/order by 类型,当前类型是:" + kind);
         }
         List<String> simpleSelectList = SQLOracleCalciteParseUtils.getSimpleSelectList(sql);
         List<SqlBasicCall> sqlBasicCalls = getWhereSimpleSqlBasicCall(sql);
@@ -572,6 +572,9 @@ public class HelperController {
         dslHelperPlus.setDslHelper(dslHelper);
         dslHelperPlus.setIndex(from.toString());
         dslHelperPlus.setFields(simpleSelectList);
+
+        Map<String, String> sqlOrderMap = SQLOracleCalciteParseUtils.getSqlOrderMap(sql);
+        dslHelperPlus.getSort().add(sqlOrderMap);
         return Response.Ok(dslHelperPlus);
 
     }
