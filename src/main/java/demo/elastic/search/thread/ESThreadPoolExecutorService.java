@@ -13,10 +13,11 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
-public class ThreadPoolExecutorService {
+public class ESThreadPoolExecutorService {
 
-    private ThreadLocal<BlockingQueue<Runnable>> blockingQueueThreadLocal = new ThreadLocal<>();
-    private ThreadLocal<ThreadPoolExecutor> threadPoolExecutorThreadLocal = new ThreadLocal<>();
+    private InheritableThreadLocal<BlockingQueue<Runnable>> blockingQueueThreadLocal = new InheritableThreadLocal<>();
+    private InheritableThreadLocal<ThreadPoolExecutor> threadPoolExecutorThreadLocal = new InheritableThreadLocal<>();
+    private ThreadLocal<Boolean> endFlag = new ThreadLocal<>();
 
 
     public synchronized void addWork(Runnable runnable) {
@@ -71,10 +72,24 @@ public class ThreadPoolExecutorService {
     public synchronized boolean isComplete() throws Exception {
         ThreadPoolExecutor threadPoolExecutor = threadPoolExecutorThreadLocal.get();
         if (threadPoolExecutor == null) {
-            log.info("线程池为空，请初始化,可能未执行addWork方法");
-            return false;
+            throw new Exception("线程池为空，请初始化,可能未执行addWork方法");
         }
         return threadPoolExecutor.getActiveCount() == 0;
+    }
+
+    /**
+     * 自旋 直至完成
+     *
+     * @return
+     * @throws Exception
+     */
+    public void isCompleteLog() throws Exception {
+        ThreadPoolExecutor threadPoolExecutor = threadPoolExecutorThreadLocal.get();
+        if (threadPoolExecutor == null) {
+            return;
+        }
+        log.info("当前剩余作业:{}", blockingQueueThreadLocal.get().size());
+        log.info("当前活跃作业:{}", threadPoolExecutor.getActiveCount());
     }
 
 }

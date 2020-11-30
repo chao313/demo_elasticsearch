@@ -1,14 +1,17 @@
 package demo.elastic.search.feign.plus;
 
+import com.alibaba.fastjson.JSON;
 import demo.elastic.search.engine.script.ExecuteScript;
 import demo.elastic.search.engine.script.impl.JavaScriptExecuteScript;
 import demo.elastic.search.feign.AnalyzeService;
+import demo.elastic.search.feign.ScrollService;
 import demo.elastic.search.feign.SearchService;
 import demo.elastic.search.out.remove.compound.Body;
 import demo.elastic.search.out.remove.compound.Query;
 import demo.elastic.search.out.remove.compound.base.Bool;
 import demo.elastic.search.out.remove.compound.level.TermLevel;
 import demo.elastic.search.out.remove.compound.level.base.Terms;
+import demo.elastic.search.po.request.SearchSourceBuilder;
 import demo.elastic.search.po.response.ESResponse;
 import demo.elastic.search.po.response.InnerHits;
 import demo.elastic.search.thread.ThreadLocalFeign;
@@ -17,15 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.*;
 import rx.functions.Action2;
 
 import javax.annotation.Resource;
 import javax.script.ScriptException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -39,6 +40,12 @@ public class SearchServicePlus {
 
     @Autowired
     private ScrollServicePlus scrollServicePlus;
+
+    @Autowired
+    private SearchService searchService;
+
+    @Autowired
+    private ScrollService scrollService;
 
 
     /**
@@ -339,7 +346,14 @@ public class SearchServicePlus {
                                                   Function<List<List<String>>, Boolean> resultFunction,
                                                   ExecuteScript executeScript,
                                                   String script) {
-        List<String> names = mappingServicePlus.getFieldNamesList(index);//获取
+        List<String> names = new ArrayList<>();
+        SearchSourceBuilder tmp = JSON.parseObject(JSON.toJSON(body).toString(), SearchSourceBuilder.class);
+        if (tmp.get_source().contains("*")) {
+            names.addAll(mappingServicePlus.getFieldNamesList(index));//获取
+        } else {
+            names.addAll(tmp.get_source());
+        }
+
         AtomicReference<List<List<String>>> resultList = new AtomicReference<>();
         AtomicReference<Integer> i = new AtomicReference<>(0);
         AtomicReference<Integer> totalNum = new AtomicReference<>(0);
@@ -380,7 +394,7 @@ public class SearchServicePlus {
             }
         };
         ESResponse esResponse = this._searchWithScrollParam(index, scroll, body, total -> {
-            resultList.set(new ArrayList<>(total * 2));
+            resultList.set(new ArrayList<>(total));
             log.info("ES匹配到数量:{}", total);
             totalNum.set(total);
             if (null != addHeader && true == addHeader) {
@@ -391,7 +405,10 @@ public class SearchServicePlus {
          * 进行滚动查询
          */
         String scrollId = esResponse.getScrollId();
-        scrollServicePlus._search(scroll, scrollId, function);
+        if (esResponse.getHits().getTotal() > 0) {
+            //添加数量判断
+            scrollServicePlus._search(scroll, scrollId, function);
+        }
         return resultList.get();
     }
 
@@ -495,6 +512,42 @@ public class SearchServicePlus {
         String bodyRequest = body.parse();
 
         this._searchScrollToConsumer(index, scroll, bodyRequest, function);
+    }
+
+    /**
+     * 检索+滚动
+     */
+    public void _searchAndScroll(String index,
+                                 String scroll,
+                                 SearchSourceBuilder searchSourceBuilder,
+                                 Consumer<InnerHits> consumer) {
+        String result = searchService._search(index, scroll, searchSourceBuilder);
+        ESResponse parse = ESResponse.parse(result);
+        parse.getHits().getHits().forEach(innerHits -> {
+            consumer.accept(innerHits);
+        });
+        do {
+            String scrollId = parse.getScrollId();
+            result = scrollService._search("10m", scrollId);
+            parse = ESResponse.parse(result);
+            parse.getHits().getHits().forEach(innerHits -> {
+                consumer.accept(innerHits);
+            });
+        } while (parse.getHits().getHits().size() > 0);
+
+    }
+
+    /**
+     * 检索+滚动
+     */
+    public void _search(String index,
+                        SearchSourceBuilder searchSourceBuilder,
+                        Consumer<InnerHits> consumer) {
+        String result = searchService._search(index, searchSourceBuilder);
+        ESResponse parse = ESResponse.parse(result);
+        parse.getHits().getHits().forEach(innerHits -> {
+            consumer.accept(innerHits);
+        });
     }
 
 }

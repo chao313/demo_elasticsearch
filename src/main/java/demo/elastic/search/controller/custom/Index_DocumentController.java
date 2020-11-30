@@ -30,6 +30,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class Index_DocumentController {
 
+    /**
+     * 批量处理的size（字节数）
+     */
+    private static final Integer BULK_SIZE = 10000;
+
     @ApiOperation(value = "创建一个Document")
     @ApiImplicitParams(value = {
             @ApiImplicitParam(
@@ -217,17 +222,25 @@ public class Index_DocumentController {
             @PathVariable(value = "type") String type,
             @RequestParam(name = "listFile", required = false) MultipartFile listFile) throws IOException {
         DocumentService documentService = ThreadLocalFeign.getFeignService(DocumentService.class);
-//        String body = IOUtils.toString(listFile.getInputStream(), "UTF-8");
-//        String s = documentService._bulk(index, body);
         List<String> list = IOUtils.readLines(listFile.getInputStream(), "UTF-8");
         int total = list.size();
         AtomicInteger i = new AtomicInteger();
-        list.stream().parallel().forEach(line -> {
-            documentService.post_doc_v2(index, type, line);
-            ExcelUtil.percent(i.getAndIncrement(), total);
-            log.info("处理进度:{}/{}->{}", i, total, ExcelUtil.percent(i.get(), total));
-        });
-
+        StringBuilder stringBuilder = new StringBuilder();
+        for (String line : list) {
+            int process = i.getAndIncrement() % 10000;
+            if (process == 0) {
+                log.info("处理进度 10000打印一次:{}/{}->{}", i.get(), total, ExcelUtil.percent(i.get(), total));
+            }
+            stringBuilder.append("{ \"index\":{\"_type\": \"" + type + "\"} }").append("\n");
+            stringBuilder.append(line).append("\n");
+            if (stringBuilder.length() >= BULK_SIZE) {
+                documentService._bulk(index, stringBuilder.toString());
+                //清空
+                stringBuilder = new StringBuilder();
+            }
+        }
+        //补全最后的数据
+        documentService._bulk(index, stringBuilder.toString());
         return Response.Ok(list.size());
     }
 

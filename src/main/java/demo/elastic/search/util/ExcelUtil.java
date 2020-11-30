@@ -1,6 +1,10 @@
 package demo.elastic.search.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.IteratorUtils;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -17,10 +21,9 @@ import rx.functions.Action2;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -545,6 +548,59 @@ public class ExcelUtil {
         nf.setMinimumFractionDigits(2);
         str = nf.format(p3);
         return str;
+    }
+
+    /**
+     * 写入CSV
+     */
+    public static void writeListCSV(Collection<List<String>> collection,
+                                    OutputStream outputStream,
+                                    Action2<Integer, Integer> process) throws IOException {
+        //初始化csvformat
+        CSVFormat formator = CSVFormat.DEFAULT;
+        //创建FileWriter对象
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+        //创建CSVPrinter对象
+        CSVPrinter printer = new CSVPrinter(outputStreamWriter, formator);
+        if (null != collection) {
+            int line = 0;
+            int size = collection.size();
+            for (List<String> lineData : collection) {
+                if (null != process) {
+                    process.call(line, size);//留作处理进度
+                }
+                line++;
+                printer.printRecord(lineData);
+            }
+        }
+        printer.flush();//必须要添加,不然会在缓存中
+    }
+
+    /**
+     * 读出CSV
+     */
+    public static Collection<List<String>> ReadListCSV(InputStream inputStream,
+                                                       Action2<Integer, Integer> process) throws IOException {
+        Collection<List<String>> result = new ArrayList<>();
+        Reader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        Iterable<CSVRecord> records = CSVFormat.RFC4180.parse(reader);// 定义后必须和csv文件中的标头一致
+        int line = 0;
+        for (CSVRecord csvRecord : records) {
+            line++;
+            Iterator<String> iterator = csvRecord.iterator();
+            List<String> tmpList = IteratorUtils.toList(iterator);
+            result.add(tmpList);
+        }
+        reader.close();
+        return result;
+    }
+
+    /**
+     * 读出CSV
+     */
+    public static Collection<List<String>> ReadListCSV(File file,
+                                                       Action2<Integer, Integer> process) throws IOException {
+        return ReadListCSV(new FileInputStream(file), process);
     }
 
 

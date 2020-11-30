@@ -1,0 +1,65 @@
+
+New:
+SELECT F1,F2,F3,F4 FROM "tb_object" WHERE F21 = 'github' ORDER BY F3 DESC , F4 ASC
+1.支持多字段排序
+2.支持可选字段检索/导出
+
+基础功能:
+1.NULL,NOT NULL
+SELECT * FROM "tb_object" WHERE "F1" IS NOT NULL AND "F2" IS NULL
+
+2.=,<>
+SELECT * FROM "tb_object" WHERE "F1" = '1' AND "F1" <> '1
+
+3.IN,NOT IN
+SELECT * FROM "tb_object" WHERE "F1" IN ('1','2') AND "F1" NOT IN ('1','2')
+
+4.>=,<=
+SELECT * FROM "tb_object" WHERE "F3" BETWEEN "30" AND "40"
+SELECT * FROM "tb_object" WHERE "F3" >= "30" AND F3 <= "30"
+
+4.REGEXP,NOT REGEXP
+SELECT * FROM "tb_object" WHERE REGEXP_LIKE("F4",'[\u4e00-\u9fa5]+') AND NOT REGEXP_LIKE("F4",'[0-9]*')
+
+5.LIKE,NOT LIKE
+SELECT * FROM "tb_object" WHERE "F4" LIKE 'St*'  AND "F4" NOT LIKE 'St*'
+
+6.Order
+SELECT * FROM "tb_object" WHERE F21 = 'github' ORDER BY F3 DESC , F4 ASC
+
+---------------------------------------------------------------------------------------------
+
+常用示例:
+1.IN
+   SELECT * FROM "tb_object" WHERE  F5 IN ("A","B","C")
+2.=
+   SELECT * FROM "tb_object" WHERE  F2 = ''
+
+3.日期检索
+   SELECT * FROM "tb_object" WHERE "RP_GEN_DATETIME" >= "2020-08-19 00:00:00"
+   SELECT * FROM "tb_object" WHERE "RP_GEN_DATETIME" <= "2020-08-19 00:00:00"
+   SELECT * FROM "tb_object" WHERE "RP_GEN_DATETIME" BETWEEN "2020-08-19 00:00:00" AND "2020-10-19 00:00:00"
+
+4.正则检索
+  4.1 纯中文
+   SELECT * FROM "tb_object" WHERE REGEXP_LIKE("F2",'[\u4e00-\u9fa5]+')
+  4.2 非纯中文
+   SELECT * FROM "tb_object" WHERE NOT REGEXP_LIKE("F2",'[\u4e00-\u9fa5]+')
+  4.3 字段长度(检索F1长度>=6的数据)
+   SELECT * FROM "tb_object" WHERE REGEXP_LIKE("F1",'.{6,}')
+  4.4 字符型数字大于检索(支持double e.g. 500.2)
+   4.4.1 > 500
+   SELECT * FROM "tb_object" WHERE REGEXP_LIKE("F10",'[5-9][0-9]{3}.*')
+   4.4.1 > 500
+   SELECT * FROM "tb_object" WHERE REGEXP_LIKE("F10",'[5-9][0-9]{2,}.')
+   4.4.1 > 500  < 1000
+   SELECT * FROM "tb_object" WHERE REGEXP_LIKE("F10",'[5-9][0-9]{2}|[5-9][0-9]{2}\\..*')
+
+5.通配检索
+  5.1 检索以github开头
+   SELECT * FROM "tb_object" WHERE "F2" LIKE 'github*'
+  5.2 检索以ES结尾(消耗比较大,慎用)
+   SELECT * FROM "tb_object" WHERE "F2" LIKE '*ES'
+
+注意:
+？ 《》会报错

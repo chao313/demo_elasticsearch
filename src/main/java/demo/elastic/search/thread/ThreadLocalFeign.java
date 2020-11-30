@@ -21,16 +21,19 @@ import java.util.Set;
 
 /**
  * 远程调用本地线程池
+ * <p>
+ * ！！！ 注意 ThreadLocal子线程无法使用！！！！
+ * ！！！ 注意 InheritableThreadLocal子线程可以使用父线程的变量！！！！
  */
 @Slf4j
 @Component
 public class ThreadLocalFeign {
 
 
-    private static ThreadLocal<String> ESHOSTThreadLocal = new ThreadLocal<>();//存放URL
-    private static ThreadLocal<Boolean> ESPageThreadLocal = new ThreadLocal<>();//存放是否分页
-    private static ThreadLocal<Integer> ESPageSizeThreadLocal = new ThreadLocal<>();//存放分页的每页数量
-    private static ThreadLocal<String> ESFilterThreadLocal = new ThreadLocal<>();//存放过滤条件
+    private static InheritableThreadLocal<String> ESHOSTThreadLocal = new InheritableThreadLocal<>();//存放URL
+    private static InheritableThreadLocal<Boolean> ESPageThreadLocal = new InheritableThreadLocal<>();//存放是否分页
+    private static InheritableThreadLocal<Integer> ESPageSizeThreadLocal = new InheritableThreadLocal<>();//存放分页的每页数量
+    private static InheritableThreadLocal<String> ESFilterThreadLocal = new InheritableThreadLocal<>();//存放过滤条件
     /**
      * HOST -> Class -> BEAN
      */

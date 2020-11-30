@@ -1,7 +1,10 @@
 package demo.elastic.search.controller.helper;
 
+import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import demo.elastic.search.config.Bootstrap;
+import demo.elastic.search.config.web.CustomInterceptConfig;
 import demo.elastic.search.feign.plus.MappingServicePlus;
 import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Response;
@@ -9,16 +12,16 @@ import demo.elastic.search.out.db.mysql.service.DBService;
 import demo.elastic.search.out.resource.service.ResourceService;
 import demo.elastic.search.po.helper.DSLHelper;
 import demo.elastic.search.po.helper.DSLHelperPlus;
-import demo.elastic.search.po.request.QueryBuilders;
 import demo.elastic.search.po.request.SearchSourceBuilder;
 import demo.elastic.search.po.request.aggs.VoidAggs;
 import demo.elastic.search.po.request.dsl.compound.BoolQuery;
+import demo.elastic.search.po.request.dsl.term.TermsQuery;
 import demo.elastic.search.service.RedisService;
+import demo.elastic.search.thread.ESThreadPoolExecutorService;
 import demo.elastic.search.thread.ThreadPoolExecutorService;
-import demo.elastic.search.util.DateUtil;
-import demo.elastic.search.util.ExcelUtil;
-import demo.elastic.search.util.SQLMysqlCalciteParseUtils;
-import demo.elastic.search.util.SQLOracleCalciteParseUtils;
+import demo.elastic.search.util.*;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.SneakyThrows;
@@ -31,21 +34,29 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static demo.elastic.search.util.ExcelUtil.percent;
-import static demo.elastic.search.util.SQLOracleCalciteParseUtils.getWhereSimpleSqlBasicCall;
 
 /**
  * helper使用
@@ -73,134 +84,23 @@ public class HelperController {
     @Autowired
     private ThreadPoolExecutorService threadPoolExecutorService;
 
+    @Autowired
+    private ESThreadPoolExecutorService esThreadPoolExecutorService;
+
 
     private static final Integer LIMIT_EXCEL = 500000;
+    private static final Integer LIMIT_CSV = 10000;
     private static final Integer LIMIT_DB = 50000;
+    private static final Integer LIMIT_ES = 10000;
+    private static final Integer PROCESS_LIMIT = 10000;//进度处理
+    private static final Integer TERMS_ES_LIMIT = 1000;//ES检索的限制
+    private static final Integer TERMS_DB_LIMIT = 5000;//入库数量的限制
+    private static final Integer TERMS_LIMIT_QUEUE = 100000;//队列的size
 
     @ApiOperation(value = "请求结构体转换成ES结构体")
     @PostMapping(value = "/DSLHelper")
     public Response DSLHelper(@RequestBody DSLHelper dslHelper) throws JsonProcessingException {
-
-        BoolQuery boolQuery = QueryBuilders.boolQuery();
-
-
-        SearchSourceBuilder<BoolQuery, VoidAggs> request = new SearchSourceBuilder<>();
-
-        dslHelper.getFilter().getExists().forEach(exists -> {
-            boolQuery.filter(QueryBuilders.existsQuery(exists.getField()));
-        });
-        dslHelper.getFilter().getTerm().forEach(term -> {
-            boolQuery.filter(QueryBuilders.termQuery(term.getField(), term.getValue()));
-        });
-        dslHelper.getFilter().getTerms().forEach(terms -> {
-            boolQuery.filter(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
-        });
-        dslHelper.getFilter().getRange().forEach(range -> {
-            boolQuery.filter(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
-        });
-        dslHelper.getFilter().getRegexp().forEach(regexp -> {
-            boolQuery.filter(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
-        });
-        dslHelper.getFilter().getPrefix().forEach(prefix -> {
-            boolQuery.filter(QueryBuilders.prefixQuery(prefix.getField(), prefix.getValue()));
-        });
-        dslHelper.getFilter().getWildcard().forEach(wildcard -> {
-            boolQuery.filter(QueryBuilders.wildcardQuery(wildcard.getField(), wildcard.getValue()));
-        });
-
-        dslHelper.getFilter().getFuzzy().forEach(fuzzy -> {
-            boolQuery.filter(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
-        });
-        if (null != dslHelper.getFilter().getIds() && null != dslHelper.getFilter().getIds().getValue() && dslHelper.getFilter().getIds().getValue().size() > 0) {
-            boolQuery.filter(QueryBuilders.idsQuery(dslHelper.getFilter().getIds().getValue()));
-        }
-        //must
-        dslHelper.getMust().getExists().forEach(exists -> {
-            boolQuery.must(QueryBuilders.existsQuery(exists.getField()));
-        });
-        dslHelper.getMust().getTerm().forEach(term -> {
-            boolQuery.must(QueryBuilders.termQuery(term.getField(), term.getValue()));
-        });
-        dslHelper.getMust().getTerms().forEach(terms -> {
-            boolQuery.must(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
-        });
-        dslHelper.getMust().getRange().forEach(range -> {
-            boolQuery.must(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
-        });
-        dslHelper.getMust().getRegexp().forEach(regexp -> {
-            boolQuery.must(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
-        });
-        dslHelper.getMust().getPrefix().forEach(prefix -> {
-            boolQuery.must(QueryBuilders.prefixQuery(prefix.getField(), prefix.getValue()));
-        });
-        dslHelper.getMust().getWildcard().forEach(wildcard -> {
-            boolQuery.must(QueryBuilders.wildcardQuery(wildcard.getField(), wildcard.getValue()));
-        });
-
-        dslHelper.getMust().getFuzzy().forEach(fuzzy -> {
-            boolQuery.must(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
-        });
-        if (null != dslHelper.getMust().getIds() && null != dslHelper.getMust().getIds().getValue() && dslHelper.getMust().getIds().getValue().size() > 0) {
-            boolQuery.must(QueryBuilders.idsQuery(dslHelper.getFilter().getIds().getValue()));
-        }
-        //must_not
-        dslHelper.getMust_not().getExists().forEach(exists -> {
-            boolQuery.must_not(QueryBuilders.existsQuery(exists.getField()));
-        });
-        dslHelper.getMust_not().getTerm().forEach(term -> {
-            boolQuery.must_not(QueryBuilders.termQuery(term.getField(), term.getValue()));
-        });
-        dslHelper.getMust_not().getTerms().forEach(terms -> {
-            boolQuery.must_not(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
-        });
-        dslHelper.getMust_not().getRange().forEach(range -> {
-            boolQuery.must_not(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
-        });
-        dslHelper.getMust_not().getRegexp().forEach(regexp -> {
-            boolQuery.must_not(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
-        });
-        dslHelper.getMust_not().getPrefix().forEach(prefix -> {
-            boolQuery.must_not(QueryBuilders.prefixQuery(prefix.getField(), prefix.getValue()));
-        });
-        dslHelper.getMust_not().getWildcard().forEach(wildcard -> {
-            boolQuery.must_not(QueryBuilders.wildcardQuery(wildcard.getField(), wildcard.getValue()));
-        });
-
-        dslHelper.getMust_not().getFuzzy().forEach(fuzzy -> {
-            boolQuery.must_not(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
-        });
-        if (null != dslHelper.getMust_not().getIds() && null != dslHelper.getMust_not().getIds().getValue() && dslHelper.getMust_not().getIds().getValue().size() > 0) {
-            boolQuery.must_not(QueryBuilders.idsQuery(dslHelper.getFilter().getIds().getValue()));
-        }
-        //should
-        dslHelper.getShould().getExists().forEach(exists -> {
-            boolQuery.should(QueryBuilders.existsQuery(exists.getField()));
-        });
-        dslHelper.getShould().getTerm().forEach(term -> {
-            boolQuery.should(QueryBuilders.termQuery(term.getField(), term.getValue()));
-        });
-        dslHelper.getShould().getTerms().forEach(terms -> {
-            boolQuery.should(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
-        });
-        dslHelper.getShould().getRange().forEach(range -> {
-            boolQuery.should(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
-        });
-        dslHelper.getShould().getRegexp().forEach(regexp -> {
-            boolQuery.should(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
-        });
-        dslHelper.getShould().getPrefix().forEach(prefix -> {
-            boolQuery.should(QueryBuilders.prefixQuery(prefix.getField(), prefix.getValue()));
-        });
-        dslHelper.getShould().getWildcard().forEach(wildcard -> {
-            boolQuery.should(QueryBuilders.wildcardQuery(wildcard.getField(), wildcard.getValue()));
-        });
-
-        dslHelper.getShould().getFuzzy().forEach(fuzzy -> {
-            boolQuery.should(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
-        });
-        if (null != dslHelper.getShould().getIds() && null != dslHelper.getShould().getIds().getValue() && dslHelper.getShould().getIds().getValue().size() > 0) {
-            boolQuery.should(QueryBuilders.idsQuery(dslHelper.getFilter().getIds().getValue()));
-        }
+        BoolQuery boolQuery = DSLHelper.DSLHelperToBoolQuery(dslHelper);
         JsonMapper jsonMapper = new JsonMapper();
         String s = StringEscapeUtils.unescapeJavaScript(boolQuery.getRequestBody());//去除双\\
         return Response.Ok(jsonMapper.readTree(s));
@@ -261,6 +161,114 @@ public class HelperController {
         return Response.Ok(urls);
     }
 
+    /**
+     * 导出为 CSV
+     */
+    @ApiImplicitParams(value = {
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE)
+    })
+    @ApiOperation(value = "导出全部的查询结果(收编入ES体系)")
+    @PostMapping(value = "/_search/outputToCSV/{index}")
+    public Response _searchOutputToCSV(
+            @ApiParam(defaultValue = "tb_object_0088") @PathVariable(value = "index") String index,
+            @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)") @RequestParam(value = "scroll") String scroll,
+            @ApiParam(value = "导出的size(-1代表全部)") @RequestParam(value = "outPutSize", required = false) Integer outPutSize,
+            @RequestBody String body,
+            @ApiParam(hidden = true) @RequestHeader(value = "host") String host,
+            HttpServletRequest httpServletRequest
+    ) throws IOException, IllegalAccessException {
+
+        LocalStopWatch stopWatch = new LocalStopWatch();
+        List<String> filesNames = new ArrayList<>();//文件名称
+        AtomicReference<Integer> sum = new AtomicReference<>(0);
+        AtomicReference<List<List<String>>> result = new AtomicReference<>();
+        //阻塞队列 -> 用于缓冲生产者和消费者
+        ArrayBlockingQueue<List<List<String>>> queue = new ArrayBlockingQueue<>(TERMS_LIMIT_QUEUE);
+        AtomicBoolean isStop = new AtomicBoolean(false);
+        //生成csv
+        String fileName = index + DateUtil.getNow() + ".csv";
+        File file = resourceService.addNewFile(fileName);
+        OutputStream outputStream = new FileOutputStream(file);
+        filesNames.add(fileName);
+        AtomicReference<Integer> totalAto = new AtomicReference<>();
+        long start = System.currentTimeMillis();
+        new Thread(new Runnable() {
+            @SneakyThrows
+            @Override
+            public void run() {
+                searchServicePlus._searchScrollToList(index, scroll, body, true, (size, total) -> {
+                    if (null == totalAto.get()) {
+                        totalAto.set(total);
+                    }
+                    if (size % PROCESS_LIMIT == 0) {
+                        log.info("读取进度:{}/{}->{}", size, total, percent(size, total));
+                    }
+                }, new Function<List<List<String>>, Boolean>() {
+                    @SneakyThrows
+                    @Override
+                    public Boolean apply(List<List<String>> lists) {
+                        if (result.get() == null) {
+                            result.set(lists);
+                        }
+                        //加入队列
+                        if (lists.size() > LIMIT_ES) {
+                            queue.put((new ArrayList<>(lists)));
+                            lists.clear();
+                        }
+                        sum.set(sum.get() + lists.size());
+
+                        //限制导出大小
+                        if (outPutSize != -1) {
+                            if (sum.get() >= outPutSize) {
+                                //如果大于导出数据 -> 停止
+                                return false;
+                            }
+                        }
+                        sum.set(sum.get() + 1);//每次接收一条记录 只需要+1
+                        return true;
+                    }
+                });
+                //补全最后的数据
+                queue.put((new ArrayList<>(result.get())));
+                isStop.set(true);//代表是否结束
+            }
+        }).start();
+        //消费者
+        AtomicInteger write = new AtomicInteger();
+        while (isStop.get() == false || queue.size() > 0) {
+            //没有结束 或者 队列的size >0 就一只循环
+            List<List<String>> poll = queue.poll();
+            if (null != poll) {
+                ExcelUtil.writeListCSV(poll, outputStream, (line, size) -> {
+                    write.getAndIncrement();
+                    if (write.get() % PROCESS_LIMIT == 0) {
+                        long use = System.currentTimeMillis() - start;//耗时 毫秒
+                        BigDecimal numPeerSecond = new BigDecimal(write.get()).divide(new BigDecimal(use), 3, RoundingMode.HALF_DOWN).multiply(new BigDecimal(1000));//每秒处理的数量
+                        BigDecimal timeSecond = new BigDecimal(totalAto.get()).divide(numPeerSecond, 3, RoundingMode.HALF_DOWN);//剩余时间(Second)
+                        BigDecimal timeMinutes = timeSecond.divide(new BigDecimal(60), 3, RoundingMode.HALF_DOWN);//剩余时间(Minutes)
+                        BigDecimal timeHour = timeMinutes.divide(new BigDecimal(60), 3, RoundingMode.HALF_DOWN);//剩余时间(Hour)
+                        log.info("写入进度:{}/{}->{},以使用耗时(Second):{} ,每秒处理的数量:{},预计总耗时时间(Second):{}, Minutes:{} ,Hour:{},", write.get(), totalAto.get(), percent(write.get(), totalAto.get()), use / 1000, numPeerSecond, timeSecond, timeMinutes, timeHour);
+                    }
+                });
+            }
+        }
+
+        //关闭流
+        outputStream.close();
+        List<String> urls = new ArrayList<>();
+        filesNames.forEach(path -> {
+            String url = "http://" + host + resourceService.getContextPath() + "/ResourceController/downloadByFileName?fileName=" + path;
+            urls.add(url);
+        });
+        return Response.Ok(urls);
+    }
+
+
     @ApiOperation(value = "导出全部的查询到DB(收编入ES体系)")
     @PostMapping(value = "/_search/outputToDB/{index}")
     public Response _searchOutputToDB(
@@ -291,14 +299,20 @@ public class HelperController {
 
         String targetTable = tableName + "_" + DateUtil.getNow();
         dbService.cloneTableStruct(tableName, targetTable);//创建新的表
-        List<String> fieldNames = mappingServicePlus.getFieldNamesList(index);//获取name
+        List<String> fieldNames = new ArrayList<>();
+        SearchSourceBuilder tmpS = JSON.parseObject(JSON.toJSON(body).toString(), SearchSourceBuilder.class);
+        if (tmpS.get_source().contains("*")) {
+            fieldNames.addAll(mappingServicePlus.getFieldNamesList(index));//获取
+        } else {
+            fieldNames.addAll(tmpS.get_source());
+        }
         fieldNames.remove("row_feature");
         fieldNames.remove("ES_MOD_TIME");
         List<List<String>> lists = new ArrayList<>();
         AtomicReference<Integer> i = new AtomicReference<>(0);
         AtomicReference<Integer> sum = new AtomicReference<>(0);
 
-        lists = searchServicePlus._searchScrollToList(index, scroll, body, false, (size, total) -> {
+        lists = searchServicePlus._searchScrollToList(index, scroll, body, true, (size, total) -> {
             log.info("读取进度:{}/{}->{}", size + 1, total, percent(size + 1, total));
         }, new Function<List<List<String>>, Boolean>() {
             @SneakyThrows
@@ -411,170 +425,7 @@ public class HelperController {
     @ApiOperation(value = "SQL转换成ES结构体")
     @PostMapping(value = "/SQLToEsHelper")
     public Response SQLToEsHelper(@RequestBody String sql) throws JsonProcessingException, SqlParseException, JSQLParserException {
-
-        DSLHelper dslHelper = new DSLHelper();
-        SqlKind kind = SQLOracleCalciteParseUtils.getKind(sql);
-        if (!kind.equals(SqlKind.SELECT) && !kind.equals(SqlKind.ORDER_BY)) {
-            throw new RuntimeException("只支持 select/order by 类型,当前类型是:" + kind);
-        }
-        List<String> simpleSelectList = SQLOracleCalciteParseUtils.getSimpleSelectList(sql);
-        List<SqlBasicCall> sqlBasicCalls = getWhereSimpleSqlBasicCall(sql);
-        for (SqlBasicCall sqlBasicCall : sqlBasicCalls) {
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IS_NOT_NULL)) {
-                //处理null
-                DSLHelper.Exists exists = new DSLHelper.Exists();
-                exists.setField(sqlBasicCall.getOperands()[0].toString());
-                dslHelper.must(exists);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.EQUALS)) {
-                //处理 =
-                DSLHelper.Term term = new DSLHelper.Term();
-                term.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                term.setValue(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                dslHelper.must(term);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IN)) {
-                //处理 in
-                DSLHelper.Terms terms = new DSLHelper.Terms();
-                terms.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                if (sqlBasicCall.getOperands()[1] instanceof SqlNodeList) {
-                    SqlNodeList sqlNodeList = (SqlNodeList) sqlBasicCall.getOperands()[1];
-                    List<String> values = new ArrayList<>();
-                    sqlNodeList.getList().forEach(sqlNode -> {
-                        values.add(SQLOracleCalciteParseUtils.getValue(sqlNode));
-                    });
-                    terms.setValue(values);
-                } else {
-                    throw new RuntimeException("In 后不是数组");
-                }
-                dslHelper.must(terms);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.BETWEEN)) {
-                //处理 between
-                DSLHelper.Range range = new DSLHelper.Range();
-                range.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                range.setGte(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                range.setLte(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[2]));
-                dslHelper.must(range);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.GREATER_THAN_OR_EQUAL)) {
-                //处理 >=
-                DSLHelper.Range range = new DSLHelper.Range();
-                range.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                range.setGte(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                dslHelper.must(range);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.GREATER_THAN)) {
-                //处理 >=
-                DSLHelper.Range range = new DSLHelper.Range();
-                range.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                range.setGt(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                dslHelper.must(range);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LESS_THAN_OR_EQUAL)) {
-                //处理 <=
-                DSLHelper.Range range = new DSLHelper.Range();
-                range.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                range.setLte(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                dslHelper.must(range);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LESS_THAN)) {
-                //处理 <=
-                DSLHelper.Range range = new DSLHelper.Range();
-                range.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                range.setLt(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                dslHelper.must(range);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LIKE)) {
-                //处理 like -> 注意类型都是 LIKE
-                if (sqlBasicCall.getOperator().getName().equalsIgnoreCase("LIKE")) {
-                    DSLHelper.Wildcard wildcard = new DSLHelper.Wildcard();
-                    wildcard.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                    wildcard.setValue(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                    dslHelper.must(wildcard);
-                }
-
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.OTHER_FUNCTION)) {
-                //处理 regex_like 这里当做函数来处理
-                if (sqlBasicCall.getOperator().getName().equalsIgnoreCase("REGEXP_LIKE")) {
-                    DSLHelper.Regexp regexp = new DSLHelper.Regexp();
-                    regexp.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                    regexp.setValue(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                    dslHelper.must(regexp);
-                } else {
-                    throw new RuntimeException("出现不支持函数:" + sqlBasicCall.getOperator().getName());
-                }
-            }
-            //处理 not
-
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.IS_NULL)) {
-                //处理 not null
-                //处理null
-                DSLHelper.Exists exists = new DSLHelper.Exists();
-                exists.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                dslHelper.must_not(exists);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.NOT_EQUALS)) {
-                //处理 <>
-                DSLHelper.Term term = new DSLHelper.Term();
-                term.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                term.setValue(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                dslHelper.must_not(term);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.NOT_IN)) {
-                //处理 not in
-                DSLHelper.Terms terms = new DSLHelper.Terms();
-                terms.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                if (sqlBasicCall.getOperands()[1] instanceof SqlNodeList) {
-                    SqlNodeList sqlNodeList = (SqlNodeList) sqlBasicCall.getOperands()[1];
-                    List<String> values = new ArrayList<>();
-                    sqlNodeList.getList().forEach(sqlNode -> {
-                        values.add(SQLOracleCalciteParseUtils.getValue(sqlNode));
-                    });
-                    terms.setValue(values);
-                } else {
-                    throw new RuntimeException("In 后不是数组");
-                }
-                dslHelper.must_not(terms);
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.LIKE)) {
-                //处理 not like -> 注意类型都是 LIKE
-                if (sqlBasicCall.getOperator().getName().equalsIgnoreCase("NOT LIKE")) {
-                    DSLHelper.Wildcard wildcard = new DSLHelper.Wildcard();
-                    wildcard.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[0]));
-                    wildcard.setValue(SQLOracleCalciteParseUtils.getValue(sqlBasicCall.getOperands()[1]));
-                    dslHelper.must_not(wildcard);
-                }
-            }
-            if (sqlBasicCall.getOperator().getKind().equals(SqlKind.NOT)) {
-                //处理 NOT 先判断是NOT类型。
-                //处理 regex_like 这里当做函数来处理
-                Arrays.stream(sqlBasicCall.getOperands()).forEach(sqlNode -> {
-                    if (sqlNode instanceof SqlBasicCall) {
-                        SqlBasicCall sqlBasicCallTmp = (SqlBasicCall) sqlNode;
-                        if (sqlBasicCallTmp.getOperator().getName().equalsIgnoreCase("REGEXP_LIKE")) {
-                            DSLHelper.Regexp regexp = new DSLHelper.Regexp();
-                            regexp.setField(SQLOracleCalciteParseUtils.getValue(sqlBasicCallTmp.getOperands()[0]));
-                            regexp.setValue(SQLOracleCalciteParseUtils.getValue(sqlBasicCallTmp.getOperands()[1]));
-                            dslHelper.must_not(regexp);
-                        } else {
-                            throw new RuntimeException("出现不支持函数:" + sqlBasicCall.getOperator().getName());
-                        }
-                    }
-                });
-            }
-
-        }
-
-        SqlNode from = SQLOracleCalciteParseUtils.getFrom(sql);
-        DSLHelperPlus dslHelperPlus = new DSLHelperPlus();
-        dslHelperPlus.setDslHelper(dslHelper);
-        dslHelperPlus.setIndex(from.toString());
-        dslHelperPlus.setFields(simpleSelectList);
-
-        Map<String, String> sqlOrderMap = SQLOracleCalciteParseUtils.getSqlOrderMap(sql);
-        dslHelperPlus.getSort().add(sqlOrderMap);
+        DSLHelperPlus dslHelperPlus = DSLHelperPlus.sqlToDSLHelperPlus(sql);
         return Response.Ok(dslHelperPlus);
 
     }
@@ -757,6 +608,116 @@ public class HelperController {
         dslHelperPlus.getSort().add(sqlOrderMap);
         return Response.Ok(dslHelperPlus);
 
+    }
+
+
+    @ApiOperation(value = "批量terms导出的查询到DB(收编入ES体系)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "listFile", value = "listFile", dataType = "__file", paramType = "form"),
+            @ApiImplicitParam(name = "field", value = "field", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "values", value = "values", dataTypeClass = String.class, paramType = "form", allowMultiple = true)
+    })
+    @RequestMapping(value = "/_searchTermsToDb/{index}", method = {RequestMethod.POST})
+    public Response _searchTermsToDb(
+            @ApiParam(defaultValue = "F6_0088", value = "下面的文件中需要匹配的值") @RequestParam(value = "field", required = false) String field,
+            @ApiParam(value = "检索语法 ORACLE语法") @RequestParam(value = "request") String sql,
+            @RequestParam(value = "values", required = false) List<String> values,
+            @RequestParam(name = "listFile", required = false) MultipartFile listFile
+    ) throws Exception {
+        DSLHelperPlus dslHelperPlus = DSLHelperPlus.sqlToDSLHelperPlus(sql);
+        String index = dslHelperPlus.getIndex();
+
+        AtomicInteger atomicInteger = new AtomicInteger();
+
+        /**
+         * 队列数量,这个是生产者和消费者的缓冲地带,越大,生产者和消费者越不受限制！
+         */
+        ArrayBlockingQueue<List<String>> queue = new ArrayBlockingQueue<>(TERMS_LIMIT_QUEUE);
+        List<String> lines = new ArrayList<>(1024);
+        List<Runnable> runnables = new ArrayList<>(100000);//执行的任务
+        /**
+         * 读取行数较大的文本
+         */
+        FileUtil.readBigFileByLine(listFile.getInputStream(), new Consumer<String>() {
+            @Override
+            public void accept(String line) {
+                lines.add(line);
+                int process = atomicInteger.getAndIncrement() % PROCESS_LIMIT;
+                if (process == 0) {
+                    log.info("处理进度 :{}", atomicInteger.get());
+                }
+
+                if (lines.size() > TERMS_ES_LIMIT) {
+                    SearchSourceBuilder<BoolQuery, VoidAggs> request = new SearchSourceBuilder<>();
+                    BoolQuery boolQuery = DSLHelper.DSLHelperToBoolQuery(dslHelperPlus.getDslHelper());
+                    request.from(0).size(3000).source(dslHelperPlus.getFields()).query(boolQuery);
+                    boolQuery.must(TermsQuery.builderQuery(field, lines));
+                    String requestBody = request.getRequestBody();
+                    log.info("lines.size:{}", lines.size());
+                    lines.clear();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", requestBody, false);
+                            lists.forEach(vo -> {
+                                try {
+                                    queue.put(vo);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                    };
+                    runnables.add(runnable);
+
+                }
+            }
+        });
+        log.info("生产者任务数量:{}", runnables.size());
+        //批量提交任务
+        for (Runnable runnable : runnables) {
+            esThreadPoolExecutorService.addWork(runnable);
+        }
+        //准备入库
+        String targetTable = index + "_" + DateUtil.getNow();
+        dbService.cloneTableStruct(index, targetTable);//创建新的表
+        /**
+         * 获取 title
+         */
+        List<String> fieldNames = new ArrayList<>();
+        if (dslHelperPlus.getFields().contains("*")) {
+            fieldNames.addAll(mappingServicePlus.getFieldNamesList(index));//获取
+        } else {
+            fieldNames.addAll(dslHelperPlus.getFields());
+        }
+        List<List<String>> tmp = new ArrayList<>(1024);
+        while (esThreadPoolExecutorService.isComplete() != true) {
+            List<String> poll = queue.poll();
+            if (null != poll) {
+                tmp.add(poll);
+                if (tmp.size() > TERMS_DB_LIMIT) {
+                    esThreadPoolExecutorService.isCompleteLog();
+                    List<List<String>> tmp2 = tmp;
+                    threadPoolExecutorService.addWork(new Runnable() {
+                        @Override
+                        public void run() {
+                            dbService.batchInsert(targetTable, tmp2, fieldNames);
+                        }
+                    });
+                    tmp = new ArrayList<>(1024);
+                }
+            }
+        }
+        //补全最后的数据
+        List<List<String>> tmp2 = tmp;
+        threadPoolExecutorService.addWork(new Runnable() {
+            @Override
+            public void run() {
+                dbService.batchInsert(targetTable, tmp2, fieldNames);
+            }
+        });
+        threadPoolExecutorService.waitComplete();
+        return Response.Ok(targetTable);
     }
 
 }

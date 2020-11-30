@@ -76,16 +76,16 @@ public class FeignServiceConfig {
         };
     }
 
-    @Bean(value = "6.4.1")
-    public RequestInterceptor headerInterceptor6_4_1() {
-        return new RequestInterceptor() {
-            @Override
-            public void apply(RequestTemplate requestTemplate) {
-                // 设置请求头
-                requestTemplate.header("kbn-version", "6.4.1");
-            }
-        };
-    }
+//    @Bean(value = "6.4.1")
+//    public RequestInterceptor headerInterceptor6_4_1() {
+//        return new RequestInterceptor() {
+//            @Override
+//            public void apply(RequestTemplate requestTemplate) {
+//                // 设置请求头
+//                requestTemplate.header("kbn-version", "6.4.1");
+//            }
+//        };
+//    }
 
 }
 

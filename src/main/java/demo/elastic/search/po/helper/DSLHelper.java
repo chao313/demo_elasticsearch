@@ -1,6 +1,10 @@
 package demo.elastic.search.po.helper;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import demo.elastic.search.po.request.QueryBuilders;
+import demo.elastic.search.po.request.SearchSourceBuilder;
+import demo.elastic.search.po.request.aggs.VoidAggs;
+import demo.elastic.search.po.request.dsl.compound.BoolQuery;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -329,4 +333,131 @@ public class DSLHelper {
         private List<String> value;
     }
 
+
+    /**
+     * DSL转换成bool检索 抽出代码
+     * @param dslHelper
+     * @return
+     */
+    public static BoolQuery DSLHelperToBoolQuery(DSLHelper dslHelper) {
+        BoolQuery boolQuery = QueryBuilders.boolQuery();
+        SearchSourceBuilder<BoolQuery, VoidAggs> request = new SearchSourceBuilder<>();
+
+        dslHelper.getFilter().getExists().forEach(exists -> {
+            boolQuery.filter(QueryBuilders.existsQuery(exists.getField()));
+        });
+        dslHelper.getFilter().getTerm().forEach(term -> {
+            boolQuery.filter(QueryBuilders.termQuery(term.getField(), term.getValue()));
+        });
+        dslHelper.getFilter().getTerms().forEach(terms -> {
+            boolQuery.filter(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
+        });
+        dslHelper.getFilter().getRange().forEach(range -> {
+            boolQuery.filter(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
+        });
+        dslHelper.getFilter().getRegexp().forEach(regexp -> {
+            boolQuery.filter(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
+        });
+        dslHelper.getFilter().getPrefix().forEach(prefix -> {
+            boolQuery.filter(QueryBuilders.prefixQuery(prefix.getField(), prefix.getValue()));
+        });
+        dslHelper.getFilter().getWildcard().forEach(wildcard -> {
+            boolQuery.filter(QueryBuilders.wildcardQuery(wildcard.getField(), wildcard.getValue()));
+        });
+
+        dslHelper.getFilter().getFuzzy().forEach(fuzzy -> {
+            boolQuery.filter(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
+        });
+        if (null != dslHelper.getFilter().getIds() && null != dslHelper.getFilter().getIds().getValue() && dslHelper.getFilter().getIds().getValue().size() > 0) {
+            boolQuery.filter(QueryBuilders.idsQuery(dslHelper.getFilter().getIds().getValue()));
+        }
+        //must
+        dslHelper.getMust().getExists().forEach(exists -> {
+            boolQuery.must(QueryBuilders.existsQuery(exists.getField()));
+        });
+        dslHelper.getMust().getTerm().forEach(term -> {
+            boolQuery.must(QueryBuilders.termQuery(term.getField(), term.getValue()));
+        });
+        dslHelper.getMust().getTerms().forEach(terms -> {
+            boolQuery.must(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
+        });
+        dslHelper.getMust().getRange().forEach(range -> {
+            boolQuery.must(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
+        });
+        dslHelper.getMust().getRegexp().forEach(regexp -> {
+            boolQuery.must(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
+        });
+        dslHelper.getMust().getPrefix().forEach(prefix -> {
+            boolQuery.must(QueryBuilders.prefixQuery(prefix.getField(), prefix.getValue()));
+        });
+        dslHelper.getMust().getWildcard().forEach(wildcard -> {
+            boolQuery.must(QueryBuilders.wildcardQuery(wildcard.getField(), wildcard.getValue()));
+        });
+
+        dslHelper.getMust().getFuzzy().forEach(fuzzy -> {
+            boolQuery.must(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
+        });
+        if (null != dslHelper.getMust().getIds() && null != dslHelper.getMust().getIds().getValue() && dslHelper.getMust().getIds().getValue().size() > 0) {
+            boolQuery.must(QueryBuilders.idsQuery(dslHelper.getFilter().getIds().getValue()));
+        }
+        //must_not
+        dslHelper.getMust_not().getExists().forEach(exists -> {
+            boolQuery.must_not(QueryBuilders.existsQuery(exists.getField()));
+        });
+        dslHelper.getMust_not().getTerm().forEach(term -> {
+            boolQuery.must_not(QueryBuilders.termQuery(term.getField(), term.getValue()));
+        });
+        dslHelper.getMust_not().getTerms().forEach(terms -> {
+            boolQuery.must_not(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
+        });
+        dslHelper.getMust_not().getRange().forEach(range -> {
+            boolQuery.must_not(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
+        });
+        dslHelper.getMust_not().getRegexp().forEach(regexp -> {
+            boolQuery.must_not(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
+        });
+        dslHelper.getMust_not().getPrefix().forEach(prefix -> {
+            boolQuery.must_not(QueryBuilders.prefixQuery(prefix.getField(), prefix.getValue()));
+        });
+        dslHelper.getMust_not().getWildcard().forEach(wildcard -> {
+            boolQuery.must_not(QueryBuilders.wildcardQuery(wildcard.getField(), wildcard.getValue()));
+        });
+
+        dslHelper.getMust_not().getFuzzy().forEach(fuzzy -> {
+            boolQuery.must_not(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
+        });
+        if (null != dslHelper.getMust_not().getIds() && null != dslHelper.getMust_not().getIds().getValue() && dslHelper.getMust_not().getIds().getValue().size() > 0) {
+            boolQuery.must_not(QueryBuilders.idsQuery(dslHelper.getFilter().getIds().getValue()));
+        }
+        //should
+        dslHelper.getShould().getExists().forEach(exists -> {
+            boolQuery.should(QueryBuilders.existsQuery(exists.getField()));
+        });
+        dslHelper.getShould().getTerm().forEach(term -> {
+            boolQuery.should(QueryBuilders.termQuery(term.getField(), term.getValue()));
+        });
+        dslHelper.getShould().getTerms().forEach(terms -> {
+            boolQuery.should(QueryBuilders.termsQuery(terms.getField(), terms.getValue()));
+        });
+        dslHelper.getShould().getRange().forEach(range -> {
+            boolQuery.should(QueryBuilders.rangeQuery(range.getField(), range.getGte(), range.getGt(), range.getLte(), range.getLt()));
+        });
+        dslHelper.getShould().getRegexp().forEach(regexp -> {
+            boolQuery.should(QueryBuilders.regexpQuery(regexp.getField(), regexp.getValue()));
+        });
+        dslHelper.getShould().getPrefix().forEach(prefix -> {
+            boolQuery.should(QueryBuilders.prefixQuery(prefix.getField(), prefix.getValue()));
+        });
+        dslHelper.getShould().getWildcard().forEach(wildcard -> {
+            boolQuery.should(QueryBuilders.wildcardQuery(wildcard.getField(), wildcard.getValue()));
+        });
+
+        dslHelper.getShould().getFuzzy().forEach(fuzzy -> {
+            boolQuery.should(QueryBuilders.fuzzyQuery(fuzzy.getField(), fuzzy.getValue()));
+        });
+        if (null != dslHelper.getShould().getIds() && null != dslHelper.getShould().getIds().getValue() && dslHelper.getShould().getIds().getValue().size() > 0) {
+            boolQuery.should(QueryBuilders.idsQuery(dslHelper.getFilter().getIds().getValue()));
+        }
+        return boolQuery;
+    }
 }

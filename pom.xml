@@ -200,6 +200,13 @@
             <version>3.2</version>
         </dependency>
 
+        <!--必须引入的包，操作CSV-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.8</version>
+        </dependency>
+
 
     </dependencies>
 

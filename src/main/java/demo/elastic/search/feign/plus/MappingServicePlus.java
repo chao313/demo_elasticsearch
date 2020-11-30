@@ -6,6 +6,7 @@ import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.feign.MappingService;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import demo.elastic.search.util.JSONUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -58,8 +59,9 @@ public class MappingServicePlus {
     public List<String> getFieldNamesList(String index) {
         MappingService mappingService = ThreadLocalFeign.getFeignService(MappingService.class);
         String result = mappingService.get(index);
+        String url = StringUtils.isBlank(ThreadLocalFeign.getES_HOST()) ? Bootstrap.IN_USE : ThreadLocalFeign.getES_HOST();
         JSONObject properties = null;
-        switch (Bootstrap.getBootstrapByUrl(ThreadLocalFeign.getES_HOST()).getVersion()) {
+        switch (Bootstrap.getBootstrapByUrl(url).getVersion()) {
             case TWO: {
                 properties = JSONUtil.getByKeyAndLevel(JSON.parseObject(result), 4, 0, "properties");
             }
