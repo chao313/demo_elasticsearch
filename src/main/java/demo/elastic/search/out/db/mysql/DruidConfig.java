@@ -13,13 +13,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
 
-/**
- * @author lzhu.john
- * @version V1.0
- * @Package com.wcb.extract.gov.config
- * @Description: count数据库的配置类
- * @date 2018/2/23 16:37
- */
 @Configuration
 @EnableTransactionManagement
 public class DruidConfig {

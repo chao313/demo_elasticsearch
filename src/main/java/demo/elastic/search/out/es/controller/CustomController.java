@@ -249,7 +249,7 @@ public class CustomController {
             @ApiParam(name = "topic", value = "输出为topic -> 提供topic", defaultValue = "TP_01009406")
             @RequestParam(value = "topic")
                     String topic,
-            @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "ESETL2")
+            @ApiParam(name = "policyId", value = "指定的策略", defaultValue = "ESETL2")
             @RequestParam(value = "policyId")
                     String policyId,
             @ApiParam(name = "toTable", value = "发送的table", defaultValue = "toTable")
@@ -468,7 +468,7 @@ public class CustomController {
             @ApiParam(name = "topic", value = "输出为topic -> 提供topic", defaultValue = "TP_01009406")
             @RequestParam(value = "topic")
                     String topic,
-            @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "TB6254ETL")
+            @ApiParam(name = "policyId", value = "指定的策略", defaultValue = "TB6254ETL")
             @RequestParam(value = "policyId")
                     String policyId,
             @ApiParam(name = "toTable", value = "发送的table", defaultValue = "toTable")
@@ -988,7 +988,7 @@ public class CustomController {
             @ApiParam(name = "topic", value = "输出为topic -> 提供topic", defaultValue = "TP_01009406")
             @RequestParam(value = "topic")
                     String topic,
-            @ApiParam(name = "policyId", value = "指定wind的策略", defaultValue = "ESETL2")
+            @ApiParam(name = "policyId", value = "指定的策略", defaultValue = "ESETL2")
             @RequestParam(value = "policyId")
                     String policyId,
             @ApiParam(name = "toTable", value = "发送的table", defaultValue = "toTable")

@@ -62,7 +62,7 @@ public interface IndexService {
      * <p>
      * 2.3.1 版本
      * <pre>
-     * curl -XPOST http://10.202.16.9:9200/tags -d '{
+     * curl -XPOST http://39.107.236.187:9200/tags -d '{
      *     "settings" : {
      *         "number_of_shards" : 1
      *     },
@@ -75,14 +75,14 @@ public interface IndexService {
      *         }
      *     }
      * }
-     * $ curl -XPOST http://10.202.16.9:9200/tags -d '{
+     * $ curl -XPOST http://39.107.236.187:9200/tags -d '{
      *     "settings" : {
      *         "number_of_shards" : 1
      *     },
      *     "mappings" : {
      *         "tags" : {
      *             "properties" : {
-     *                 "windcode" : { "type" : "string", "index" : "not_analyzed" },
+     *                 "code" : { "type" : "string", "index" : "not_analyzed" },
      *                 "compname" : { "type" : "string", "index" : "not_analyzed" },
      *                 "itemID" : { "type" : "string", "index" : "not_analyzed" },
      *                 "label" : { "type" : "string", "index" : "not_analyzed" }

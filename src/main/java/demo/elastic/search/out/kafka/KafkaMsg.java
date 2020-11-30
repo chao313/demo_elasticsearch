@@ -19,7 +19,7 @@ public class KafkaMsg {
 
 
     public enum ToTable {
-        TB_OBJECT_6254("WIND.TB_OBJECT_6254"), TB_OBJECT_0088("WIND.TB_OBJECT_0088");
+        TB_OBJECT_NAME("TB_OBJECT_NAME"), TB_OBJECT_PEOPLE("TB_OBJECT_PEOPLE");
 
         private String table;
 
@@ -46,9 +46,8 @@ public class KafkaMsg {
     }
 
 
-    public final static String TB_OBJECT_6254 = "WIND.TB_OBJECT_6254";
-    public final static String TB_OBJECT_0088 = "WIND.TB_OBJECT_0088";
-    public final static String TB_OBJECT_6428 = "WIND.TB_OBJECT_6428";
+    public final static String TB_OBJECT_NAME = "TB_OBJECT_NAME";
+    public final static String TB_OBJECT_PEOPLE = "TB_OBJECT_PEOPLE";
 
     /**
      * @return
@@ -71,29 +70,16 @@ public class KafkaMsg {
         return km;
     }
 
-    protected JSONObject getJson6254(List<JSONObject> jsonObjects) {
-        JSONObject result = new JSONObject();
 
-        JSONArray jsonArray = JSONArray.parseArray(JSON.toJSON(jsonObjects).toString());
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("data", jsonArray);
 
-        /**
-         * 关联0088和6428
-         */
-        result.put(TB_OBJECT_6254, jsonObject);
-
-        return result;
-    }
-
-    protected JSONObject getJson0088(List<JSONObject> jsonObjects) {
+    protected JSONObject getJson(List<JSONObject> jsonObjects) {
         JSONObject result = new JSONObject();
 
         JSONArray jsonArray0088 = JSONArray.parseArray(JSON.toJSON(jsonObjects).toString());
         JSONObject data0088 = new JSONObject();
         data0088.put("data", jsonArray0088);
 
-        result.put(TB_OBJECT_0088, data0088);
+        result.put(TB_OBJECT_PEOPLE, data0088);
 
         return result;
     }
@@ -117,32 +103,5 @@ public class KafkaMsg {
     }
 
 
-    protected JSONObject getJson0088(List<JSONObject> jsonObjects, String time) {
-        JSONObject result = new JSONObject();
-
-        JSONArray jsonArray0088 = JSONArray.parseArray(JSON.toJSON(jsonObjects).toString());
-        JSONObject data0088 = new JSONObject();
-        data0088.put("data", jsonArray0088);
-
-        /**
-         * 补全6428
-         */
-        jsonArray0088.forEach(json0088 -> {
-            JSONObject json6428 = new JSONObject();
-            json6428.put("F2_6428", time);
-            JSONArray jsonArray6428 = new JSONArray();
-            jsonArray6428.add(json6428);
-            JSONObject data6428 = new JSONObject();
-            data6428.put("data", jsonArray6428);
-            ((JSONObject) json0088).put(TB_OBJECT_6428, data6428);
-        });
-
-        /**
-         *
-         */
-        result.put(TB_OBJECT_0088, data0088);
-
-        return result;
-    }
 
 }

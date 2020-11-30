@@ -30,7 +30,7 @@ public class KafkaOutService {
      */
     public void load0088(String topic, JSONObject root0088, String policyId) {
 
-        JSONObject result = kafkaMsg.getJson0088(Arrays.asList(root0088));
+        JSONObject result = kafkaMsg.getJson(Arrays.asList(root0088));
 
         KafkaMessage kafkaMessage = kafkaMsg.getKafakMsg(UUID.randomUUID().toString(),
                 policyId, result);

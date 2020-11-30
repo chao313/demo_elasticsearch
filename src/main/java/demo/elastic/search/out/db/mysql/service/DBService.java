@@ -50,7 +50,6 @@ public class DBService {
         if (datas == null || datas.size() == 0) {
             return successCount;
         }
-//        String insertSQL = "INSERT INTO " + tableName + " (F1_6917,F2_6917,F3_6917,F4_6917,F5_6917,F6_6917,F7_6917,F8_6917,F9_6917,OB_OBJECT_ID,RP_GEN_DATETIME) VALUES(?,?,?,?，?,?,?,?,?,wind.FUNC_GUID(),?)";
         String insertSQL = "INSERT INTO " + tableName + "";
         insertSQL += " ( ";
         for (String field : fieldNames) {
