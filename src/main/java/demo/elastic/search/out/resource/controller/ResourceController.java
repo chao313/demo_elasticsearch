@@ -240,4 +240,15 @@ public class ResourceController {
         }
         return fileContentTypeBytesByName;
     }
+
+    /**
+     * 获取真实的下载地址
+     *
+     * @param host
+     * @param path
+     * @return
+     */
+    public String getDownloadByFileName(String host, String path) {
+        return "http://" + host + resourceService.getContextPath() + "/ResourceController/downloadByFileName?fileName=" + path;
+    }
 }

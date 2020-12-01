@@ -1,11 +1,13 @@
 package demo.elastic.search.config.web;
 
+import demo.elastic.search.config.StartConfig;
 import demo.elastic.search.thread.ThreadLocalFeign;
 import demo.elastic.search.util.HttpRequestUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,6 +34,9 @@ public class CustomInterceptConfig extends WebMvcConfigurerAdapter {
     public static final String ES_FILTER_HEADER_KEY_EXAMPLE = "{key:value}";
 
     private static Logger LOGGER = LoggerFactory.getLogger(CustomInterceptConfig.class);
+
+    @Autowired
+    private StartConfig startConfig;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
@@ -60,6 +65,13 @@ public class CustomInterceptConfig extends WebMvcConfigurerAdapter {
                 String ES_FILTER = request.getHeader(ES_FILTER_HEADER_KEY);
                 if (StringUtils.isNotBlank(ES_PAGE_SIZE)) {
                     ThreadLocalFeign.setES_FILTER(ES_FILTER);//过滤
+                }
+                //处理白名单
+                String ip = HttpRequestUtils.getRealRequestIp(request);
+                if (!startConfig.getWhiteList().contains(ip)) {
+                    //如果不是白名单 -> 拒绝访问
+//                    log.info("拒绝访问:{}", ip);
+                    return false;
                 }
                 return true;
             }

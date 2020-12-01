@@ -1,11 +1,12 @@
-package demo.elastic.search.out.comm;
+package demo.elastic.search.enums;
 
-public enum OutType {
-    EXCEL("excel"), URL("url");
+public enum EnumOutType {
+
+    EXCEL("excel"), CSV("csv"), DB("db"), JSON("json");
 
     private String type;
 
-    OutType(String type) {
+    EnumOutType(String type) {
         this.type = type;
     }
 
@@ -17,8 +18,8 @@ public enum OutType {
         this.type = type;
     }
 
-    public static OutType getOutTypeByType(String type) {
-        for (OutType outType : OutType.values()) {
+    public static EnumOutType getOutTypeByType(String type) {
+        for (EnumOutType outType : EnumOutType.values()) {
             if (outType.getType().equals(type)) {
                 return outType;
             }

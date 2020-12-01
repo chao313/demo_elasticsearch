@@ -27,6 +27,10 @@ public class StartConfig {
     @Value(value = "classpath:data/demo.txt")
     private Resource demo;
 
+    //访问的白名单
+    @Value("#{'${white.list}'.split(',')}")
+    private List<String> whiteList;
+
     private List<String> multi_match_fieldsList;
 
     private List<String> multi_match_fields_defaultList;
@@ -50,5 +54,9 @@ public class StartConfig {
 
     public String getDemoStr() {
         return demoStr;
+    }
+
+    public List<String> getWhiteList() {
+        return whiteList;
     }
 }

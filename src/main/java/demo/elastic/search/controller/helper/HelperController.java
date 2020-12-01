@@ -5,10 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import demo.elastic.search.config.Bootstrap;
 import demo.elastic.search.config.web.CustomInterceptConfig;
+import demo.elastic.search.enums.EnumOutType;
 import demo.elastic.search.feign.plus.MappingServicePlus;
 import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Response;
 import demo.elastic.search.out.db.mysql.service.DBService;
+import demo.elastic.search.out.resource.controller.ResourceController;
 import demo.elastic.search.out.resource.service.ResourceService;
 import demo.elastic.search.po.helper.DSLHelper;
 import demo.elastic.search.po.helper.DSLHelperPlus;
@@ -87,6 +89,9 @@ public class HelperController {
     @Autowired
     private ESThreadPoolExecutorService esThreadPoolExecutorService;
 
+    @Autowired
+    private ResourceController resourceController;
+
 
     private static final Integer LIMIT_EXCEL = 500000;
     private static final Integer LIMIT_CSV = 10000;
@@ -109,7 +114,7 @@ public class HelperController {
     @ApiOperation(value = "导出全部的查询结果(收编入ES体系)")
     @PostMapping(value = "/_search/outputToExcel/{index}")
     public Response _searchOutputToExcel(
-            @ApiParam(defaultValue = "tb_object_0088") @PathVariable(value = "index") String index,
+            @ApiParam(defaultValue = "tb_object") @PathVariable(value = "index") String index,
             @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)") @RequestParam(value = "scroll") String scroll,
             @ApiParam(value = "导出的size(-1代表全部)") @RequestParam(value = "outPutSize", required = false) Integer outPutSize,
             @RequestBody String body,
@@ -155,7 +160,7 @@ public class HelperController {
 
         List<String> urls = new ArrayList<>();
         filesNames.forEach(path -> {
-            String url = "http://" + host + resourceService.getContextPath() + "/ResourceController/downloadByFileName?fileName=" + path;
+            String url = resourceController.getDownloadByFileName(host, path);
             urls.add(url);
         });
         return Response.Ok(urls);
@@ -175,7 +180,7 @@ public class HelperController {
     @ApiOperation(value = "导出全部的查询结果(收编入ES体系)")
     @PostMapping(value = "/_search/outputToCSV/{index}")
     public Response _searchOutputToCSV(
-            @ApiParam(defaultValue = "tb_object_0088") @PathVariable(value = "index") String index,
+            @ApiParam(defaultValue = "tb_object") @PathVariable(value = "index") String index,
             @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)") @RequestParam(value = "scroll") String scroll,
             @ApiParam(value = "导出的size(-1代表全部)") @RequestParam(value = "outPutSize", required = false) Integer outPutSize,
             @RequestBody String body,
@@ -262,7 +267,7 @@ public class HelperController {
         outputStream.close();
         List<String> urls = new ArrayList<>();
         filesNames.forEach(path -> {
-            String url = "http://" + host + resourceService.getContextPath() + "/ResourceController/downloadByFileName?fileName=" + path;
+            String url = resourceController.getDownloadByFileName(host, path);
             urls.add(url);
         });
         return Response.Ok(urls);
@@ -272,7 +277,7 @@ public class HelperController {
     @ApiOperation(value = "导出全部的查询到DB(收编入ES体系)")
     @PostMapping(value = "/_search/outputToDB/{index}")
     public Response _searchOutputToDB(
-            @ApiParam(defaultValue = "tb_object_0088")
+            @ApiParam(defaultValue = "tb_object")
             @PathVariable(value = "index") String index,
             @ApiParam(value = "scroll的有效时间,允许为空(e.g. 1m 1d)")
             @RequestParam(value = "scroll", required = true) String scroll,
@@ -357,63 +362,63 @@ public class HelperController {
     }
 
     /**
-     * SELECT * FROM tb_object_0088 WHERE
-     * F1_0088 IS NOT NULL AND F2_0088 IS NULL
-     * AND F1_0088 = '1' AND F1_0088 <> '1'
-     * AND F1_0088 IN ('1','2') AND F1_0088 NOT IN ('1','2')
-     * AND F3_0088 BETWEEN 30 AND 40
-     * AND F3_0088 >= 30 AND F3_0088 <= 30
-     * AND REGEXP_LIKE(F4_0088,'\d*') AND  NOT REGEXP_LIKE(F4_0088,'\d*')
-     * AND F4_0088 LIKE 'St%'  AND F4_0088 NOT LIKE 'St%'
+     * SELECT * FROM tb_object WHERE
+     * F1 IS NOT NULL AND F2 IS NULL
+     * AND F1 = '1' AND F1 <> '1'
+     * AND F1 IN ('1','2') AND F1 NOT IN ('1','2')
+     * AND F3 BETWEEN 30 AND 40
+     * AND F3 >= 30 AND F3 <= 30
+     * AND REGEXP_LIKE(F4,'\d*') AND  NOT REGEXP_LIKE(F4,'\d*')
+     * AND F4 LIKE 'St%'  AND F4 NOT LIKE 'St%'
      * <p>
      * <p>
-     * SELECT * FROM tb_object_0088 WHERE
-     * F1_0088 IS NOT NULL AND F2_0088 IS NULL
-     * AND F1_0088 = '1' AND F1_0088 <> '1'
-     * AND F1_0088 IN ('1') AND F1_0088 NOT IN ('1','2')
-     * AND F3_0088 BETWEEN 30 AND 40
-     * AND F3_0088 >= '30' AND F3_0088 <= '40'
-     * AND REGEXP_LIKE(F4_0088,'\d*') AND  NOT REGEXP_LIKE(F4_0088,'\d*')
-     * AND F4_0088 LIKE 'St%'  AND F4_0088 NOT LIKE 'St%'
+     * SELECT * FROM tb_object WHERE
+     * F1 IS NOT NULL AND F2 IS NULL
+     * AND F1 = '1' AND F1 <> '1'
+     * AND F1 IN ('1') AND F1 NOT IN ('1','2')
+     * AND F3 BETWEEN 30 AND 40
+     * AND F3 >= '30' AND F3 <= '40'
+     * AND REGEXP_LIKE(F4,'\d*') AND  NOT REGEXP_LIKE(F4,'\d*')
+     * AND F4 LIKE 'St%'  AND F4 NOT LIKE 'St%'
      *
      * <pre>
      *  测试用例
      *  :
-     * SELECT * FROM "tb_object_0088" WHERE
-     * "F1_0088" IS NOT NULL AND "F2_0088" IS NULL
-     * AND "F1_0088" = '1' AND "F1_0088" <> '1'
-     * AND "F1_0088" IN ('1','2') AND "F1_0088" NOT IN ('1','2')
-     * AND "F3_0088" BETWEEN 30 AND 40
-     * AND "F3_0088" >= 30 AND F3_0088 <= 30
-     * AND REGEXP_LIKE("F2_0088",'[\u4e00-\u9fa5]+') AND  NOT REGEXP_LIKE("F1_0088",'[0-9]*')
-     * AND "F4_0088" LIKE 'St%'  AND "F4_0088" NOT LIKE 'St%'
+     * SELECT * FROM "tb_object" WHERE
+     * "F1" IS NOT NULL AND "F2" IS NULL
+     * AND "F1" = '1' AND "F1" <> '1'
+     * AND "F1" IN ('1','2') AND "F1" NOT IN ('1','2')
+     * AND "F3" BETWEEN 30 AND 40
+     * AND "F3" >= 30 AND F3 <= 30
+     * AND REGEXP_LIKE("F2",'[\u4e00-\u9fa5]+') AND  NOT REGEXP_LIKE("F1",'[0-9]*')
+     * AND "F4" LIKE 'St%'  AND "F4" NOT LIKE 'St%'
      *
      *
-     * SELECT * FROM tb_object_0088 WHERE F1_0088 = '1'
+     * SELECT * FROM tb_object WHERE F1 = '1'
      *
-     * SELECT * FROM tb_object_0088 WHERE F1_0088 <> '1'
+     * SELECT * FROM tb_object WHERE F1 <> '1'
      *
-     * SELECT * FROM tb_object_0088 WHERE F1_0088 LIKE '1*'
+     * SELECT * FROM tb_object WHERE F1 LIKE '1*'
      *
-     * SELECT * FROM tb_object_0088 WHERE F1_0088 NOT LIKE '1*'
+     * SELECT * FROM tb_object WHERE F1 NOT LIKE '1*'
      *
-     * SELECT * FROM tb_object_0088 WHERE F1_0088 IS NULL
+     * SELECT * FROM tb_object WHERE F1 IS NULL
      *
-     * SELECT * FROM tb_object_0088 WHERE F1_0088 IS NOT NULL
+     * SELECT * FROM tb_object WHERE F1 IS NOT NULL
      *
-     * SELECT * FROM tb_object_0088 WHERE F1_0088 IN ('1','2')
+     * SELECT * FROM tb_object WHERE F1 IN ('1','2')
      *
-     * SELECT * FROM tb_object_0088 WHERE F1_0088 NOT IN ('1','2')
+     * SELECT * FROM tb_object WHERE F1 NOT IN ('1','2')
      *
-     * SELECT * FROM tb_object_0088 WHERE F10_0088 <= 1
+     * SELECT * FROM tb_object WHERE F10 <= 1
      *
-     * SELECT * FROM tb_object_0088 WHERE F10_0088 >= 50
+     * SELECT * FROM tb_object WHERE F10 >= 50
      *
-     * SELECT * FROM tb_object_0088 WHERE F10_0088 BETWEEN 1 AND 49
+     * SELECT * FROM tb_object WHERE F10 BETWEEN 1 AND 49
      *
-     * SELECT * FROM tb_object_0088 WHERE  REGEXP_LIKE(F1_0088,'1.*')
+     * SELECT * FROM tb_object WHERE  REGEXP_LIKE(F1,'1.*')
      *
-     * SELECT * FROM tb_object_0088 WHERE NOT REGEXP_LIKE(F1_0088,'1.*')
+     * SELECT * FROM tb_object WHERE NOT REGEXP_LIKE(F1,'1.*')
      *
      * </pre>
      *
@@ -430,8 +435,226 @@ public class HelperController {
 
     }
 
+
+    @ApiOperation(value = "批量terms导出的查询到DB/CSV/EXCEL/JSON(收编入ES体系)")
+    @ApiImplicitParams({
+            @ApiImplicitParam(
+                    name = CustomInterceptConfig.ES_HOST_HEADER_KEY,
+                    value = Bootstrap.EXAMPLE,
+                    dataType = "string",
+                    paramType = "header",
+                    defaultValue = Bootstrap.DEFAULT_VALUE),
+            @ApiImplicitParam(name = "listFile", value = "listFile", dataType = "__file", paramType = "form"),
+            @ApiImplicitParam(name = "field", value = "field", dataType = "string", paramType = "form"),
+            @ApiImplicitParam(name = "values", value = "values", dataTypeClass = String.class, paramType = "form", allowMultiple = true)
+    })
+    @RequestMapping(value = "/_searchTermsToDb/{index}", method = {RequestMethod.POST})
+    public Response _searchTermsToDb(
+            @ApiParam(defaultValue = "F6", value = "下面的文件中需要匹配的值") @RequestParam(value = "field", required = false) String field,
+            @ApiParam(value = "检索语法 ORACLE语法") @RequestParam(value = "request") String sql,
+            @RequestParam(value = "values", required = false) List<String> values,
+            @RequestParam(name = "listFile", required = false) MultipartFile listFile,
+            @RequestParam(name = "outType", required = true) EnumOutType enumOutType,
+            @ApiParam(hidden = true) @RequestHeader(value = "host") String host,
+            HttpServletRequest httpServletRequest
+
+    ) throws Exception {
+        DSLHelperPlus dslHelperPlus = DSLHelperPlus.sqlToDSLHelperPlus(sql);
+        String index = dslHelperPlus.getIndex();
+        List<String> filesNames = new ArrayList<>();
+        AtomicInteger atomicInteger = new AtomicInteger();
+
+        /**
+         * 队列数量,这个是生产者和消费者的缓冲地带,越大,生产者和消费者越不受限制！
+         */
+        ArrayBlockingQueue<List<String>> queue = new ArrayBlockingQueue<>(TERMS_LIMIT_QUEUE);
+        List<String> lines = new ArrayList<>(1024);
+        List<Runnable> runnables = new ArrayList<>(100000);//执行的任务
+        /**
+         * 获取 title
+         */
+        List<String> fieldNames = new ArrayList<>();
+        if (dslHelperPlus.getFields().contains("*")) {
+            fieldNames.addAll(mappingServicePlus.getFieldNamesList(index));//获取
+        } else {
+            fieldNames.addAll(dslHelperPlus.getFields());
+        }
+        /**
+         * 开始操作 读取行数较大的文本
+         */
+        FileUtil.readBigFileByLine(listFile.getInputStream(), new Consumer<String>() {
+            @Override
+            public void accept(String line) {
+                lines.add(line);
+                int process = atomicInteger.getAndIncrement() % PROCESS_LIMIT;
+                if (process == 0) {
+                    log.info("处理进度 :{}", atomicInteger.get());
+                }
+
+                if (lines.size() > TERMS_ES_LIMIT) {
+                    SearchSourceBuilder<BoolQuery, VoidAggs> request = new SearchSourceBuilder<>();
+                    BoolQuery boolQuery = DSLHelper.DSLHelperToBoolQuery(dslHelperPlus.getDslHelper());
+                    request.from(0).size(3000).source(dslHelperPlus.getFields()).query(boolQuery);
+                    boolQuery.must(TermsQuery.builderQuery(field, lines));
+                    String requestBody = request.getRequestBody();
+                    log.info("lines.size:{}", lines.size());
+                    lines.clear();
+                    Runnable runnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", requestBody, false);
+                            lists.forEach(vo -> {
+                                try {
+                                    queue.put(vo);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+                        }
+                    };
+                    runnables.add(runnable);
+                }
+            }
+        });
+        if (lines.size() > 0) {
+            //补全空缺
+            SearchSourceBuilder<BoolQuery, VoidAggs> request = new SearchSourceBuilder<>();
+            BoolQuery boolQuery = DSLHelper.DSLHelperToBoolQuery(dslHelperPlus.getDslHelper());
+            request.from(0).size(3000).source(dslHelperPlus.getFields()).query(boolQuery);
+            boolQuery.must(TermsQuery.builderQuery(field, lines));
+            String requestBody = request.getRequestBody();
+            log.info("lines.size:{}", lines.size());
+            lines.clear();
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", requestBody, false);
+                    lists.forEach(vo -> {
+                        try {
+                            queue.put(vo);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            };
+            runnables.add(runnable);
+        }
+        /**
+         * 开始下一步任务
+         */
+        log.info("生产者任务数量:{}", runnables.size());
+        //批量提交任务
+        for (Runnable runnable : runnables) {
+            esThreadPoolExecutorService.addWork(runnable);
+        }
+
+        if (enumOutType.equals(EnumOutType.DB)) {
+            //准备入库
+            String targetTable = index + "_" + DateUtil.getNow();
+            dbService.cloneTableStruct(index, targetTable);//创建新的表
+
+            List<List<String>> tmp = new ArrayList<>(1024);
+            while (esThreadPoolExecutorService.isComplete() != true || queue.size() > 0) {
+                List<String> poll = queue.poll();
+                if (null != poll) {
+                    tmp.add(poll);
+                    if (tmp.size() > TERMS_DB_LIMIT) {
+                        esThreadPoolExecutorService.isCompleteLog();
+                        List<List<String>> tmp2 = tmp;
+                        threadPoolExecutorService.addWork(new Runnable() {
+                            @Override
+                            public void run() {
+                                dbService.batchInsert(targetTable, tmp2, fieldNames);
+                            }
+                        });
+                        tmp = new ArrayList<>(1024);
+                    }
+                }
+            }
+            //补全最后的数据
+            List<List<String>> tmp2 = tmp;
+            threadPoolExecutorService.addWork(new Runnable() {
+                @Override
+                public void run() {
+                    dbService.batchInsert(targetTable, tmp2, fieldNames);
+                }
+            });
+            threadPoolExecutorService.waitComplete();
+            filesNames.add(targetTable);//统一处理
+        } else if (enumOutType.equals(EnumOutType.EXCEL)) {
+            List<List<String>> tmp = new ArrayList<>(LIMIT_EXCEL);
+            while (esThreadPoolExecutorService.isComplete() != true || queue.size() > 0) {
+                List<String> poll = queue.poll();
+                if (null != poll) {
+                    tmp.add(poll);
+                    if (tmp.size() > LIMIT_EXCEL) {
+                        String fileName = index + DateUtil.getNow() + ".xlsx";
+                        filesNames.add(fileName);
+                        File file = resourceService.addNewFile(fileName);
+                        OutputStream outputStream = new FileOutputStream(file);
+                        //补全头
+                        tmp.add(0, fieldNames);
+                        //具体写入
+                        ExcelUtil.writeListSXSS(tmp, outputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
+                        tmp.clear();
+                    }
+                }
+            }
+            if (tmp.size() > 0) {
+                //补全最后的数据
+                String fileName = index + DateUtil.getNow() + ".xlsx";
+                filesNames.add(fileName);
+                File file = resourceService.addNewFile(fileName);
+                OutputStream outputStream = new FileOutputStream(file);
+                //补全头
+                tmp.add(0, fieldNames);
+                ExcelUtil.writeListSXSS(tmp, outputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
+                tmp.clear();
+            }
+
+        } else if (enumOutType.equals(EnumOutType.CSV)) {
+            List<List<String>> tmp = new ArrayList<>(LIMIT_CSV);
+            //补全最后的数据
+            String fileName = index + DateUtil.getNow() + ".csv";
+            filesNames.add(fileName);
+            File file = resourceService.addNewFile(fileName);
+            OutputStream outputStream = new FileOutputStream(file);
+            tmp.add(0, fieldNames);
+            while (esThreadPoolExecutorService.isComplete() != true || queue.size() > 0) {
+                List<String> poll = queue.poll();
+                if (null != poll) {
+                    tmp.add(poll);
+                    if (tmp.size() > LIMIT_CSV) {
+                        //具体写入
+                        ExcelUtil.writeListCSV(tmp, outputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
+                        tmp.clear();
+                    }
+                }
+            }
+            if (tmp.size() > 0) {
+                //补全最后的数据
+                ExcelUtil.writeListCSV(tmp, outputStream, (line, size) -> log.info("写入进度:{}/{}->{}", line, size, percent(line, size)));
+                tmp.clear();
+            }
+        } else {
+            return Response.Ok("暂未支持");
+        }
+
+        List<String> urls = new ArrayList<>();
+        filesNames.forEach(path -> {
+            if (!enumOutType.equals(EnumOutType.DB)) {
+                String url = resourceController.getDownloadByFileName(host, path);
+                urls.add(url);
+            } else {
+                urls.add(path);
+            }
+        });
+        return Response.Ok(urls);
+    }
+
     /**
-     * SELECT F2_0088,F1_0088 FROM  tb_object_0088  WHERE  F1_0088  IS NOT NULL AND F21_0088 = '江苏' ORDER BY  F3_0088 ASC ,F1_0088 DESC
+     * SELECT F2,F1 FROM  tb_object  WHERE  F1  IS NOT NULL AND F21 = '公司' ORDER BY  F3 ASC ,F1 DESC
      *
      * @param sql
      * @return
@@ -608,116 +831,6 @@ public class HelperController {
         dslHelperPlus.getSort().add(sqlOrderMap);
         return Response.Ok(dslHelperPlus);
 
-    }
-
-
-    @ApiOperation(value = "批量terms导出的查询到DB(收编入ES体系)")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "listFile", value = "listFile", dataType = "__file", paramType = "form"),
-            @ApiImplicitParam(name = "field", value = "field", dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "values", value = "values", dataTypeClass = String.class, paramType = "form", allowMultiple = true)
-    })
-    @RequestMapping(value = "/_searchTermsToDb/{index}", method = {RequestMethod.POST})
-    public Response _searchTermsToDb(
-            @ApiParam(defaultValue = "F6_0088", value = "下面的文件中需要匹配的值") @RequestParam(value = "field", required = false) String field,
-            @ApiParam(value = "检索语法 ORACLE语法") @RequestParam(value = "request") String sql,
-            @RequestParam(value = "values", required = false) List<String> values,
-            @RequestParam(name = "listFile", required = false) MultipartFile listFile
-    ) throws Exception {
-        DSLHelperPlus dslHelperPlus = DSLHelperPlus.sqlToDSLHelperPlus(sql);
-        String index = dslHelperPlus.getIndex();
-
-        AtomicInteger atomicInteger = new AtomicInteger();
-
-        /**
-         * 队列数量,这个是生产者和消费者的缓冲地带,越大,生产者和消费者越不受限制！
-         */
-        ArrayBlockingQueue<List<String>> queue = new ArrayBlockingQueue<>(TERMS_LIMIT_QUEUE);
-        List<String> lines = new ArrayList<>(1024);
-        List<Runnable> runnables = new ArrayList<>(100000);//执行的任务
-        /**
-         * 读取行数较大的文本
-         */
-        FileUtil.readBigFileByLine(listFile.getInputStream(), new Consumer<String>() {
-            @Override
-            public void accept(String line) {
-                lines.add(line);
-                int process = atomicInteger.getAndIncrement() % PROCESS_LIMIT;
-                if (process == 0) {
-                    log.info("处理进度 :{}", atomicInteger.get());
-                }
-
-                if (lines.size() > TERMS_ES_LIMIT) {
-                    SearchSourceBuilder<BoolQuery, VoidAggs> request = new SearchSourceBuilder<>();
-                    BoolQuery boolQuery = DSLHelper.DSLHelperToBoolQuery(dslHelperPlus.getDslHelper());
-                    request.from(0).size(3000).source(dslHelperPlus.getFields()).query(boolQuery);
-                    boolQuery.must(TermsQuery.builderQuery(field, lines));
-                    String requestBody = request.getRequestBody();
-                    log.info("lines.size:{}", lines.size());
-                    lines.clear();
-                    Runnable runnable = new Runnable() {
-                        @Override
-                        public void run() {
-                            List<List<String>> lists = searchServicePlus._searchScrollToList(index, "1m", requestBody, false);
-                            lists.forEach(vo -> {
-                                try {
-                                    queue.put(vo);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            });
-                        }
-                    };
-                    runnables.add(runnable);
-
-                }
-            }
-        });
-        log.info("生产者任务数量:{}", runnables.size());
-        //批量提交任务
-        for (Runnable runnable : runnables) {
-            esThreadPoolExecutorService.addWork(runnable);
-        }
-        //准备入库
-        String targetTable = index + "_" + DateUtil.getNow();
-        dbService.cloneTableStruct(index, targetTable);//创建新的表
-        /**
-         * 获取 title
-         */
-        List<String> fieldNames = new ArrayList<>();
-        if (dslHelperPlus.getFields().contains("*")) {
-            fieldNames.addAll(mappingServicePlus.getFieldNamesList(index));//获取
-        } else {
-            fieldNames.addAll(dslHelperPlus.getFields());
-        }
-        List<List<String>> tmp = new ArrayList<>(1024);
-        while (esThreadPoolExecutorService.isComplete() != true) {
-            List<String> poll = queue.poll();
-            if (null != poll) {
-                tmp.add(poll);
-                if (tmp.size() > TERMS_DB_LIMIT) {
-                    esThreadPoolExecutorService.isCompleteLog();
-                    List<List<String>> tmp2 = tmp;
-                    threadPoolExecutorService.addWork(new Runnable() {
-                        @Override
-                        public void run() {
-                            dbService.batchInsert(targetTable, tmp2, fieldNames);
-                        }
-                    });
-                    tmp = new ArrayList<>(1024);
-                }
-            }
-        }
-        //补全最后的数据
-        List<List<String>> tmp2 = tmp;
-        threadPoolExecutorService.addWork(new Runnable() {
-            @Override
-            public void run() {
-                dbService.batchInsert(targetTable, tmp2, fieldNames);
-            }
-        });
-        threadPoolExecutorService.waitComplete();
-        return Response.Ok(targetTable);
     }
 
 }

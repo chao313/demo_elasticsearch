@@ -12,7 +12,6 @@ import demo.elastic.search.feign.plus.ScrollServicePlus;
 import demo.elastic.search.feign.plus.SearchServicePlus;
 import demo.elastic.search.framework.Code;
 import demo.elastic.search.framework.Response;
-import demo.elastic.search.out.comm.OutType;
 import demo.elastic.search.out.db.mysql.service.DBService;
 import demo.elastic.search.out.kafka.KafkaMsg;
 import demo.elastic.search.out.kafka.KafkaOutService;
@@ -50,7 +49,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static demo.elastic.search.util.ExcelUtil.percent;
@@ -727,11 +725,9 @@ public class CustomController {
             @RequestParam(value = "request") List<String> request,
             @RequestParam(value = "values", required = false) List<String> values,
             @RequestParam(name = "listFile", required = false) MultipartFile listFile,
-            @RequestParam(name = "outType", required = false, defaultValue = "URL") OutType outType,
             @ApiParam(hidden = true)
             @RequestHeader(value = "host") String host,
             HttpServletRequest httpServletRequest
-
     ) {
         try {
             /**
@@ -856,9 +852,7 @@ public class CustomController {
             @ApiParam(value = "请求体，需要复制")
             @RequestParam(value = "request") List<String> request,
             @RequestParam(value = "values", required = false) List<String> values,
-            @RequestParam(name = "listFile", required = false) MultipartFile listFile,
-            @RequestParam(name = "outType", required = false, defaultValue = "URL") OutType outType
-
+            @RequestParam(name = "listFile", required = false) MultipartFile listFile
     ) throws Exception {
 
         String targetTable = index + "_" + DateUtil.getNow();
